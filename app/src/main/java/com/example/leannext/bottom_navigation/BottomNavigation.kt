@@ -29,13 +29,14 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.leannext.R
+import com.example.leannext.utlis.Constants
 
 @Composable
 fun BottomNavigation(navHostController: NavHostController) {
     val listItems = listOf(
-        BottomItem.TestScreen,
-        BottomItem.DiagramScreen,
-        BottomItem.ProfileScreen
+        Constants.TestScreen,
+        Constants.DiagramScreen,
+        Constants.ProfileScreen
     )
     NavigationBar(
         Modifier.background(Color.White).height(92.dp).border(2.dp,Color(0xFFB1B1B1),
