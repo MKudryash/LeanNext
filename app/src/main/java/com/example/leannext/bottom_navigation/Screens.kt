@@ -4,22 +4,27 @@ import android.widget.Space
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.modifier.modifierLocalConsumer
-import androidx.compose.ui.modifier.modifierLocalMapOf
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -31,7 +36,7 @@ import com.example.leannext.Models.DevelopmentIndex
 import com.example.leannext.Models.Directions
 import com.example.leannext.R
 
-@Preview
+
 @Composable
 fun DiagramScreen() {
 
@@ -120,9 +125,7 @@ fun DiagramScreen() {
             painter = painterResource(id = R.drawable.daigramexample),
             contentDescription = ""
         )
-        Box(
-
-        ) {
+        Box{
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(bottom = 92.dp)
@@ -153,7 +156,7 @@ fun DiagramScreen() {
                             Modifier
                                 .weight(12f)
                                 .wrapContentHeight()
-                                .padding(7.dp,0.dp)
+                                .padding(7.dp, 0.dp)
                                 .border(
                                     2.dp,
                                     MaterialTheme.colorScheme.primary,
@@ -163,7 +166,7 @@ fun DiagramScreen() {
                         )
                         {
                             Text(
-                                modifier = Modifier.padding(0.dp,15.dp),
+                                modifier = Modifier.padding(0.dp, 15.dp),
                                 text = item.idDirection,
                                 color = MaterialTheme.colorScheme.secondary,
                                 fontFamily = FontFamily(Font(R.font.neosanspro_regular)),
@@ -175,7 +178,7 @@ fun DiagramScreen() {
                             Modifier
                                 .weight(2.3f)
                                 .wrapContentHeight()
-                                .padding(7.dp,0.dp)
+                                .padding(7.dp, 0.dp)
                                 .border(
                                     2.dp,
                                     MaterialTheme.colorScheme.primary,
@@ -185,7 +188,7 @@ fun DiagramScreen() {
                         )
                         {
                             Text(
-                                modifier = Modifier.padding(0.dp,15.dp),
+                                modifier = Modifier.padding(0.dp, 15.dp),
                                 text = item.mark.toString(),
                                 color = MaterialTheme.colorScheme.secondary,
                                 fontFamily = FontFamily(Font(R.font.neosanspro_regular)),
@@ -202,8 +205,150 @@ fun DiagramScreen() {
 }
 
 @Composable
-fun TestScreen() {
+fun TestScreen(onClick:()->Unit) {
+    var search: String by rememberSaveable { mutableStateOf("") }
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
 
+        CustomSearchView(search = search, onValueChange = {
+            search = it
+        })
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(bottom = 92.dp),
+        )
+        {
+            itemsIndexed(
+                listOf(
+                    Directions(1, R.drawable.menegment, "5S и Визуальный менеджмент"),
+                    Directions(2, R.drawable.system, "Всеобщая эксплуатационная система ТРМ"),
+                    Directions(3, R.drawable.smed, "Быстрая переналадка SMED"),
+                    Directions(4, R.drawable.standartwork, "Стандартизированная работа"),
+                    Directions(5, R.drawable.carta, "Картирование"),
+                    Directions(6, R.drawable.thread, "Выстраивание потока"),
+                    Directions(7, R.drawable.personal, "Вовлечение персонала"),
+                    Directions(8, R.drawable.personal, "Обучение персонала"),
+                    Directions(9, R.drawable.menegment, "Логистика")
+                )
+            )
+            { index, item ->
+                if (index < 9)
+
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(25.dp, 10.dp)
+                            .clickable(onClick =
+                            {
+                                onClick()
+                            }),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            modifier = Modifier.weight(2f),
+                            painter = painterResource(id = item.idIcon),
+                            contentDescription = "",
+                            tint = MaterialTheme.colorScheme.secondary
+                        )
+                        Text(
+                            modifier = Modifier
+                                .weight(8f)
+                                .padding(10.dp, 0.dp, 0.dp, 0.dp),
+                            text = item.title,
+                            color = MaterialTheme.colorScheme.secondary,
+                            fontFamily = FontFamily(Font(R.font.neosanspro_bold)),
+                            fontSize = 16.sp,
+                            textAlign = TextAlign.Center,
+
+                        )
+
+                    }
+                Divider(
+                    color = MaterialTheme.colorScheme.primary,
+                    thickness = 2.dp,
+                    modifier = Modifier.padding(15.dp, 10.dp)
+                )
+            }
+
+        }
+
+
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CustomSearchView(search: String,   modifier: Modifier = Modifier,onValueChange: (String) -> Unit) {
+    Box(
+        modifier = modifier
+            .padding(20.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .background(Color(0XFFF5F5F9))
+
+    ) {
+        TextField(
+            value = search,
+            onValueChange = onValueChange,
+            colors = TextFieldDefaults.textFieldColors(
+                containerColor = Color(0XFFF5F5F9),
+                placeholderColor = Color(0XFFF5F5F9),
+                focusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                textColor = MaterialTheme.colorScheme.onTertiary,
+                cursorColor = MaterialTheme.colorScheme.onTertiary
+            ),
+            modifier = Modifier.background(Color(0XFFF5F5F9)),
+            leadingIcon = { Icon(imageVector = Icons.Default.Search, contentDescription = "",
+                tint = MaterialTheme.colorScheme.onTertiary) },
+            placeholder = { Text(text = "Искать направление", color = MaterialTheme.colorScheme.onSecondary) }
+        )
+
+    }
+
+}
+
+
+@Preview
+@Composable
+fun DirectionTestScreen()
+{
+    Column(
+        modifier = Modifier
+        .fillMaxSize()
+        .background(MaterialTheme.colorScheme.background),
+
+    ){
+        Row {
+            Box(modifier = Modifier
+                .padding(7.dp,20.dp)
+                .clip(RoundedCornerShape(10.dp))
+                .background(Color(0XFFF5F5F9)),
+                contentAlignment = Alignment.Center
+            )
+            {
+                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "",
+                    tint = MaterialTheme.colorScheme.onTertiary)
+            }
+            Text(
+                modifier = Modifier
+                    .weight(8f)
+                    .padding(10.dp, 0.dp, 0.dp, 0.dp),
+                text = "5S и Визуальный менеджмент",
+                color = MaterialTheme.colorScheme.secondary,
+                fontFamily = FontFamily(Font(R.font.neosanspro_medium)),
+                fontSize = 16.sp,
+                textAlign = TextAlign.Center,
+
+                )
+
+        }
+    }
+
+}
+@Composable
+fun ProfileScreen() {
     // Column Composable,
     Column(
         modifier = Modifier
@@ -215,22 +360,5 @@ fun TestScreen() {
     ) {
         // Text to Display the current Screen
         Text(text = "Test", color = Color(0xFFB8C1CC))
-    }
-}
-
-@Composable
-fun ProfileScreen() {
-
-    // Column Composable,
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
-        // Parameters set to place the items in center
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        // Text to Display the current Screen
-        Text(text = "Profile", color = Color(0xFFB8C1CC))
     }
 }

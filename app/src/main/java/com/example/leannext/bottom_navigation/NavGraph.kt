@@ -13,7 +13,7 @@ fun NavGraph (
     {
         composable("test")
         {
-            TestScreen()
+            TestScreen{navHostController.navigate("testDirection")}
         }
         composable("diagram")
         {
@@ -22,6 +22,10 @@ fun NavGraph (
         composable("profile")
         {
             ProfileScreen()
+        }
+        composable("testDirection")
+        {
+            DirectionTestScreen()
         }
     }
 }
