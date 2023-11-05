@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "612317688987",
+    "project_id": "leannext-ca7d2",
+    "storage_bucket": "leannext-ca7d2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:612317688987:android:42f0f55857549ac252c23e",
+        "android_client_info": {
+          "package_name": "com.example.leannext"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_6suNPZINLF5Xvi1WI5fDM-Uy9d937IE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

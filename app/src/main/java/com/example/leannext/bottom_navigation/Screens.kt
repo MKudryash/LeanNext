@@ -1,25 +1,24 @@
 package com.example.leannext.bottom_navigation
 
-import android.widget.Space
+import android.content.ContentValues.TAG
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,24 +26,23 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.leannext.Models.Criterias
-import com.example.leannext.Models.DevelopmentIndex
-import com.example.leannext.Models.Directions
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import com.example.leannext.MainViewModel
+import com.example.leannext.db.modelsDb.DevelopmentIndex
 import com.example.leannext.R
 import com.example.leannext.utlis.CheckWeek
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.firestore
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -54,12 +52,15 @@ var week = 0
 val format = SimpleDateFormat("dd MMMM", Locale("ru"))
 var startDate = mutableStateOf(format.format(checkWeek.PreviousNextWeekModay(week)))
 var endDate = mutableStateOf(format.format(checkWeek.PreviousNextWeekSunday(week)))
-fun ChangeDate(week:Int) {
+fun ChangeDate(week: Int) {
     startDate.value = format.format(checkWeek.PreviousNextWeekModay(week))
     endDate.value = format.format(checkWeek.PreviousNextWeekSunday(week))
 }
+
 @Composable
-fun DiagramScreen() {
+fun DiagramScreen( mainViewModel: MainViewModel = viewModel(factory = MainViewModel.factory),
+                   navHostController: NavHostController) {
+    val itemsListDirection = mainViewModel.itemsListDirection.collectAsState(initial = emptyList())
     var startDateText by startDate
     var endDateText by endDate
     // Column Composable,
@@ -96,7 +97,8 @@ fun DiagramScreen() {
             Box(
                 Modifier
                     .weight(1f)
-                    .size(60.dp).clickable { ChangeDate(--week) },
+                    .size(60.dp)
+                    .clickable { ChangeDate(--week) },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -130,7 +132,7 @@ fun DiagramScreen() {
                 Modifier
                     .weight(1f)
                     .size(60.dp)
-                    .clickable { ChangeDate(++ week) },
+                    .clickable { ChangeDate(++week) },
                 contentAlignment = Alignment.Center
 
             ) {
@@ -155,19 +157,7 @@ fun DiagramScreen() {
                 contentPadding = PaddingValues(bottom = 92.dp)
             )
             {
-                itemsIndexed(
-                    listOf(
-                        DevelopmentIndex(1, 1, "5S и Визуальный менеджмент", 0.0),
-                        DevelopmentIndex(1, 1, "Всеобщая эксплуатационная система ТРМ", 0.0),
-                        DevelopmentIndex(1, 1, "Логистика", 0.0),
-                        DevelopmentIndex(1, 1, "Картирование", 0.0),
-                        DevelopmentIndex(1, 1, "5S и Визуальный менеджмент", 0.0),
-                        DevelopmentIndex(1, 1, "Всеобщая эксплуатационная система ТРМ", 0.0),
-                        DevelopmentIndex(1, 1, "Логистика", 0.0),
-                        DevelopmentIndex(1, 1, "Картирование", 0.0)
-                    )
-                )
-                { _, item ->
+                items(itemsListDirection.value){ item ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -190,8 +180,8 @@ fun DiagramScreen() {
                         )
                         {
                             Text(
-                                modifier = Modifier.padding(0.dp, 15.dp),
-                                text = item.idDirection,
+                                modifier = Modifier.padding(4.dp, 15.dp),
+                                text = item.title,
                                 color = MaterialTheme.colorScheme.secondary,
                                 fontFamily = FontFamily(Font(R.font.neosanspro_regular)),
                                 fontSize = 14.sp,
@@ -213,7 +203,7 @@ fun DiagramScreen() {
                         {
                             Text(
                                 modifier = Modifier.padding(0.dp, 15.dp),
-                                text = item.mark.toString(),
+                                text = "0,0",
                                 color = MaterialTheme.colorScheme.secondary,
                                 fontFamily = FontFamily(Font(R.font.neosanspro_regular)),
                                 fontSize = 14.sp,
@@ -229,8 +219,29 @@ fun DiagramScreen() {
 }
 
 @Composable
-fun TestScreen(onClick: () -> Unit) {
+fun TestScreen(
+    mainViewModel: MainViewModel = viewModel(factory = MainViewModel.factory),
+    navHostController: NavHostController
+) {
     var search: String by rememberSaveable { mutableStateOf("") }
+    val itemsListDirection = mainViewModel.itemsListDirection.collectAsState(initial = emptyList())
+   // mainViewModel.addDataToFirestore()
+/*    val db = Firebase.firestore
+    val user = hashMapOf(
+        "first" to "Ada",
+        "last" to "Lovelace",
+        "born" to 1815
+    )
+
+// Add a new document with a generated ID
+    db.collection("userss")
+        .add(user)
+        .addOnSuccessListener { documentReference ->
+            Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
+        }
+        .addOnFailureListener { e ->
+            Log.w(TAG, "Error adding document", e)
+        }*/
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -238,28 +249,13 @@ fun TestScreen(onClick: () -> Unit) {
         CustomSearchView(search = search, onValueChange = {
             search = it
         })
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(bottom = 92.dp),
-        )
-        {
-            itemsIndexed(
-                listOf(
-                    Directions(1, R.drawable.menegment, "5S и Визуальный менеджмент"),
-                    Directions(2, R.drawable.system, "Всеобщая эксплуатационная система ТРМ"),
-                    Directions(3, R.drawable.smed, "Быстрая переналадка SMED"),
-                    Directions(4, R.drawable.standartwork, "Стандартизированная работа"),
-                    Directions(5, R.drawable.carta, "Картирование"),
-                    Directions(6, R.drawable.thread, "Выстраивание потока"),
-                    Directions(7, R.drawable.personal, "Вовлечение персонала"),
-                    Directions(8, R.drawable.personal, "Обучение персонала"),
-                    Directions(9, R.drawable.menegment, "Логистика")
-                )
+        if (itemsListDirection != null) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(bottom = 92.dp),
             )
-            { index, item ->
-
-                if (index < 9)
-
+            {
+                items(itemsListDirection.value) { item ->
                     Row(
                         Modifier
                             .fillMaxWidth()
@@ -268,10 +264,19 @@ fun TestScreen(onClick: () -> Unit) {
                             .height(85.dp)
                             .clickable(onClick =
                             {
-                                onClick()
+                                navHostController.navigate("directionTestScreen/" + item.id)
                             }),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+                      /*  val context = LocalContext.current
+                        val name = "menegment"
+                        val drawableId = remember(name) {
+                            context.resources.getIdentifier(
+                                name,
+                                "drawable",
+                                context.packageName
+                            )
+                        }*/
                         Icon(
                             modifier = Modifier.weight(2f),
                             painter = painterResource(id = item.idIcon),
@@ -291,18 +296,16 @@ fun TestScreen(onClick: () -> Unit) {
                             )
 
                     }
-                if (index < 8)
-                { Divider(
-                    color = MaterialTheme.colorScheme.primary,
-                    thickness = 2.dp,
-                    modifier = Modifier.padding(15.dp, 10.dp)
-                )
+                    if (item.id < itemsListDirection.value.size) {
+                        Divider(
+                            color = MaterialTheme.colorScheme.primary,
+                            thickness = 2.dp,
+                            modifier = Modifier.padding(15.dp, 10.dp)
+                        )
+                    }
                 }
             }
-
         }
-
-
     }
 }
 
@@ -352,15 +355,20 @@ fun CustomSearchView(
 }
 
 
-@Preview
 @Composable
-fun DirectionTestScreen() {
+fun DirectionTestScreen(
+    mainViewModel: MainViewModel = viewModel(factory = MainViewModel.factory),
+    navHostController: NavHostController,
+    id: Int
+) {
+    val itemsListCriterias =
+        mainViewModel.foundItemCriteriasForDirection(id).collectAsState(initial = emptyList())
+    val titleDirection = mainViewModel.foundNameItemDirectionWithId(id)
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
-
-        ) {
+    ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
@@ -384,13 +392,12 @@ fun DirectionTestScreen() {
                 modifier = Modifier
                     .weight(8f)
                     .padding(10.dp, 0.dp, 10.dp, 0.dp),
-                text = "5S и Визуальный менеджмент",
+                text = titleDirection.toString(),
                 color = MaterialTheme.colorScheme.secondary,
                 fontFamily = FontFamily(Font(R.font.neosanspro_medium)),
                 fontSize = 20.sp,
                 textAlign = TextAlign.Center,
-
-                )
+            )
         }
         LazyColumn(
             verticalArrangement = Arrangement.SpaceEvenly,
@@ -398,25 +405,9 @@ fun DirectionTestScreen() {
             contentPadding = PaddingValues(bottom = 92.dp),
         )
         {
-            itemsIndexed(
-                listOf(
-                    Criterias(
-                        1,
-                        "% персонала, ознакомленный с основами, технологиями, инструментами и порядком внедрения системы \"Пять S\"",
-                        1,
-                        ""
-                    ),
-                    Criterias(2, "% участков, обеспеченных плакатами по 5S", 1, ""),
-                    Criterias(
-                        3,
-                        "На земле, на полу, на оборудовании, внутри и под оборудованием, под столами, под стеллажами и т.д. отсутствуют инструменты, оснастка, материалы и прочие предметы",
-                        1,
-                        ""
-                    ),
-                )
-            )
-            { index, item ->
-                var count = index + 1
+            items(itemsListCriterias.value) { item ->
+                var count = item.id % 3
+                if (count == 0) count = 3
                 var progressWeight: Float = count.toFloat()
                 var allWeight: Float = 3f - count.toFloat()
                 Column(
@@ -482,7 +473,7 @@ fun DirectionTestScreen() {
                     )
                     {
                         Text(
-                            text = item.Title,
+                            text = item.title,
                             fontFamily = FontFamily(Font(R.font.neosanspro_bold)),
                             fontSize = 16.sp,
                             color = MaterialTheme.colorScheme.secondary,
@@ -521,12 +512,12 @@ fun DirectionTestScreen() {
                             }
                         }
                     }
-                    if (index < 2)
-                    { Divider(
-                        color = MaterialTheme.colorScheme.primary,
-                        thickness = 2.dp,
-                        modifier = Modifier.padding(15.dp, 10.dp)
-                    )
+                    if (item.id < 2) {
+                        Divider(
+                            color = MaterialTheme.colorScheme.primary,
+                            thickness = 2.dp,
+                            modifier = Modifier.padding(15.dp, 10.dp)
+                        )
                     }
                 }
             }
@@ -535,7 +526,7 @@ fun DirectionTestScreen() {
 }
 
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(navHostController: NavHostController) {
     // Column Composable,
     Column(
         modifier = Modifier

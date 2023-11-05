@@ -1,31 +1,43 @@
 package com.example.leannext.bottom_navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
+import com.example.leannext.MainViewModel
+import com.example.leannext.utlis.Constants
 
 @Composable
-fun NavGraph (
-    navHostController:NavHostController
-){
-    NavHost(navController = navHostController, startDestination = "diagram" )
+fun NavGraph(
+    navHostController: NavHostController
+) {
+    NavHost(navController = navHostController, startDestination = Constants.DiagramScreen.route)
     {
-        composable("test")
+        composable(Constants.TestScreen.route)
         {
-            TestScreen{navHostController.navigate("testDirection")}
+            TestScreen(navHostController = navHostController)
         }
-        composable("diagram")
+        composable(Constants.DiagramScreen.route)
         {
-            DiagramScreen()
+            DiagramScreen(navHostController = navHostController)
         }
-        composable("profile")
+        composable(Constants.ProfileScreen.route)
         {
-            ProfileScreen()
+            ProfileScreen(navHostController = navHostController)
         }
-        composable("testDirection")
-        {
-            DirectionTestScreen()
+        composable(
+            route = Constants.DirectionTestScreen.route,
+            arguments = listOf(navArgument("id") {
+                type = NavType.IntType
+            })
+        ) {
+            var a = it.arguments?.getInt("id")
+            if (a != null) {
+                DirectionTestScreen(navHostController = navHostController,id = a)
+            }
         }
     }
 }

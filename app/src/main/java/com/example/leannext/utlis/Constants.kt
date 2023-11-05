@@ -1,17 +1,16 @@
 package com.example.leannext.utlis
 
-import com.example.leannext.Models.DevelopmentIndex
-import com.example.leannext.Models.Directions
+import com.example.leannext.db.modelsDb.DevelopmentIndex
+import com.example.leannext.db.modelsDb.Directions
 import com.example.leannext.R
 import com.example.leannext.bottom_navigation.BottomItem
-import java.time.LocalDateTime
-import java.util.Date
-import java.util.Locale
 
+sealed class  Screen(val route:String)
 object Constants {
     object DiagramScreen : BottomItem("Diagram", R.drawable.diagram,"diagram")
     object ProfileScreen : BottomItem("Profile", R.drawable.profile,"profile")
     object TestScreen : BottomItem("Test", R.drawable.test,"test")
+    object DirectionTestScreen:Screen("directionTestScreen/{id}")
 
     object dateForDataBase{
        val listDirection =listOf(
