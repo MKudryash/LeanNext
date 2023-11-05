@@ -44,11 +44,24 @@ import com.example.leannext.Models.Criterias
 import com.example.leannext.Models.DevelopmentIndex
 import com.example.leannext.Models.Directions
 import com.example.leannext.R
+import com.example.leannext.utlis.CheckWeek
+import java.text.SimpleDateFormat
+import java.util.Locale
 
+val checkWeek = CheckWeek()
+var week = 0
 
+val format = SimpleDateFormat("dd MMMM", Locale("ru"))
+var startDate = mutableStateOf(format.format(checkWeek.PreviousNextWeekModay(week)))
+var endDate = mutableStateOf(format.format(checkWeek.PreviousNextWeekSunday(week)))
+fun ChangeDate(week:Int) {
+    startDate.value = format.format(checkWeek.PreviousNextWeekModay(week))
+    endDate.value = format.format(checkWeek.PreviousNextWeekSunday(week))
+}
 @Composable
 fun DiagramScreen() {
-
+    var startDateText by startDate
+    var endDateText by endDate
     // Column Composable,
     Column(
         modifier = Modifier
@@ -83,7 +96,7 @@ fun DiagramScreen() {
             Box(
                 Modifier
                     .weight(1f)
-                    .size(60.dp),
+                    .size(60.dp).clickable { ChangeDate(--week) },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -105,7 +118,7 @@ fun DiagramScreen() {
                     textAlign = TextAlign.Center,
                 )
                 Text(
-                    text = "30 октября - 6 ноября",
+                    text = "${startDateText} - ${endDateText}",
                     modifier = Modifier.padding(top = 10.dp),
                     color = MaterialTheme.colorScheme.secondary,
                     fontFamily = FontFamily(Font(R.font.neosanspro_regular)),
@@ -116,8 +129,10 @@ fun DiagramScreen() {
             Box(
                 Modifier
                     .weight(1f)
-                    .size(60.dp),
+                    .size(60.dp)
+                    .clickable { ChangeDate(++ week) },
                 contentAlignment = Alignment.Center
+
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.arrowright),
@@ -440,7 +455,7 @@ fun DirectionTestScreen() {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(20.dp, 10.dp,20.dp,20.dp)
+                            .padding(20.dp, 10.dp, 20.dp, 20.dp)
                             .border(2.dp, Color.Transparent, RoundedCornerShape(5.dp))
                     )
                     {
