@@ -1,13 +1,15 @@
 package com.example.leannext.bottom_navigation
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.leannext.MainViewModel
+import com.example.leannext.screens.DiagramScreen
+import com.example.leannext.screens.DirectionTestScreen
+import com.example.leannext.screens.ProfileScreen
+import com.example.leannext.screens.TestScreen
 import com.example.leannext.utlis.Constants
 
 @Composable
