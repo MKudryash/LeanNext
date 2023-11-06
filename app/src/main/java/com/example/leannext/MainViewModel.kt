@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
-data class directions(
+/*data class directions(
     var iconName:String? = null,
     var id: Int? = null,
     var title: String? = null
@@ -25,7 +25,7 @@ data class directions(
     companion object Factory {
         var COLLECTION = "directions"
     }
-}
+}*/
 class MainViewModel(val database: MainDb) : ViewModel() {
     var itemsListDirection = database.dao.getAllItemsDirection()
 
@@ -76,7 +76,6 @@ init {
 
     }
 */
-
     init {
         loadCriteriasDirection()
     }

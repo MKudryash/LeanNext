@@ -10,7 +10,7 @@ object Constants {
     object DiagramScreen : BottomItem("Diagram", R.drawable.diagram,"diagram")
     object ProfileScreen : BottomItem("Profile", R.drawable.profile,"profile")
     object TestScreen : BottomItem("Test", R.drawable.test,"test")
-    object DirectionTestScreen:Screen("directionTestScreen/{id}")
+    object DirectionTestScreen:Screen("directionTestScreen/{id}/{name}")
 
     object dateForDataBase{
        val listDirection =listOf(

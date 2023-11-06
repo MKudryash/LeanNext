@@ -67,8 +67,8 @@ fun BottomNavigation(navHostController: NavHostController) {
                     )
                 },
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Color(0xFF4CBBBF),
-                    selectedTextColor = Color(0xFF4CBBBF),
+                    selectedIconColor = MaterialTheme.colorScheme.primary,
+                    selectedTextColor = MaterialTheme.colorScheme.primary,
                     unselectedIconColor = Color(0xFFB8C1CC),
                     unselectedTextColor = Color(0xFFB8C1CC),
                     indicatorColor =MaterialTheme.colorScheme.background

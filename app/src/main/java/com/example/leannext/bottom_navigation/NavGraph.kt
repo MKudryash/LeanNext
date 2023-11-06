@@ -32,11 +32,15 @@ fun NavGraph(
             route = Constants.DirectionTestScreen.route,
             arguments = listOf(navArgument("id") {
                 type = NavType.IntType
-            })
+            },
+                navArgument("name") {
+                    type = NavType.StringType
+                })
         ) {
-            var a = it.arguments?.getInt("id")
-            if (a != null) {
-                DirectionTestScreen(navHostController = navHostController,id = a)
+            var id = it.arguments?.getInt("id")
+            var name = it.arguments?.getString("name")
+            if (id != null && name!= null) {
+                DirectionTestScreen(navHostController = navHostController, id = id, name = name)
             }
         }
     }

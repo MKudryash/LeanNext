@@ -91,6 +91,7 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
+    implementation("io.github.thechance101:chart:Beta-0.0.5")
 
 
 }

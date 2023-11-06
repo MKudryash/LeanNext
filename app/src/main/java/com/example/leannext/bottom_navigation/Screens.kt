@@ -28,15 +28,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.aay.compose.radarChart.RadarChart
+import com.aay.compose.radarChart.model.NetLinesStyle
+import com.aay.compose.radarChart.model.Polygon
+import com.aay.compose.radarChart.model.PolygonStyle
 import com.example.leannext.MainViewModel
 import com.example.leannext.db.modelsDb.DevelopmentIndex
 import com.example.leannext.R
@@ -56,7 +63,65 @@ fun ChangeDate(week: Int) {
     startDate.value = format.format(checkWeek.PreviousNextWeekModay(week))
     endDate.value = format.format(checkWeek.PreviousNextWeekSunday(week))
 }
+@Composable
+fun RadarChartSample() {
+    val radarLabels =
+        listOf(
+            /*"5S и Визуальный менеджмент",
+            "Всеобщая эксплуатационная система ТРМ A",
+            "Быстрая переналадка SMED",
+            "Стандартизированная работа",
+            "Картирование",
+            "Выстраивание потока",
+            "Вовлечение персонала",
+            "Обучение персонала",
+            "Логистика"*/
+            "1", "2", "3", "4", "5", "6", "7", "8"
+        )
+    val values2 = listOf(5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0)
+    val values  = listOf(5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0)
+    val labelsStyle = TextStyle(
+        color = Color.Black,
+        fontFamily = FontFamily.Serif,
+        fontWeight = FontWeight.Medium,
+        fontSize = 16.sp
+    )
 
+    val scalarValuesStyle = TextStyle(
+        color = Color.Black,
+        fontFamily = FontFamily.Serif,
+        fontWeight = FontWeight.Medium,
+        fontSize =10.sp
+    )
+
+    RadarChart(
+        modifier = Modifier.fillMaxSize(),
+        radarLabels = radarLabels,
+        labelsStyle = labelsStyle,
+        netLinesStyle = NetLinesStyle(
+            netLineColor = Color(0x90ffD3CFD3),
+            netLinesStrokeWidth = 3f,
+            netLinesStrokeCap = StrokeCap.Butt
+        ),
+        scalarSteps = 5,
+        scalarValue = 5.00,
+        scalarValuesStyle = scalarValuesStyle,
+        polygons = listOf(
+            Polygon(
+                values = values,
+                unit = "",
+                style = PolygonStyle(
+                    fillColor = Color(0xffc2ff86),
+                    fillColorAlpha = 0.5f,
+                    borderColor = Color(0xffe6ffd6),
+                    borderColorAlpha = 0.5f,
+                    borderStrokeWidth = 2f,
+                    borderStrokeCap = StrokeCap.Butt,
+                )
+            )
+        )
+    )
+}
 @Composable
 fun DiagramScreen( mainViewModel: MainViewModel = viewModel(factory = MainViewModel.factory),
                    navHostController: NavHostController) {
@@ -143,20 +208,16 @@ fun DiagramScreen( mainViewModel: MainViewModel = viewModel(factory = MainViewMo
                 )
             }
         }
-        Image(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(250.dp)
-                .padding(top = 30.dp),
-            painter = painterResource(id = R.drawable.daigramexample),
-            contentDescription = ""
-        )
+
+
         Box {
+
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(bottom = 92.dp)
             )
             {
+
                 items(itemsListDirection.value){ item ->
                     Row(
                         modifier = Modifier
@@ -264,7 +325,7 @@ fun TestScreen(
                             .height(85.dp)
                             .clickable(onClick =
                             {
-                                navHostController.navigate("directionTestScreen/" + item.id)
+                                navHostController.navigate("directionTestScreen/" + item.id+"/"+item.title)
                             }),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -359,11 +420,11 @@ fun CustomSearchView(
 fun DirectionTestScreen(
     mainViewModel: MainViewModel = viewModel(factory = MainViewModel.factory),
     navHostController: NavHostController,
-    id: Int
+    id:Int,
+    name: String
 ) {
     val itemsListCriterias =
         mainViewModel.foundItemCriteriasForDirection(id).collectAsState(initial = emptyList())
-    val titleDirection = mainViewModel.foundNameItemDirectionWithId(id)
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -392,7 +453,7 @@ fun DirectionTestScreen(
                 modifier = Modifier
                     .weight(8f)
                     .padding(10.dp, 0.dp, 10.dp, 0.dp),
-                text = titleDirection.toString(),
+                text = name,
                 color = MaterialTheme.colorScheme.secondary,
                 fontFamily = FontFamily(Font(R.font.neosanspro_medium)),
                 fontSize = 20.sp,
