@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -33,15 +34,12 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.Hyphens
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.aay.compose.radarChart.RadarChart
-import com.aay.compose.radarChart.model.NetLinesStyle
-import com.aay.compose.radarChart.model.Polygon
-import com.aay.compose.radarChart.model.PolygonStyle
 import com.example.leannext.MainViewModel
 import com.example.leannext.R
 import com.example.leannext.utlis.CheckWeek
@@ -62,35 +60,33 @@ fun ChangeDate(week: Int) {
 fun RadarChartSample() {
     val radarLabels =
         listOf(
-            /*"5S и Визуальный менеджмент",
-            "Всеобщая эксплуатационная система ТРМ A",
-            "Быстрая переналадка SMED",
+            "5S и Визуальный менеджмент",
+            "Cистема ТРМ",
+            "Быстрая \nпереналадка SMED",
             "Стандартизированная работа",
             "Картирование",
-            "Выстраивание потока",
-            "Вовлечение персонала",
-            "Обучение персонала",
-            "Логистика"*/
-            "1", "2", "3", "4", "5", "6", "7", "8"
+            "Выстраивание\nпотока",
+            "Вовлечение\nперсонала",
+            "Обучение\nперсонала",
+            "Логистика"
         )
-    val values2 = listOf(5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0)
-    val values  = listOf(5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0)
+    val values  = listOf(5.0, 5.0, 2.5, 5.0, 3.0, 5.0, 5.0, 5.0, 1.0)
     val labelsStyle = TextStyle(
-        color = Color.Black,
-        fontFamily = FontFamily.Serif,
-        fontWeight = FontWeight.Medium,
-        fontSize = 16.sp
+        color = MaterialTheme.colorScheme.secondary,
+        fontFamily = FontFamily(Font(R.font.neosanspro_bold)),
+        fontSize = 10.sp,
+                textAlign = TextAlign.Center,
+        hyphens = Hyphens.Auto
     )
 
     val scalarValuesStyle = TextStyle(
-        color = Color.Black,
-        fontFamily = FontFamily.Serif,
-        fontWeight = FontWeight.Medium,
+        color = MaterialTheme.colorScheme.secondary,
+        fontFamily = FontFamily(Font(R.font.neosanspro_regular)),
         fontSize =10.sp
     )
 
     RadarChart(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.size(400.dp),
         radarLabels = radarLabels,
         labelsStyle = labelsStyle,
         netLinesStyle = NetLinesStyle(
@@ -106,11 +102,11 @@ fun RadarChartSample() {
                 values = values,
                 unit = "",
                 style = PolygonStyle(
-                    fillColor = Color(0xffc2ff86),
+                    fillColor = Color(0x594CBBBF),
                     fillColorAlpha = 0.5f,
-                    borderColor = Color(0xffe6ffd6),
+                    borderColor = MaterialTheme.colorScheme.primary,
                     borderColorAlpha = 0.5f,
-                    borderStrokeWidth = 2f,
+                    borderStrokeWidth = 4f,
                     borderStrokeCap = StrokeCap.Butt,
                 )
             )
@@ -127,7 +123,7 @@ fun DiagramScreen(mainViewModel: MainViewModel = viewModel(factory = MainViewMod
     // Column Composable,
     Column(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxSize(1f)
             .background(MaterialTheme.colorScheme.background),
         // Parameters set to place the items in center
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -149,7 +145,7 @@ fun DiagramScreen(mainViewModel: MainViewModel = viewModel(factory = MainViewMod
         }
         Row(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxWidth(1f)
                 .wrapContentHeight(),
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment = Alignment.CenterVertically
@@ -204,12 +200,12 @@ fun DiagramScreen(mainViewModel: MainViewModel = viewModel(factory = MainViewMod
                 )
             }
         }
-
+        RadarChartSample()
 
         Box {
 
             LazyColumn(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize(3f),
                 contentPadding = PaddingValues(bottom = 92.dp)
             )
             {
