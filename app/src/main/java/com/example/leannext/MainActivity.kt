@@ -3,7 +3,7 @@ package com.example.leannext
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import com.example.leannext.screens.MainScreen
+import com.example.leannext.Navigation.Navigation
 import com.example.leannext.ui.theme.LeanNextTheme
 
 class MainActivity : ComponentActivity() {
@@ -11,7 +11,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             LeanNextTheme {
-                MainScreen()
+                Navigation()
             }
         }
     }

@@ -11,6 +11,8 @@ object Constants {
     object ProfileScreen : BottomItem("Profile", R.drawable.profile,"profile")
     object TestScreen : BottomItem("Test", R.drawable.test,"test")
     object DirectionTestScreen:Screen("directionTestScreen/{id}/{name}")
+    object MainScreen:Screen("mainScreen")
+
 
     object dateForDataBase{
        val listDirection =listOf(

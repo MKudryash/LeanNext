@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.leannext.screens.DiagramScreen
 import com.example.leannext.screens.DirectionTestScreen
+import com.example.leannext.screens.MainScreen
 import com.example.leannext.screens.ProfileScreen
 import com.example.leannext.screens.TestScreen
 import com.example.leannext.utlis.Constants
@@ -29,6 +30,10 @@ fun NavGraph(
         composable(Constants.ProfileScreen.route)
         {
             ProfileScreen(navHostController = navHostController)
+        }
+        composable(Constants.MainScreen.route)
+        {
+            MainScreen()
         }
         composable(
             route = Constants.DirectionTestScreen.route,
