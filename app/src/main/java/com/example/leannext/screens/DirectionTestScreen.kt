@@ -1,8 +1,10 @@
 package com.example.leannext.screens
 
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +24,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -67,7 +70,9 @@ fun DirectionTestScreen(
                 modifier = Modifier
                     .padding(7.dp, 25.dp)
                     .clip(RoundedCornerShape(10.dp))
-                    .background(Color(0XFFF5F5F9)), contentAlignment = Alignment.Center
+                    .background(Color(0XFFF5F5F9)).clickable {
+                                                             navHostController.navigateUp()
+                    }, contentAlignment = Alignment.Center
             ) {
                 Icon(
                     modifier = Modifier.padding(7.dp),
@@ -186,7 +191,15 @@ fun DirectionTestScreen(
                             Box(
                                 modifier = Modifier.border(
                                     2.dp, borderColor, RoundedCornerShape(20.dp)
-                                )
+                                ).selectable(selected = index == selectedIndex, onClick = {
+                                    if (selectedIndex != index) selectedIndex =
+                                        index else selectedIndex = -1
+                                },interactionSource = remember { MutableInteractionSource() },
+                                    indication = rememberRipple(
+                                        bounded = false,
+                                        radius = 20.dp,
+                                        color = MaterialTheme.colorScheme.primary
+                                    ),)
                             ) {
                                 Text(
                                     text = item,
@@ -195,10 +208,7 @@ fun DirectionTestScreen(
                                     color = MaterialTheme.colorScheme.secondary,
                                     modifier = Modifier
                                         .padding(16.dp)
-                                        .selectable(selected = index == selectedIndex, onClick = {
-                                            if (selectedIndex != index) selectedIndex =
-                                                index else selectedIndex = -1
-                                        })
+
                                 )
                             }
                         }

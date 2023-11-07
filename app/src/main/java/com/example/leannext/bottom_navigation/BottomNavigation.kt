@@ -52,6 +52,11 @@ fun BottomNavigation(navHostController: NavHostController) {
                 selected = currentRoute == item.route,
                 onClick = {
                     navHostController.navigate(item.route)
+                    {
+                        if (currentRoute != null) {
+                            popUpTo(currentRoute) {inclusive = true}
+                        }
+                    }
                 },
                 icon = {
                     Icon(
