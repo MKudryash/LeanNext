@@ -12,29 +12,80 @@ import com.example.leannext.db.modelsDb.DevelopmentIndex
 import com.example.leannext.db.modelsDb.Directions
 import com.example.leannext.db.modelsDb.Users
 import kotlinx.coroutines.flow.Flow
+import java.time.LocalDate
+import java.util.Date
 
 @Dao
 interface Dao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertItemUsers(users: Users)
+
+    @Query("SELECT * FROM Users")
+    fun getAllItemsUsers(): Flow<List<Users>>
+
+    @Query(value = "SELECT * FROM Users WHERE login LIKE  :login")
+    fun foundItemUsersWithLogin(login: String): LiveData<Users>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertItemAnswerCriterias(answerCriterias: AnswerCriterias)
+    @Query(value = "SELECT * FROM AnswerCriterias WHERE date = :date")
+    fun foundItemAnswerCriteriasIndexForDate(date: String): LiveData<AnswerCriterias>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertItemCriterias(criterias: Criterias)
+
     @Query("SELECT * FROM Criterias")
     fun getAllItemsCriterias(): Flow<List<Criterias>>
+
     @Query(value = "SELECT * FROM Criterias WHERE title LIKE  :title")
     fun foundItemCriteriasWithName(title: String): LiveData<Criterias>
+
     @Query(value = "SELECT * FROM Criterias WHERE idDirection = :id")
     fun foundItemCriteriasForDirection(id: Int): Flow<List<Criterias>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertItemDevelopmentIndex(developmentIndex: DevelopmentIndex)
+    @Query(value = "SELECT * FROM DevelopmentIndex WHERE date Like :date")
+    fun foundItemDevelopmentIndexForDate(date: String): LiveData<DevelopmentIndex>
+
+    @Query(value = "SELECT * FROM DevelopmentIndex WHERE date Like :date")
+    fun getAllDevelopmentIndexDate(date: String): Flow<List<DevelopmentIndex>>
+
+
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertItemDirection(directions: Directions)
+
     @Query("SELECT * FROM Directions")
     fun getAllItemsDirection(): Flow<List<Directions>>
+
     @Query(value = "SELECT * FROM Directions WHERE title LIKE  :title")
     fun foundItemDirectionWithName(title: String): LiveData<Directions>
+
     @Query(value = "SELECT * FROM Directions WHERE id = :ids")
     fun foundNameItemDirectionWithId(ids: Int): LiveData<Directions>
+
+    @Query(
+        value = "select sum(mark)/(select count(id) from Criterias as C where c.idDirection = :idDirection)\n" +
+                "from Criterias as C\n" +
+                "join AnswerCriterias as AC on C.id = AC.idCriterias\n" +
+                "where c.idDirection = :idDirection and date LIKE :date"
+    )
+    fun CalculationMartForDevelopmentIndex(idDirection: Int, date: String): Double
+    @Query(
+        value = "select title, COALESCE(\n" +
+                "(select mark\n" +
+                "from directions as dd  join developmentindex as DI on dd.id = DI.idDirection\n" +
+                "and dd.title = d.title\n" +
+                "Where DI.Date = :date\n" +
+                "),0) as mark\n" +
+                "from directions as d\n" +
+                "left join developmentindex as DI on d.id = DI.idDirection"
+    )
+    fun FoundDirectionForDiagram( date: String): Flow<List<dir>>
 }
+data class dir
+    (
+            val title: String,
+            val mark:Double
+            )

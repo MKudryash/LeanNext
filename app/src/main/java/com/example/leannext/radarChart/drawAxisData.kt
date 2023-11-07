@@ -1,5 +1,6 @@
 package com.example.leannext.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.offset
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
@@ -30,14 +31,14 @@ internal fun DrawScope.drawAxisData(
     val labelsEndPoints = radarChartConfig.labelsPoints
     val nextStartPoints = radarChartConfig.polygonPoints.toMutableList()
     nextStartPoints.add(0, center)
-    nextStartPoints.removeAt(nextStartPoints.size - 1)
+    //nextStartPoints.removeAt(nextStartPoints.size - 1)
 
     val scalarStep = scalarValue / (scalarSteps - 1)
     val textVerticalOffset = 20.toDp().toPx()
     val labelHeight = textMeasurer.measure(AnnotatedString("M")).size.height
 
 
-    for (step in 0 until scalarSteps) {
+    for (step in 0 until scalarSteps+1) {
         drawText(
             textMeasurer = textMeasurer,
             text = (scalarStep * step).toString() + " " + unit,
@@ -47,8 +48,8 @@ internal fun DrawScope.drawAxisData(
                 nextStartPoints[step].y - textVerticalOffset
             )
         )
+        Log.d("DRAW",(scalarStep * step).toString())
     }
-
     for (line in labelsEndPoints.indices) {
         val rect = Rect(Offset(
             labelsEndPoints[line].x - textMeasurer.measure(

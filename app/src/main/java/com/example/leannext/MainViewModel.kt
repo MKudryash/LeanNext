@@ -1,6 +1,9 @@
 package com.example.leannext
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -8,13 +11,23 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.leannext.db.App
 import com.example.leannext.db.MainDb
+import com.example.leannext.db.modelsDb.AnswerCriterias
 import com.example.leannext.db.modelsDb.Criterias
+import com.example.leannext.db.modelsDb.DevelopmentIndex
 import com.example.leannext.db.modelsDb.Directions
 import com.example.leannext.db.modelsDb.Users
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.auth.User
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.Month
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.Date
+import java.util.Locale
 
 /*data class directions(
     var iconName:String? = null,
@@ -28,6 +41,10 @@ import kotlinx.coroutines.tasks.await
 }*/
 class MainViewModel(val database: MainDb) : ViewModel() {
     var itemsListDirection = database.dao.getAllItemsDirection()
+    val format = SimpleDateFormat("dd MM yyyy", Locale("ru"))
+
+    var itemsListDirectionIndex = database.dao.getAllDevelopmentIndexDate(format.format(Date()))
+    var itemsListDirectionForDiagram = database.dao.FoundDirectionForDiagram(format.format(Date()))
 
 /*
 init {
@@ -74,8 +91,7 @@ init {
                 Log.w("TAG", "Error getting documents.", exception)
             }*//*
 
-    }
-*/
+    }*/
     init {
         loadCriteriasDirection()
     }
@@ -83,21 +99,8 @@ init {
     {
         return database.dao.foundItemCriteriasForDirection(id)
     }
-    fun foundNameItemDirectionWithId(id:Int): String?
-    {
-        return database.dao.foundNameItemDirectionWithId(id).value?.title
-    }
     private fun loadCriteriasDirection()
     {
-
-        var c2 =R.drawable.system
-        var c3 =R.drawable.smed
-        var c4 =R.drawable.standartwork
-        var c5 =R.drawable.carta
-        var c6 =R.drawable.thread
-        var c7 =R.drawable.personal
-        var c8 =R.drawable.personal
-        var c9 =R.drawable.menegment
         val listDirection = mutableListOf(
             Directions(1, R.drawable.menegment, "5S и Визуальный менеджмент"),
             Directions(2, R.drawable.system, "Всеобщая эксплуатационная система ТРМ"),
@@ -117,9 +120,22 @@ init {
             Criterias(5,"% охвата оборудования, механизмов, транспортных средств и дорожно-строительной техники чек-листами самостоятельного технического обслуживания с отметками о выполнении проверок",2,""),
             Criterias(6,"Ведется учет простоев и их причин значимых единиц оборудования, механизмов, транспортных средств и дорожно-строительной техники.",2,""),
         )
+        val listUsers = mutableListOf(
+            Users(1,"Ivan","LeanNext","LeanNext"),
+            Users(2,"admin","admin","admin")
+        )
+
+        val format = SimpleDateFormat("dd MM yyyy", Locale("ru"))
+        val listAnswerCriterias = mutableStateListOf(
+            AnswerCriterias(1,1,5.0, format.format(Date())),
+            AnswerCriterias(2,2,1.0, format.format(Date())),
+            AnswerCriterias(3,3,2.0, format.format(Date())),
+            AnswerCriterias(4,1,1.0, "30 11 2023"),
+            AnswerCriterias(5,2,3.0, "30 11 2023"),
+            AnswerCriterias(5,2,3.0, "30 11 2023")
+        )
         viewModelScope.launch {
             listDirection.forEach {
-                Log.d("DBName",it.title)
                 try {
                     val local: Directions? = database.dao.foundItemDirectionWithName(it.title).value
                     if (local?.title == null)   database.dao.insertItemDirection(it)
@@ -130,7 +146,6 @@ init {
                 }
             }
             listCriterias.forEach {
-                Log.d("DBName",it.title)
                 try {
                     val local: Criterias? = database.dao.foundItemCriteriasWithName(it.title).value
                     if (local?.title == null)   database.dao.insertItemCriterias(it)
@@ -139,7 +154,41 @@ init {
                 {
                     Log.d("ExDB",ex.message.toString())
                 }
-
+            }
+            listUsers.forEach {
+                try {
+                    val local: Users? = database.dao.foundItemUsersWithLogin(it.login).value
+                    if (local?.login == null)   database.dao.insertItemUsers(it)
+                }
+                catch (ex:Exception)
+                {
+                    Log.d("ExDB",ex.message.toString())
+                }
+            }
+            listAnswerCriterias.forEach {
+                try {
+                    val local: AnswerCriterias? = database.dao.foundItemAnswerCriteriasIndexForDate(it.date).value
+                    if (local?.date == null)   database.dao.insertItemAnswerCriterias(it)
+                }
+                catch (ex:Exception)
+                {
+                    Log.d("ExDB",ex.message.toString())
+                }
+            }
+            val listDevelopmentIndex = mutableStateListOf(
+                DevelopmentIndex(1,1, format.format(Date()),1,4.0),
+                DevelopmentIndex(2,1, "02 11 2023",1,2.1),
+                DevelopmentIndex(3,1, "30 11 2023",1,3.5)
+            )
+            listDevelopmentIndex.forEach {
+                try {
+                    val local: DevelopmentIndex? = database.dao.foundItemDevelopmentIndexForDate(it.date).value
+                    if (local?.date == null)   database.dao.insertItemDevelopmentIndex(it)
+                }
+                catch (ex:Exception)
+                {
+                    Log.d("ExDB",ex.message.toString())
+                }
             }
         }
     }

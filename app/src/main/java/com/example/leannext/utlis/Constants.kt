@@ -14,7 +14,7 @@ object Constants {
     object MainScreen:Screen("mainScreen")
 
 
-    object dateForDataBase{
+   /* object dateForDataBase{
        val listDirection =listOf(
            Directions(1,R.drawable.menegment,"5S и Визуальный менеджмент"),
            Directions(2,R.drawable.system,"Всеобщая эксплуатационная система ТРМ"),
@@ -32,5 +32,5 @@ object Constants {
             DevelopmentIndex(1,1,"Логистика",0.0),
             DevelopmentIndex(1,1,"Картирование",0.0)
         )
-    }
+    }*/
 }

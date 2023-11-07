@@ -4,6 +4,10 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.ForeignKey.Companion.CASCADE
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverter
+import androidx.room.TypeConverters
+import com.example.leannext.utlis.Converters
+import java.time.LocalDate
 import java.util.Date
 
 @Entity(
@@ -20,6 +24,7 @@ class AnswerCriterias(
     @PrimaryKey(autoGenerate = true)
     val id: Int,
     val idCriterias: Int,
-    val mark: Double
-    /*val date: Date*/
+    val mark: Double,
+    @TypeConverters(Converters::class)
+    val date: String
 )

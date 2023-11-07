@@ -27,7 +27,7 @@ fun RadarChart(
 
     val textMeasurer = rememberTextMeasurer()
 
-    validateRadarChartConfiguration(radarLabels, scalarValue, polygons, scalarSteps)
+   // validateRadarChartConfiguration(radarLabels, scalarValue, polygons, scalarSteps)
 
     Canvas(modifier = modifier) {
 
@@ -59,7 +59,7 @@ fun RadarChart(
             textMeasurer,
             radarChartConfig,
             radarLabels,
-            scalarValue,
+            scalarValue-1,
             scalarSteps,
             polygons[0].unit
         )

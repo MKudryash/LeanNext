@@ -4,6 +4,10 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.ForeignKey.Companion.CASCADE
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
+import com.example.leannext.utlis.Converters
+import java.time.LocalDate
+import java.util.Date
 
 @Entity(
     tableName = "DevelopmentIndex", foreignKeys = arrayOf(
@@ -25,7 +29,7 @@ data class DevelopmentIndex(
     @PrimaryKey(autoGenerate = true)
     val id: Int,
     val idUser:Int,
-   /* val Date:Data,*/
-    val idDirection:String,
+    val date:String,
+    val idDirection:Int,
     val mark: Double
 )
