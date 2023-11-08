@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -44,15 +45,15 @@ import java.util.Locale
 class MainViewModel(val database: MainDb) : ViewModel() {
     var itemsListDirection = database.dao.getAllItemsDirection()
     var week = mutableStateOf(0)
-    var startDate = mutableStateOf(CheckWeek.PreviousNextWeekModay(week.value))
-    var endDate = mutableStateOf(CheckWeek.PreviousNextWeekSunday(week.value))
+    val startDate = mutableStateOf(CheckWeek.PreviousNextWeekModay(week.value))
+    val endDate = mutableStateOf(CheckWeek.PreviousNextWeekSunday(week.value))
     var itemsListDirectionIndex =
         database.dao.getAllDevelopmentIndexDate(startDate.value, endDate.value)
 
 
     fun checkday() {
-        startDate = mutableStateOf(CheckWeek.PreviousNextWeekModay(week.value))
-        endDate = mutableStateOf(CheckWeek.PreviousNextWeekSunday(week.value))
+        startDate.value = CheckWeek.PreviousNextWeekModay(week.value)
+        endDate.value = CheckWeek.PreviousNextWeekSunday(week.value)
         itemsListDirectionIndex =
             database.dao.getAllDevelopmentIndexDate(startDate.value, endDate.value)
     }

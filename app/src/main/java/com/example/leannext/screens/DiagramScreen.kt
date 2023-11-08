@@ -46,9 +46,13 @@ import com.example.leannext.MainViewModel
 import com.example.leannext.R
 import com.example.leannext.db.modelsDb.DevelopmentIndex
 import com.example.leannext.utlis.CheckWeek
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.forEach
 import java.text.SimpleDateFormat
 import java.util.Locale
+
+
+
 
 
 val format = SimpleDateFormat("dd MMMM", Locale("ru"))
@@ -67,9 +71,10 @@ fun RadarChartSample(itemsListDirectionIndex: List<DevelopmentIndex>) {
             "Обучение\nперсонала",
             "Логистика"
         )
-
-    val valuesDirection = arrayListOf(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+//Сделать в одном цикле!
+    var valuesDirection = arrayListOf(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
     var indexDir = 1
+
     // iterate it using a mutable iterator and modify values
     val iterate = valuesDirection.listIterator()
     while (iterate.hasNext()) {
@@ -81,7 +86,6 @@ fun RadarChartSample(itemsListDirectionIndex: List<DevelopmentIndex>) {
         }
         indexDir++
     }
-    val values = listOf(4.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
 
     val labelsStyle = TextStyle(
         color = MaterialTheme.colorScheme.secondary,
@@ -133,11 +137,9 @@ fun DiagramScreen(
 ) {
     var mutableList: MutableState<List<DevelopmentIndex>> = remember { mutableStateOf(listOf()) }
     val itemsListDirection = mainViewModel.itemsListDirection.collectAsState(initial = emptyList())
-    val itemsListDirectionIndex =
-        mainViewModel.itemsListDirectionIndex.collectAsState(initial = emptyList())
+    val itemsListDirectionIndex = mainViewModel.itemsListDirectionIndex.collectAsState(initial = emptyList())
 
-    var startDateText =  remember { format.format(mainViewModel.startDate.value)}
-    var endDateText =  remember { format.format(mainViewModel.endDate.value)}
+
     // Column Composable,
     Column(
         modifier = Modifier
@@ -176,7 +178,8 @@ fun DiagramScreen(
                     .clickable {
                         --mainViewModel.week.value
                         mainViewModel.checkday()
-                               },
+                        Log.d("WEEK++", mainViewModel.week.value.toString())
+                    },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -198,7 +201,7 @@ fun DiagramScreen(
                     textAlign = TextAlign.Center,
                 )
                 Text(
-                    text = "${startDateText} - ${endDateText}",
+                    text = "${format.format(mainViewModel.startDate.value)} - ${format.format(mainViewModel.endDate.value)}",
                     modifier = Modifier.padding(top = 10.dp),
                     color = MaterialTheme.colorScheme.secondary,
                     fontFamily = FontFamily(Font(R.font.neosanspro_regular)),
@@ -211,8 +214,10 @@ fun DiagramScreen(
                     .weight(1f)
                     .size(60.dp)
                     .clickable {
-                               ++mainViewModel.week.value
+                        ++mainViewModel.week.value
                         mainViewModel.checkday()
+                        Log.d("WEEK--", mainViewModel.week.value.toString())
+                        Log.d("WEEKDATE", format.format(mainViewModel.startDate.value),)
                     },
                 contentAlignment = Alignment.Center
 
@@ -224,9 +229,12 @@ fun DiagramScreen(
                 )
             }
         }
+
+
         mutableList.value = itemsListDirectionIndex.value
-        // mutableList2.value = itemsListdir2.value
         RadarChartSample(mutableList.value)
+
+
 
         Box {
 
@@ -281,7 +289,7 @@ fun DiagramScreen(
                         )
                         {
                             var index = "0.0"
-                            itemsListDirectionIndex.value.forEach {
+                            mutableList.value.forEach {
                                 if (it.idDirection == item.id) index = it.mark.toString()
                             }
                             Text(
