@@ -27,9 +27,10 @@ import java.util.Date
 )
 data class DevelopmentIndex(
     @PrimaryKey(autoGenerate = true)
-    val id: Int,
+    val id: Int?,
     val idUser:Int,
-    val date:String,
+    @TypeConverters(Converters::class)
+    val date:Date,
     val idDirection:Int,
     val mark: Double
 )

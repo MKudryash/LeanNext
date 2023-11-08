@@ -1,5 +1,6 @@
 package com.example.leannext.screens
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -43,30 +44,22 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.leannext.MainViewModel
 import com.example.leannext.R
-import com.example.leannext.db.dir
+import com.example.leannext.db.modelsDb.DevelopmentIndex
 import com.example.leannext.utlis.CheckWeek
 import kotlinx.coroutines.flow.forEach
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-val checkWeek = CheckWeek()
-var week = 0
 
 val format = SimpleDateFormat("dd MMMM", Locale("ru"))
-var startDate = mutableStateOf(format.format(checkWeek.PreviousNextWeekModay(week)))
-var endDate = mutableStateOf(format.format(checkWeek.PreviousNextWeekSunday(week)))
-fun ChangeDate(week: Int) {
-    startDate.value = format.format(checkWeek.PreviousNextWeekModay(week))
-    endDate.value = format.format(checkWeek.PreviousNextWeekSunday(week))
-}
 
 @Composable
-fun RadarChartSample(itemsListDirectionForDiagram:List<dir>) {
-    val radarLabels =
+fun RadarChartSample(itemsListDirectionIndex: List<DevelopmentIndex>) {
+    val labelDirection =
         listOf(
             "5S и Визуальный менеджмент",
             "Cистема ТРМ",
-            "Быстрая \nпереналадка SMED",
+            "Быстрая переналадка SMED",
             "Стандартизированная работа",
             "Картирование",
             "Выстраивание\nпотока",
@@ -74,27 +67,21 @@ fun RadarChartSample(itemsListDirectionForDiagram:List<dir>) {
             "Обучение\nперсонала",
             "Логистика"
         )
-    var labelDirection: List<String> = emptyList()
-    var valuesDirection: List<Double> = emptyList()
-    /* val itemsListdir = mainViewModel.itemsListDirectionForDiagram.collectAsState(initial = listOf(
-        dir("5S и Визуальный менеджмент",0.0),
-         dir("Cистема ТРМ",0.0),
-         dir("Быстрая \nпереналадка SMED",0.0),
-         dir("Стандартизированная работа",0.0),
-         dir("Картирование",0.0),
-         dir("Выстраивание\nпотока",0.0),
-         dir("Вовлечение\nперсонала",0.0),
-         dir("Обучение\nперсонала",0.0),
-         dir("Логистика",0.0)
-    ))*/
 
-
-    itemsListDirectionForDiagram.forEach {
-         labelDirection+=(it.title)
-         valuesDirection+=(it.mark)
-     }
-
-    val values = listOf(5.0, 5.0, 2.5, 5.0, 3.0, 5.0, 5.0, 5.0, 1.0)
+    val valuesDirection = arrayListOf(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+    var indexDir = 1
+    // iterate it using a mutable iterator and modify values
+    val iterate = valuesDirection.listIterator()
+    while (iterate.hasNext()) {
+        iterate.next()
+        itemsListDirectionIndex.forEach {
+            if (it.idDirection == indexDir) {
+                iterate.set(it.mark)
+            }
+        }
+        indexDir++
+    }
+    val values = listOf(4.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
 
     val labelsStyle = TextStyle(
         color = MaterialTheme.colorScheme.secondary,
@@ -112,7 +99,7 @@ fun RadarChartSample(itemsListDirectionForDiagram:List<dir>) {
 
     RadarChart(
         modifier = Modifier.size(400.dp),
-        radarLabels = radarLabels,
+        radarLabels = labelDirection,
         labelsStyle = labelsStyle,
         netLinesStyle = NetLinesStyle(
             netLineColor = Color(0x90ffD3CFD3),
@@ -124,14 +111,14 @@ fun RadarChartSample(itemsListDirectionForDiagram:List<dir>) {
         scalarValuesStyle = scalarValuesStyle,
         polygons = listOf(
             Polygon(
-                values = values,
+                values = valuesDirection,
                 unit = "",
                 style = PolygonStyle(
                     fillColor = Color(0x594CBBBF),
                     fillColorAlpha = 0.5f,
                     borderColor = MaterialTheme.colorScheme.primary,
                     borderColorAlpha = 0.5f,
-                    borderStrokeWidth = 4f,
+                    borderStrokeWidth = 6f,
                     borderStrokeCap = StrokeCap.Butt,
                 )
             )
@@ -144,22 +131,13 @@ fun DiagramScreen(
     mainViewModel: MainViewModel = viewModel(factory = MainViewModel.factory),
     navHostController: NavHostController
 ) {
-    var mutableList: MutableState<List<dir>> = remember { mutableStateOf(listOf()) }
+    var mutableList: MutableState<List<DevelopmentIndex>> = remember { mutableStateOf(listOf()) }
     val itemsListDirection = mainViewModel.itemsListDirection.collectAsState(initial = emptyList())
-    val itemsListDirectionIndex = mainViewModel.itemsListDirectionIndex.collectAsState(initial = emptyList())
-     val itemsListdir = mainViewModel.itemsListDirectionForDiagram.collectAsState(initial = listOf(
-     dir("5S и Визуальный менеджмент",0.0),
-      dir("Cистема ТРМ",0.0),
-      dir("Быстрая \nпереналадка SMED",0.0),
-      dir("Стандартизированная работа",0.0),
-      dir("Картирование",0.0),
-      dir("Выстраивание\nпотока",0.0),
-      dir("Вовлечение\nперсонала",0.0),
-      dir("Обучение\nперсонала",0.0),
-      dir("Логистика",0.0)
- ))
-    var startDateText by startDate
-    var endDateText by endDate
+    val itemsListDirectionIndex =
+        mainViewModel.itemsListDirectionIndex.collectAsState(initial = emptyList())
+
+    var startDateText =  remember { format.format(mainViewModel.startDate.value)}
+    var endDateText =  remember { format.format(mainViewModel.endDate.value)}
     // Column Composable,
     Column(
         modifier = Modifier
@@ -195,7 +173,10 @@ fun DiagramScreen(
                 Modifier
                     .weight(1f)
                     .size(60.dp)
-                    .clickable { ChangeDate(--week) },
+                    .clickable {
+                        --mainViewModel.week.value
+                        mainViewModel.checkday()
+                               },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -229,7 +210,10 @@ fun DiagramScreen(
                 Modifier
                     .weight(1f)
                     .size(60.dp)
-                    .clickable { ChangeDate(++week) },
+                    .clickable {
+                               ++mainViewModel.week.value
+                        mainViewModel.checkday()
+                    },
                 contentAlignment = Alignment.Center
 
             ) {
@@ -240,7 +224,8 @@ fun DiagramScreen(
                 )
             }
         }
-        mutableList.value = itemsListdir.value
+        mutableList.value = itemsListDirectionIndex.value
+        // mutableList2.value = itemsListdir2.value
         RadarChartSample(mutableList.value)
 
         Box {
@@ -315,3 +300,5 @@ fun DiagramScreen(
         }
     }
 }
+
+

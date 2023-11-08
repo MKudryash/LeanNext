@@ -4,11 +4,13 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import com.example.leannext.db.modelsDb.AnswerCriterias
 import com.example.leannext.db.modelsDb.Criterias
 import com.example.leannext.db.modelsDb.DevelopmentIndex
 import com.example.leannext.db.modelsDb.Directions
 import com.example.leannext.db.modelsDb.Users
+import com.example.leannext.utlis.Converters
 
 @Database(
     entities = [
@@ -20,6 +22,7 @@ import com.example.leannext.db.modelsDb.Users
     ],
     version = 1
 )
+@TypeConverters(Converters::class)
 abstract class MainDb : RoomDatabase() {
     abstract val dao: Dao
     companion object {

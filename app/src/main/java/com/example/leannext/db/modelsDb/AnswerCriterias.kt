@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
 import com.example.leannext.utlis.Converters
+import java.sql.Timestamp
 import java.time.LocalDate
 import java.util.Date
 
@@ -26,5 +27,5 @@ class AnswerCriterias(
     val idCriterias: Int,
     val mark: Double,
     @TypeConverters(Converters::class)
-    val date: String
+    val date: Date
 )

@@ -3,7 +3,7 @@ package com.example.leannext.utlis
 import java.util.Calendar
 import java.util.Date
 
-class CheckWeek {
+object CheckWeek {
     fun PreviousNextWeekModay(privioisWeek: Int): Date {
         return Calendar.getInstance().apply {
             firstDayOfWeek = Calendar.MONDAY

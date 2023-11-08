@@ -12,6 +12,8 @@ import com.example.leannext.db.modelsDb.DevelopmentIndex
 import com.example.leannext.db.modelsDb.Directions
 import com.example.leannext.db.modelsDb.Users
 import kotlinx.coroutines.flow.Flow
+import java.sql.Timestamp
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.util.Date
 
@@ -29,7 +31,7 @@ interface Dao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertItemAnswerCriterias(answerCriterias: AnswerCriterias)
     @Query(value = "SELECT * FROM AnswerCriterias WHERE date = :date")
-    fun foundItemAnswerCriteriasIndexForDate(date: String): LiveData<AnswerCriterias>
+    fun foundItemAnswerCriteriasIndexForDate(date: Timestamp): LiveData<AnswerCriterias>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertItemCriterias(criterias: Criterias)
@@ -45,11 +47,11 @@ interface Dao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertItemDevelopmentIndex(developmentIndex: DevelopmentIndex)
-    @Query(value = "SELECT * FROM DevelopmentIndex WHERE date Like :date")
-    fun foundItemDevelopmentIndexForDate(date: String): LiveData<DevelopmentIndex>
+    @Query(value = "SELECT * FROM DevelopmentIndex WHERE date = :date")
+    fun foundItemDevelopmentIndexForDate(date: Date): LiveData<DevelopmentIndex>
 
-    @Query(value = "SELECT * FROM DevelopmentIndex WHERE date Like :date")
-    fun getAllDevelopmentIndexDate(date: String): Flow<List<DevelopmentIndex>>
+    @Query(value = "SELECT * FROM DevelopmentIndex WHERE date>= :startWeek & date<=:endWeek")
+    fun getAllDevelopmentIndexDate(startWeek: Date,endWeek:Date): Flow<List<DevelopmentIndex>>
 
 
 
@@ -69,9 +71,10 @@ interface Dao {
         value = "select sum(mark)/(select count(id) from Criterias as C where c.idDirection = :idDirection)\n" +
                 "from Criterias as C\n" +
                 "join AnswerCriterias as AC on C.id = AC.idCriterias\n" +
-                "where c.idDirection = :idDirection and date LIKE :date"
+                "where c.idDirection = :idDirection and Date(date) LIKE :date"
     )
-    fun CalculationMartForDevelopmentIndex(idDirection: Int, date: String): Double
+    fun CalculationMartForDevelopmentIndex(idDirection: Int, date: Date): Double
+/*
     @Query(
         value = "select title, COALESCE(\n" +
                 "(select mark\n" +
@@ -82,10 +85,5 @@ interface Dao {
                 "from directions as d\n" +
                 "left join developmentindex as DI on d.id = DI.idDirection"
     )
-    fun FoundDirectionForDiagram( date: String): Flow<List<dir>>
+    fun FoundDirectionForDiagram(date: String): Flow<List<dir>>*/
 }
-data class dir
-    (
-            val title: String,
-            val mark:Double
-            )

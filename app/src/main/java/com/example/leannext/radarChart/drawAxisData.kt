@@ -60,19 +60,6 @@ internal fun DrawScope.drawAxisData(
             labelsEndPoints[line].y - labelHeight /2
         ), size.minDimension)
         var degrees = 0f
-       /* when (line)
-        {
-            0->degrees = 0f
-            1->degrees = 40f
-            2->degrees = 80f
-            3->degrees = 120f
-            4->degrees = -40f
-            5->degrees = 40f
-            6->degrees = 120f
-            7->degrees = -80f
-            8->degrees = -40f
-
-        }*/
         rotate(degrees = degrees, rect.center){
         drawText(
             textMeasurer = textMeasurer,
