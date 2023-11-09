@@ -37,7 +37,8 @@ abstract class MainDb : RoomDatabase() {
                         context.applicationContext,
                         MainDb::class.java,
                         "leannext"
-                    ).fallbackToDestructiveMigration()
+                    ).createFromAsset("leannext.db")
+                        .fallbackToDestructiveMigration()
                         .build()
                     INSTANCE = instance
 

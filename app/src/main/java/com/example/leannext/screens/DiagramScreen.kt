@@ -1,7 +1,6 @@
 package com.example.leannext.screens
 
 import android.app.Application
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -22,12 +21,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -51,12 +46,6 @@ import com.example.leannext.MainViewModel
 import com.example.leannext.MainViewModelFactory
 import com.example.leannext.R
 import com.example.leannext.db.modelsDb.DevelopmentIndex
-import com.example.leannext.db.modelsDb.Directions
-import com.example.leannext.utlis.CheckWeek
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collectIndexed
-import kotlinx.coroutines.flow.forEach
-import kotlinx.coroutines.flow.launchIn
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -138,204 +127,188 @@ fun RadarChartSample(itemsListDirectionIndex: List<DevelopmentIndex>?) {
 
 @Composable
 fun DiagramScreen(
-    navHostController: NavHostController
+    navHostController: NavHostController,
+    viewModel: MainViewModel
 ) {
-    val owner = LocalViewModelStoreOwner.current
 
-    owner?.let {
-        val viewModel: MainViewModel = viewModel(
-            it,
-            "MainViewModel",
-            MainViewModelFactory(
-                LocalContext.current.applicationContext
-                        as Application
-            )
-        )
-        val allDirections by viewModel.allDirection.observeAsState(listOf())
-        val itemsForDiagram by viewModel.itemsAllDiagrams.observeAsState(listOf())
-        val searchResults by viewModel.searchResults.observeAsState(listOf())
-        var searching by remember { mutableStateOf(false) }
-        //val searchResults by viewModel.searchResults.observeAsState(listOf())
+    val allDirections by viewModel.allDirection.observeAsState(listOf())
+    val itemsForDiagram by viewModel.itemsAllDiagrams.observeAsState(listOf())
+    val searchResults by viewModel.searchResults.observeAsState(listOf())
+    var searching by remember { mutableStateOf(false) }
 
-        /*  itemsListDirectionIndex.value.forEach{
-        Log.d("ITEMSDIAGRAM",it.idDirection.toString())
-        Log.d("ITEMSDIAGRAM",it.mark.toString())
-    }*/
 
-        // Column Composable,
-        Column(
-            modifier = Modifier
-                .fillMaxSize(1f)
-                .background(MaterialTheme.colorScheme.background),
-            // Parameters set to place the items in center
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top
+    // Column Composable,
+    Column(
+        modifier = Modifier
+            .fillMaxSize(1f)
+            .background(MaterialTheme.colorScheme.background),
+        // Parameters set to place the items in center
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top
+    ) {
+        // Text to Display the current Screen
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            // Text to Display the current Screen
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+            Text(
+                modifier = Modifier.padding(10.dp, 35.dp),
+                text = "Индекс развития технологий и инструментов Кайдзен (КDI)",
+                color = MaterialTheme.colorScheme.secondary,
+                fontFamily = FontFamily(Font(R.font.neosanspro_medium)),
+                fontSize = 24.sp,
+                textAlign = TextAlign.Center,
+            )
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(1f)
+                .wrapContentHeight(),
+            horizontalArrangement = Arrangement.SpaceAround,
+            verticalAlignment = Alignment.CenterVertically
+        )
+        {
+            Box(
+                Modifier
+                    .weight(1f)
+                    .size(60.dp)
+                    .clickable {
+                        --viewModel.week.value
+                        viewModel.checkday()
+                        viewModel.findDevelopmentIndex()
+                        searching = viewModel.week.value != 0
+                    },
+                contentAlignment = Alignment.Center
             ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.arrowleft),
+                    contentDescription = "",
+                    tint = MaterialTheme.colorScheme.secondary
+                )
+            }
+            Column(
+                Modifier.weight(4f),
+                horizontalAlignment = Alignment.CenterHorizontally
+            )
+            {
                 Text(
-                    modifier = Modifier.padding(10.dp, 35.dp),
-                    text = "Индекс развития технологий и инструментов Кайдзен (КDI)",
+                    text = "Еженедельный отчет",
                     color = MaterialTheme.colorScheme.secondary,
-                    fontFamily = FontFamily(Font(R.font.neosanspro_medium)),
-                    fontSize = 24.sp,
+                    fontFamily = FontFamily(Font(R.font.neosanspro_bold)),
+                    fontSize = 20.sp,
+                    textAlign = TextAlign.Center,
+                )
+                Text(
+                    text = "${format.format(viewModel.startDate.value)} - ${
+                        format.format(
+                            viewModel.endDate.value
+                        )
+                    }",
+                    modifier = Modifier.padding(top = 10.dp),
+                    color = MaterialTheme.colorScheme.secondary,
+                    fontFamily = FontFamily(Font(R.font.neosanspro_regular)),
+                    fontSize = 14.sp,
                     textAlign = TextAlign.Center,
                 )
             }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(1f)
-                    .wrapContentHeight(),
-                horizontalArrangement = Arrangement.SpaceAround,
-                verticalAlignment = Alignment.CenterVertically
+            Box(
+                Modifier
+                    .weight(1f)
+                    .size(60.dp)
+                    .clickable {
+                        ++viewModel.week.value
+                        viewModel.checkday()
+                        viewModel.findDevelopmentIndex()
+                        searching = viewModel.week.value != 0
+                    },
+                contentAlignment = Alignment.Center
+
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.arrowright),
+                    contentDescription = "",
+                    tint = MaterialTheme.colorScheme.secondary
+                )
+            }
+        }
+
+        val list = if (searching) searchResults else itemsForDiagram
+        RadarChartSample(list)
+
+
+        Box {
+
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(3f),
+                contentPadding = PaddingValues(bottom = 92.dp)
             )
             {
-                Box(
-                    Modifier
-                        .weight(1f)
-                        .size(60.dp)
-                        .clickable {
-                            --viewModel.week.value
-                            viewModel.checkday()
-                            searching = viewModel.week.value != 0
-                            //mainViewModel.checkday()
-                            /* Log.d("WEEK++", mainViewModel.week.value.toString())
-                            mainViewModel.getAll(mainViewModel.startDate.value,mainViewModel.endDate.value)*/
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.arrowleft),
-                        contentDescription = "",
-                        tint = MaterialTheme.colorScheme.secondary
+
+                items(allDirections) { item ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight()
+                            .padding(5.dp, 7.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     )
-                }
-                Column(
-                    Modifier.weight(4f),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                )
-                {
-                    Text(
-                        text = "Еженедельный отчет",
-                        color = MaterialTheme.colorScheme.secondary,
-                        fontFamily = FontFamily(Font(R.font.neosanspro_bold)),
-                        fontSize = 20.sp,
-                        textAlign = TextAlign.Center,
-                    )
-                    Text(
-                        text = "${format.format(viewModel.startDate.value)} - ${
-                            format.format(
-                                viewModel.endDate.value
-                            )
-                        }",
-                        //text = "start - end",
-                        modifier = Modifier.padding(top = 10.dp),
-                        color = MaterialTheme.colorScheme.secondary,
-                        fontFamily = FontFamily(Font(R.font.neosanspro_regular)),
-                        fontSize = 14.sp,
-                        textAlign = TextAlign.Center,
-                    )
-                }
-                Box(
-                    Modifier
-                        .weight(1f)
-                        .size(60.dp)
-                        .clickable {
-                            ++viewModel.week.value
-                            viewModel.checkday()
-                            searching = viewModel.week.value != 0
-                        },
-                    contentAlignment = Alignment.Center
-
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.arrowright),
-                        contentDescription = "",
-                        tint = MaterialTheme.colorScheme.secondary
-                    )
-                }
-            }
-
-            val list = if (searching) searchResults else itemsForDiagram
-            RadarChartSample(list)
-
-
-            Box {
-
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(3f),
-                    contentPadding = PaddingValues(bottom = 92.dp)
-                )
-                {
-
-                    items(allDirections) { item ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
+                    {
+                        Box(
+                            Modifier
+                                .weight(12f)
                                 .wrapContentHeight()
-                                .padding(5.dp, 7.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                                .padding(7.dp, 0.dp)
+                                .border(
+                                    2.dp,
+                                    MaterialTheme.colorScheme.primary,
+                                    RoundedCornerShape(20.dp)
+                                ),
+                            contentAlignment = Alignment.Center
                         )
                         {
-                            Box(
-                                Modifier
-                                    .weight(12f)
-                                    .wrapContentHeight()
-                                    .padding(7.dp, 0.dp)
-                                    .border(
-                                        2.dp,
-                                        MaterialTheme.colorScheme.primary,
-                                        RoundedCornerShape(20.dp)
-                                    ),
-                                contentAlignment = Alignment.Center
+                            Text(
+                                modifier = Modifier.padding(4.dp, 15.dp),
+                                text = item.title,
+                                color = MaterialTheme.colorScheme.secondary,
+                                fontFamily = FontFamily(Font(R.font.neosanspro_regular)),
+                                fontSize = 14.sp,
+                                textAlign = TextAlign.Center,
                             )
-                            {
-                                Text(
-                                    modifier = Modifier.padding(4.dp, 15.dp),
-                                    text = item.title,
-                                    color = MaterialTheme.colorScheme.secondary,
-                                    fontFamily = FontFamily(Font(R.font.neosanspro_regular)),
-                                    fontSize = 14.sp,
-                                    textAlign = TextAlign.Center,
-                                )
-                            }
-                            Box(
-                                Modifier
-                                    .weight(2.3f)
-                                    .wrapContentHeight()
-                                    .padding(7.dp, 0.dp)
-                                    .border(
-                                        2.dp,
-                                        MaterialTheme.colorScheme.primary,
-                                        RoundedCornerShape(20.dp)
-                                    ),
-                                contentAlignment = Alignment.Center
-                            )
-                            {
+                        }
+                        Box(
+                            Modifier
+                                .weight(2.3f)
+                                .wrapContentHeight()
+                                .padding(7.dp, 0.dp)
+                                .border(
+                                    2.dp,
+                                    MaterialTheme.colorScheme.primary,
+                                    RoundedCornerShape(20.dp)
+                                ),
+                            contentAlignment = Alignment.Center
+                        )
+                        {
 
-                                var index = "0.0"
-                                list.forEach {
-                                    if (it.idDirection == item.id) index = it.mark.toString()
-                                }
-                                Text(
-                                    modifier = Modifier.padding(0.dp, 15.dp),
-                                    text = index,
-                                    color = MaterialTheme.colorScheme.secondary,
-                                    fontFamily = FontFamily(Font(R.font.neosanspro_regular)),
-                                    fontSize = 14.sp,
-                                    textAlign = TextAlign.Center,
-                                )
+                            var index = 0.0
+                            list.forEach {
+                                if (it.idDirection == item.id) index = it.mark
                             }
+                            Text(
+                                modifier = Modifier.padding(0.dp, 15.dp),
+                                text = String.format("%.1f", index),
+                                color = MaterialTheme.colorScheme.secondary,
+                                fontFamily = FontFamily(Font(R.font.neosanspro_regular)),
+                                fontSize = 14.sp,
+                                textAlign = TextAlign.Center,
+                            )
                         }
                     }
-
                 }
+
             }
         }
     }
 }
+
 
 

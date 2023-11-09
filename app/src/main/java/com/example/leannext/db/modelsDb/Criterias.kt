@@ -19,7 +19,7 @@ import androidx.room.Relation
 )
 data class Criterias(
     @PrimaryKey(autoGenerate = true)
-    val id: Int,
+    val id: Int? = null,
     @ColumnInfo(name = "title")
     val title: String,
     val idDirection: Int,

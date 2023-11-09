@@ -1,60 +1,31 @@
 package com.example.leannext
 
 import android.app.Application
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
-import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.CreationExtras
-import com.example.leannext.db.App
 import com.example.leannext.db.MainDb
 import com.example.leannext.db.Repository
 import com.example.leannext.db.modelsDb.AnswerCriterias
 import com.example.leannext.db.modelsDb.Criterias
 import com.example.leannext.db.modelsDb.DevelopmentIndex
 import com.example.leannext.db.modelsDb.Directions
-import com.example.leannext.db.modelsDb.Users
 import com.example.leannext.utlis.CheckWeek
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.auth.User
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collectIndexed
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
-import java.sql.Timestamp
-import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.Month
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-import java.util.Collections.addAll
 import java.util.Date
-import java.util.Locale
-import javax.inject.Inject
-
 
 
 class MainViewModel(application: Application) : ViewModel() {
     val allDirection: LiveData<List<Directions>>
     val itemsAllDiagrams: LiveData<List<DevelopmentIndex>>
+    val itemsCriterias:LiveData<List<Criterias>>
+
     val searchResults: MutableLiveData<List<DevelopmentIndex>>
+    val answerResult: MutableLiveData<List<AnswerCriterias>>
+
+
+
     private val repository:Repository
 
 
@@ -66,50 +37,34 @@ class MainViewModel(application: Application) : ViewModel() {
         val db = MainDb.createDataBase(application)
         val dao = db.dao()
         repository = Repository(dao)
-        val listDirection = mutableListOf(
-            Directions(null, R.drawable.menegment, "5S и Визуальный менеджмент"),
-            Directions(null, R.drawable.system, "Всеобщая эксплуатационная система ТРМ"),
-            Directions(null, R.drawable.smed, "Быстрая переналадка SMED"),
-            Directions(null, R.drawable.standartwork, "Стандартизированная работа"),
-            Directions(null, R.drawable.carta, "Картирование"),
-            Directions(null, R.drawable.thread, "Выстраивание потока"),
-            Directions(null, R.drawable.personal, "Вовлечение персонала"),
-            Directions(null, R.drawable.personal, "Обучение персонала"),
-            Directions(null, R.drawable.menegment, "Логистика")
-        )
-        val listDevelopmentIndex = mutableStateListOf(
-            DevelopmentIndex(null, 1, Date(), 1, 4.0),
-            DevelopmentIndex(null, 1, Date(), 2, 2.0),
-            DevelopmentIndex(null, 1, Date(), 5, 1.0),
-            DevelopmentIndex(null, 1, Date(), 1, 2.1),
-            DevelopmentIndex(null, 1, Date(), 1, 3.5),
-            DevelopmentIndex(null, 1, Date(), 3, 1.0),
-            DevelopmentIndex(null, 1, Date(), 7, 3.0),
-            DevelopmentIndex(null, 1, Date(), 9, 2.0),
-            DevelopmentIndex(null, 1, Date(), 4, 1.0),
-        )
-        listDirection.forEach{
-            insertDirection(it)
-        }
-        listDevelopmentIndex.forEach{
-            insertDevelopmentIndex(it)
-        }
+
         allDirection = repository.allItemDirection
         itemsAllDiagrams = repository.itemsForDiagram
         searchResults = repository.searchResults
+        itemsCriterias = repository.allItemCriterias
+        answerResult = repository.answerCriteries
     }
     fun checkday() {
         startDate.value = CheckWeek.PreviousNextWeekModay(week.value)
         endDate.value = CheckWeek.PreviousNextWeekSunday(week.value)
     }
-    fun insertDirection(itemDirection: Directions) {
-        repository.insertDirection(itemDirection)
+    fun getAnswerCriteries(idDirections: Int)
+    {
+        repository.changeListAnswerCriterias(Date(),idDirections)
     }
+    fun getItemsCriterias(id:Int)
+    {
+        repository.changeListCriterias(id)
+    }
+
     fun insertDevelopmentIndex(itemDevelopmentIndex: DevelopmentIndex) {
         repository.insertDevelopmentIndex(itemDevelopmentIndex)
     }
-    fun findProduct(name: String) {
-        repository.changeList(startDate.value,endDate.value)
+    fun insertAnswerCriteries(idCriteries:Int,mark:Double,idDirections: Int) {
+        repository.insertAnswerCriteries(AnswerCriterias(null,idCriteries,mark, Date()),idDirections)
+    }
+    fun findDevelopmentIndex() {
+        repository.changeListDevelopmentIndex(startDate.value,endDate.value)
     }
 }
 

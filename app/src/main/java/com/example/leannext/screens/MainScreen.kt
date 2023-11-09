@@ -44,10 +44,23 @@ fun MainScreen() {
         Modifier.background(MaterialTheme.colorScheme.background),
         bottomBar = { BottomNavigation(navHostController = navHostController) }
     ) {
+        val owner = LocalViewModelStoreOwner.current
 
-            NavGraph(navHostController = navHostController)
+        owner?.let {
+            val viewModel: MainViewModel = viewModel(
+                it,
+                "MainViewModel",
+                MainViewModelFactory(
+                    LocalContext.current.applicationContext
+                            as Application
+                )
+            )
+
+
+            NavGraph(navHostController = navHostController, viewModel)
         }
     }
+}
 
 
 

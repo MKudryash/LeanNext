@@ -25,13 +25,16 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -45,28 +48,13 @@ import com.example.leannext.R
 
 @Composable
 fun TestScreen(
-   /* mainViewModel: MainViewModel = viewModel(factory = MainViewModel.factory),*/
-    navHostController: NavHostController
+    navHostController: NavHostController,     viewModel: MainViewModel
 ) {
-    /*var search: String by rememberSaveable { mutableStateOf("") }
-    val itemsListDirection = mainViewModel.itemsListDirection.collectAsState(initial = emptyList())
-    // mainViewModel.addDataToFirestore()
-    *//*    val db = Firebase.firestore
-        val user = hashMapOf(
-            "first" to "Ada",
-            "last" to "Lovelace",
-            "born" to 1815
-        )
+    var search: String by rememberSaveable { mutableStateOf("") }
+    val allDirections by viewModel.allDirection.observeAsState(listOf())
 
-    // Add a new document with a generated ID
-        db.collection("userss")
-            .add(user)
-            .addOnSuccessListener { documentReference ->
-                Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
-            }
-            .addOnFailureListener { e ->
-                Log.w(TAG, "Error adding document", e)
-            }*//*
+
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -74,13 +62,13 @@ fun TestScreen(
         CustomSearchView(search = search, onValueChange = {
             search = it
         })
-        if (itemsListDirection != null) {
+        if (allDirections != null) {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(bottom = 92.dp),
             )
             {
-                items(itemsListDirection.value) { item ->
+                items(allDirections) { item ->
                     Row(
                         Modifier
                             .fillMaxWidth()
@@ -89,22 +77,24 @@ fun TestScreen(
                             .height(85.dp)
                             .clickable(onClick =
                             {
+                                viewModel.getItemsCriterias(item.id!!)
+                                viewModel.getAnswerCriteries(item.id)
                                 navHostController.navigate("directionTestScreen/" + item.id+"/"+item.title)
+
                             }),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        *//*  val context = LocalContext.current
-                          val name = "menegment"
-                          val drawableId = remember(name) {
+                          val context = LocalContext.current
+                          val drawableId = remember(item.nameIcon) {
                               context.resources.getIdentifier(
-                                  name,
+                                  item.nameIcon,
                                   "drawable",
                                   context.packageName
                               )
-                          }*//*
+                          }
                         Icon(
                             modifier = Modifier.weight(2f),
-                            painter = painterResource(id = item.idIcon),
+                            painter = painterResource(id = drawableId),
                             contentDescription = "",
                             tint = MaterialTheme.colorScheme.secondary
                         )
@@ -121,7 +111,7 @@ fun TestScreen(
                             )
 
                     }
-                    if (item.id < itemsListDirection.value.size) {
+                    if (item.id!! < allDirections.size) {
                         Divider(
                             color = MaterialTheme.colorScheme.primary,
                             thickness = 2.dp,
@@ -176,5 +166,4 @@ fun CustomSearchView(
         )
 
     }
-*/
 }

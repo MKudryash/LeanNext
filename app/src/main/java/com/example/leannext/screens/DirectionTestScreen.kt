@@ -32,6 +32,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -51,13 +52,13 @@ import com.example.leannext.R
 
 @Composable
 fun DirectionTestScreen(
-   /* mainViewModel: MainViewModel = viewModel(factory = MainViewModel.factory),*/
     navHostController: NavHostController,
     id: Int,
-    name: String
+    name: String,
+    viewModel: MainViewModel
 ) {
-   /* val itemsListCriterias =
-        mainViewModel.foundItemCriteriasForDirection(id).collectAsState(initial = emptyList())
+    val itemsListCriterias by viewModel.itemsCriterias.observeAsState(listOf())
+    val itemsListAnswerCriterias by viewModel.answerResult.observeAsState(listOf())
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -97,8 +98,8 @@ fun DirectionTestScreen(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(bottom = 92.dp),
         ) {
-            items(itemsListCriterias.value) { item ->
-                var count = item.id % 3
+            items(itemsListCriterias) { item ->
+                var count = item.id!! % 3
                 if (count == 0) count = 3
                 var progressWeight: Float = count.toFloat()
                 var allWeight: Float = 3f - count.toFloat()
@@ -183,6 +184,17 @@ fun DirectionTestScreen(
 
                         ) { index, items ->
                             var borderColor: Color
+                           itemsListAnswerCriterias.forEach{
+                               if(it.idCriterias==item.id) {
+                                   when (it.mark){
+                                       1.0->selectedIndex = 0
+                                       2.0->selectedIndex = 1
+                                       3.0->selectedIndex = 2
+                                       4.0->selectedIndex = 3
+                                       5.0->selectedIndex = 4
+                                   }
+                               }
+                           }
                             if (index == selectedIndex) borderColor =MaterialTheme.colorScheme.primary
                             else borderColor = Color(0xFFB8C1CC)
                             Box(
@@ -191,7 +203,7 @@ fun DirectionTestScreen(
                                 ).selectable(selected = index == selectedIndex, onClick = {
                                     if (selectedIndex != index) selectedIndex =
                                         index else selectedIndex = -1
-                                    mainViewModel.insertAnswerCriterias(items,item.id)
+                                    viewModel.insertAnswerCriteries(item.id,items,id)
                                 },interactionSource = remember { MutableInteractionSource() },
                                     indication = rememberRipple(
                                         bounded = false,
@@ -211,7 +223,7 @@ fun DirectionTestScreen(
                             }
                         }
                     }
-                    if (item.id < 2) {
+                    if (item.id!! < 2) {
                         Divider(
                             color = MaterialTheme.colorScheme.primary,
                             thickness = 2.dp,
@@ -221,5 +233,5 @@ fun DirectionTestScreen(
                 }
             }
         }
-    }*/
+    }
 }
