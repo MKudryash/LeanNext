@@ -21,9 +21,9 @@ import java.util.Date
         )
     )
 )
-class AnswerCriterias(
+data class AnswerCriterias(
     @PrimaryKey(autoGenerate = true)
-    val id: Int,
+    val id: Int?,
     val idCriterias: Int,
     val mark: Double,
     @TypeConverters(Converters::class)

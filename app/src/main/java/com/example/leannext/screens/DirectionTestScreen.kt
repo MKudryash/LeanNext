@@ -51,12 +51,12 @@ import com.example.leannext.R
 
 @Composable
 fun DirectionTestScreen(
-    mainViewModel: MainViewModel = viewModel(factory = MainViewModel.factory),
+   /* mainViewModel: MainViewModel = viewModel(factory = MainViewModel.factory),*/
     navHostController: NavHostController,
     id: Int,
     name: String
 ) {
-    val itemsListCriterias =
+   /* val itemsListCriterias =
         mainViewModel.foundItemCriteriasForDirection(id).collectAsState(initial = emptyList())
     Column(
         modifier = Modifier
@@ -102,9 +102,7 @@ fun DirectionTestScreen(
                 if (count == 0) count = 3
                 var progressWeight: Float = count.toFloat()
                 var allWeight: Float = 3f - count.toFloat()
-                Column(
-
-                ) {
+                Column {
                     Row(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -170,7 +168,6 @@ fun DirectionTestScreen(
                             textAlign = TextAlign.Center
                         )
                     }
-                    val listState = rememberLazyListState()
                     var selectedIndex by remember { mutableStateOf(-1) }
                     LazyRow(
                         modifier = Modifier
@@ -181,10 +178,10 @@ fun DirectionTestScreen(
                     ) {
                         itemsIndexed(
                             listOf(
-                                "1.0", "2.0", "3.0", "4.0", "5.0"
+                                1.0, 2.0, 3.0, 4.0, 5.0
                             )
 
-                        ) { index, item ->
+                        ) { index, items ->
                             var borderColor: Color
                             if (index == selectedIndex) borderColor =MaterialTheme.colorScheme.primary
                             else borderColor = Color(0xFFB8C1CC)
@@ -194,6 +191,7 @@ fun DirectionTestScreen(
                                 ).selectable(selected = index == selectedIndex, onClick = {
                                     if (selectedIndex != index) selectedIndex =
                                         index else selectedIndex = -1
+                                    mainViewModel.insertAnswerCriterias(items,item.id)
                                 },interactionSource = remember { MutableInteractionSource() },
                                     indication = rememberRipple(
                                         bounded = false,
@@ -202,7 +200,7 @@ fun DirectionTestScreen(
                                     ),)
                             ) {
                                 Text(
-                                    text = item,
+                                    text = items.toString(),
                                     fontFamily = FontFamily(Font(R.font.neosanspro_regular)),
                                     fontSize = 16.sp,
                                     color = MaterialTheme.colorScheme.secondary,
@@ -223,5 +221,5 @@ fun DirectionTestScreen(
                 }
             }
         }
-    }
+    }*/
 }

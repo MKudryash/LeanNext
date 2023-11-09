@@ -45,13 +45,13 @@ import com.example.leannext.R
 
 @Composable
 fun TestScreen(
-    mainViewModel: MainViewModel = viewModel(factory = MainViewModel.factory),
+   /* mainViewModel: MainViewModel = viewModel(factory = MainViewModel.factory),*/
     navHostController: NavHostController
 ) {
-    var search: String by rememberSaveable { mutableStateOf("") }
+    /*var search: String by rememberSaveable { mutableStateOf("") }
     val itemsListDirection = mainViewModel.itemsListDirection.collectAsState(initial = emptyList())
     // mainViewModel.addDataToFirestore()
-    /*    val db = Firebase.firestore
+    *//*    val db = Firebase.firestore
         val user = hashMapOf(
             "first" to "Ada",
             "last" to "Lovelace",
@@ -66,7 +66,7 @@ fun TestScreen(
             }
             .addOnFailureListener { e ->
                 Log.w(TAG, "Error adding document", e)
-            }*/
+            }*//*
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -93,7 +93,7 @@ fun TestScreen(
                             }),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        /*  val context = LocalContext.current
+                        *//*  val context = LocalContext.current
                           val name = "menegment"
                           val drawableId = remember(name) {
                               context.resources.getIdentifier(
@@ -101,7 +101,7 @@ fun TestScreen(
                                   "drawable",
                                   context.packageName
                               )
-                          }*/
+                          }*//*
                         Icon(
                             modifier = Modifier.weight(2f),
                             painter = painterResource(id = item.idIcon),
@@ -176,5 +176,5 @@ fun CustomSearchView(
         )
 
     }
-
+*/
 }

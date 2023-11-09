@@ -11,12 +11,12 @@ import java.util.Date
 
 @Entity(
     tableName = "DevelopmentIndex", foreignKeys = arrayOf(
-        ForeignKey(
+/*        ForeignKey(
             entity = Criterias::class,
             parentColumns = arrayOf("id"),
             childColumns = arrayOf("idUser"),
             onDelete = CASCADE
-        ),
+        ),*/
         ForeignKey(
             entity = Directions::class,
             parentColumns = arrayOf("id"),

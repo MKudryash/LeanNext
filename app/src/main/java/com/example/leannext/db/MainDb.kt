@@ -24,7 +24,7 @@ import com.example.leannext.utlis.Converters
 )
 @TypeConverters(Converters::class)
 abstract class MainDb : RoomDatabase() {
-    abstract val dao: Dao
+    abstract fun dao(): Dao
     companion object {
 
         private var INSTANCE: MainDb? = null

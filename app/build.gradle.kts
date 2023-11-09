@@ -7,7 +7,6 @@ buildscript {
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-
     id("kotlin-kapt")
     id("com.google.gms.google-services")
 }
@@ -79,8 +78,16 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore:24.9.1")
     implementation("com.google.firebase:firebase-messaging-ktx:23.3.1")
     kapt ("androidx.room:room-compiler:2.5.1")
-    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.5.0")
 
+
+
+
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.5.0")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
+
+
+    implementation ("androidx.compose.runtime:runtime-livedata:1.6.0-alpha08")
 
 
     testImplementation("junit:junit:4.13.2")

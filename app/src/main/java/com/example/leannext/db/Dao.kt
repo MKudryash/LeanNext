@@ -6,6 +6,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.example.leannext.db.modelsDb.AnswerCriterias
 import com.example.leannext.db.modelsDb.Criterias
 import com.example.leannext.db.modelsDb.DevelopmentIndex
@@ -29,9 +30,14 @@ interface Dao {
     fun foundItemUsersWithLogin(login: String): LiveData<Users>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertItemAnswerCriterias(answerCriterias: AnswerCriterias)
-    @Query(value = "SELECT * FROM AnswerCriterias WHERE date = :date")
-    fun foundItemAnswerCriteriasIndexForDate(date: Timestamp): LiveData<AnswerCriterias>
+    suspend fun insertItemAnswerCriterias(answerCriterias: AnswerCriterias?)
+    @Update
+    suspend fun updateItemAnswerCriterias(answerCriterias: AnswerCriterias?)
+    @Query("Update AnswerCriterias set mark = :answer where date=:date and idCriterias = :idCriterias")
+    suspend fun insertItemAnswerCriterias(answer:Double, date: Date, idCriterias: Int)
+
+    @Query(value = "SELECT * FROM AnswerCriterias WHERE idCriterias =:idCriterias")
+    fun foundItemAnswerCriteriasIndexForDate( idCriterias: Int): LiveData<AnswerCriterias>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertItemCriterias(criterias: Criterias)
@@ -51,7 +57,9 @@ interface Dao {
     fun foundItemDevelopmentIndexForDate(date: Date): LiveData<DevelopmentIndex>
 
     @Query(value = "SELECT * FROM DevelopmentIndex WHERE date>= :startWeek & date<=:endWeek")
-    fun getAllDevelopmentIndexDate(startWeek: Date,endWeek:Date): Flow<List<DevelopmentIndex>>
+    fun getAllDevelopmentIndexDate(startWeek: Date,endWeek:Date): LiveData<List<DevelopmentIndex>>
+    @Query(value = "SELECT * FROM DevelopmentIndex WHERE date>= :startWeek & date<=:endWeek")
+    fun getAllDevelopmentIndexDate1(startWeek: Date,endWeek:Date): List<DevelopmentIndex>
 
 
 
@@ -59,9 +67,9 @@ interface Dao {
     suspend fun insertItemDirection(directions: Directions)
 
     @Query("SELECT * FROM Directions")
-    fun getAllItemsDirection(): Flow<List<Directions>>
+    fun getAllItemsDirection(): LiveData<List<Directions>>
 
-    @Query(value = "SELECT * FROM Directions WHERE title LIKE  :title")
+    @Query(value = "SELECT * FROM Directions WHERE title LIKE :title")
     fun foundItemDirectionWithName(title: String): LiveData<Directions>
 
     @Query(value = "SELECT * FROM Directions WHERE id = :ids")

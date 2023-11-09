@@ -9,7 +9,7 @@ import androidx.room.PrimaryKey
 )
 data class Directions(
     @PrimaryKey(autoGenerate = true)
-    val id: Int,
+    val id: Int?,
     val idIcon:Int,
     @ColumnInfo(name = "title")
     val title: String
