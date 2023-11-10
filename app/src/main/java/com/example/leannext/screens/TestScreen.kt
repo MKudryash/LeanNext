@@ -52,6 +52,8 @@ fun TestScreen(
 ) {
     var search: String by rememberSaveable { mutableStateOf("") }
     val allDirections by viewModel.allDirection.observeAsState(listOf())
+    val searchDirection by viewModel.searchDirections.observeAsState(listOf())
+    var searching by remember { mutableStateOf(false) }
 
 
 
@@ -61,14 +63,18 @@ fun TestScreen(
 
         CustomSearchView(search = search, onValueChange = {
             search = it
+            searching = !search.isEmpty()
+            viewModel.getDirectionsWithText(search)
         })
-        if (allDirections != null) {
+
+        val list = if (searching) searchDirection else allDirections
+        if (list != null) {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(bottom = 92.dp),
             )
             {
-                items(allDirections) { item ->
+                items(list) { item ->
                     Row(
                         Modifier
                             .fillMaxWidth()
@@ -111,7 +117,7 @@ fun TestScreen(
                             )
 
                     }
-                    if (item.id!! < allDirections.size) {
+                    if (item.id!! < list.size) {
                         Divider(
                             color = MaterialTheme.colorScheme.primary,
                             thickness = 2.dp,
@@ -143,11 +149,10 @@ fun CustomSearchView(
             onValueChange = onValueChange,
             colors = TextFieldDefaults.textFieldColors(
                 containerColor = Color(0XFFF5F5F9),
-                placeholderColor = Color(0XFFF5F5F9),
                 focusedIndicatorColor = Color.Transparent,
+                focusedTextColor = Color.Black,
                 disabledIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
-                textColor = MaterialTheme.colorScheme.onTertiary,
                 cursorColor = MaterialTheme.colorScheme.onTertiary
             ),
             modifier = Modifier.background(Color(0XFFF5F5F9)),

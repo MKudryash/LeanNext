@@ -56,12 +56,14 @@ interface Dao {
     fun getAllItemsCriterias(): LiveData<List<Criterias>>
 
     @Query(value = "SELECT * FROM Criterias WHERE title LIKE  :title")
-    fun foundItemCriteriasWithName(title: String): LiveData<Criterias>
+    fun foundItemCriteriasWithName(title: String): List<Criterias>
 
     @Query(value = "SELECT * FROM Criterias WHERE idDirection = :id")
     fun foundItemCriteriasForDirection(id: Int): LiveData<List<Criterias>>
     @Query(value = "SELECT * FROM Criterias WHERE idDirection = :id")
     fun foundItemCriteriasForDirection1(id: Int): List<Criterias>
+
+
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertItemDevelopmentIndex(developmentIndex: DevelopmentIndex)
@@ -87,7 +89,7 @@ interface Dao {
 
 
     @Query(value = "SELECT * FROM Directions WHERE title LIKE :title")
-    fun foundItemDirectionWithName(title: String): LiveData<Directions>
+    fun foundItemDirectionWithName(title: String): List<Directions>
 
     @Query(value = "SELECT * FROM Directions WHERE id = :ids")
     fun foundNameItemDirectionWithId(ids: Int): LiveData<Directions>

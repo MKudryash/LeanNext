@@ -24,17 +24,32 @@ class Repository(private val dao: Dao) {
     val searchResults = MutableLiveData<List<DevelopmentIndex>>()
     val allItemCriterias = MutableLiveData<List<Criterias>>()
     val answerCriteries = MutableLiveData<List<AnswerCriterias>>()
+    val searchDirections = MutableLiveData<List<Directions>>()
 
 
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
 
+
+    fun foundItemCriteriasWithName(text: String) {
+        coroutineScope.launch(Dispatchers.Main) {
+            searchDirections.value = asyncfoundItemCriteriasWithName("%" + text+"%").await()
+            searchDirections.value?.forEach {
+                Log.d("DIRECTION",it.title)
+            }
+        }
+    }
+    private fun asyncfoundItemCriteriasWithName(
+        text: String
+    ): Deferred<List<Directions>?> =
+        coroutineScope.async(Dispatchers.IO) {
+            return@async dao.foundItemDirectionWithName( text)
+        }
     fun changeListDevelopmentIndex(startDate: Date, endDate: Date) {
         coroutineScope.launch(Dispatchers.Main) {
             searchResults.value = asyncFindDevelopmentIndex(startDate, endDate).await()
         }
     }
-
     private fun asyncFindDevelopmentIndex(
         startDate: Date,
         endDate: Date
@@ -64,11 +79,6 @@ class Repository(private val dao: Dao) {
             return@async dao.getListAnswer(idDirection,date)
         }
 
-    fun insertDevelopmentIndex(newItemDevelopmentIndex: DevelopmentIndex) {
-        coroutineScope.launch(Dispatchers.IO) {
-            dao.insertItemDevelopmentIndex(developmentIndex = newItemDevelopmentIndex)
-        }
-    }
 
     fun insertAnswerCriteries(answerCriterias: AnswerCriterias, idDirection:Int) {
         coroutineScope.launch(Dispatchers.IO) {
