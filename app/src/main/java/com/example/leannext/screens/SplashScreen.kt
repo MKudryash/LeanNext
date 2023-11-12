@@ -1,5 +1,6 @@
 package com.example.leannext.screens
 
+import android.content.res.Configuration
 import android.view.animation.OvershootInterpolator
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
@@ -15,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
 import com.example.leannext.R
@@ -23,41 +25,46 @@ import kotlinx.coroutines.delay
 @Composable
 fun SplashScreen(navController: NavController) {
     val scale = remember {
-        Animatable(4f)
+        Animatable(3f)
     }
     var darkTheme: Boolean = isSystemInDarkTheme()
+    val configuration = LocalConfiguration.current
 
-    // Animation
-    LaunchedEffect(key1 = true) {
-        scale.animateTo(
-            targetValue = 1.5f,
-            // tween Animation
-            animationSpec = tween(
-                durationMillis = 1500,
-                easing = {
-                    OvershootInterpolator(4f).getInterpolation(it)
-                })
-        )
-        // Customize the delay time
-        delay(1500L)
-        navController.navigate("main_screen"){ popUpTo("splash_screen") {
-            inclusive = true
-        }}
+    if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+        // portrait mode
+     LaunchedEffect(key1 = true) {
+                scale.animateTo(
+                    targetValue = 1.5f,
+                    // tween Animation
+                    animationSpec = tween(
+                        durationMillis = 1500,
+                        easing = {
+                            OvershootInterpolator(3f).getInterpolation(it)
+                        })
+                )
+                // Customize the delay time
+                delay(1500L)
+                navController.navigate("main_screen"){ popUpTo("splash_screen") {
+                    inclusive = true
+                }}
+            }
+
+
+            // Image
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)
+            ) {
+                // Change the logo
+                Image(
+                    painter = when (darkTheme) {
+                        true -> painterResource(id = R.drawable.logo_icon_invert)
+                        false -> painterResource(id = R.drawable.logo_icon)
+                    },
+                    contentDescription = "Logo",
+                    modifier = Modifier.scale(scale.value)
+                )
+            }
     }
 
-    // Image
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)
-    ) {
-        // Change the logo
-        Image(
-            painter = when (darkTheme) {
-                true -> painterResource(id = R.drawable.logo_icon_invert)
-                false -> painterResource(id = R.drawable.logo_icon)
-            },
-            contentDescription = "Logo",
-            modifier = Modifier.scale(scale.value)
-        )
-    }
 }

@@ -39,7 +39,7 @@ fun BottomNavigation(navHostController: NavHostController) {
         Constants.ProfileScreen
     )
     NavigationBar(
-        Modifier.background(Color.White).height(92.dp).border(2.dp,Color(0xFFB1B1B1),
+        Modifier.background(Color.White).height(90.dp).border(2.dp,Color(0xFFB1B1B1),
             RoundedCornerShape(13.dp,13.dp,0.dp,0.dp),
         ),
         containerColor =MaterialTheme.colorScheme.background,

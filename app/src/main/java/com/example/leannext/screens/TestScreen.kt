@@ -3,6 +3,7 @@ package com.example.leannext.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -23,7 +24,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -41,9 +41,8 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.example.leannext.MainViewModel
+import com.example.leannext.viewModel.MainViewModel
 import com.example.leannext.R
 
 @Composable
@@ -56,73 +55,76 @@ fun TestScreen(
     var searching by remember { mutableStateOf(false) }
 
 
-
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally
+    BoxWithConstraints(
     ) {
+        val derivedDimension = this.maxWidth
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
 
-        CustomSearchView(search = search, onValueChange = {
-            search = it
-            searching = !search.isEmpty()
-            viewModel.getDirectionsWithText(search)
-        })
+            CustomSearchView(search = search, onValueChange = {
+                search = it
+                searching = !search.isEmpty()
+                viewModel.getDirectionsWithText(search)
+            })
 
-        val list = if (searching) searchDirection else allDirections
-        if (list != null) {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(bottom = 92.dp),
-            )
-            {
-                items(list) { item ->
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(25.dp, 10.dp)
-                            .weight(1f)
-                            .height(85.dp)
-                            .clickable(onClick =
-                            {
-                                viewModel.getItemsCriterias(item.id!!)
-                                viewModel.getAnswerCriteries(item.id)
-                                navHostController.navigate("directionTestScreen/" + item.id+"/"+item.title)
+            val list = if (searching) searchDirection else allDirections
+            if (list != null) {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(bottom = 92.dp),
+                )
+                {
+                    items(list) { item ->
+                        Row(
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(derivedDimension*0.04f, 10.dp)
+                                .weight(1f)
+                                .height(75.dp)
+                                .clickable(onClick =
+                                {
+                                    viewModel.getItemsCriterias(item.id!!)
+                                    viewModel.getAnswerCriteries(item.id)
+                                    navHostController.navigate("directionTestScreen/" + item.id + "/" + item.title)
 
-                            }),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                          val context = LocalContext.current
-                          val drawableId = remember(item.nameIcon) {
-                              context.resources.getIdentifier(
-                                  item.nameIcon,
-                                  "drawable",
-                                  context.packageName
-                              )
-                          }
-                        Icon(
-                            modifier = Modifier.weight(2f),
-                            painter = painterResource(id = drawableId),
-                            contentDescription = "",
-                            tint = MaterialTheme.colorScheme.secondary
-                        )
-                        Text(
-                            modifier = Modifier
-                                .weight(8f)
-                                .padding(10.dp, 0.dp, 0.dp, 0.dp),
-                            text = item.title,
-                            color = MaterialTheme.colorScheme.secondary,
-                            fontFamily = FontFamily(Font(R.font.neosanspro_bold)),
-                            fontSize = 16.sp,
-                            textAlign = TextAlign.Center,
-
+                                }),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            val context = LocalContext.current
+                            val drawableId = remember(item.nameIcon) {
+                                context.resources.getIdentifier(
+                                    item.nameIcon,
+                                    "drawable",
+                                    context.packageName
+                                )
+                            }
+                            Icon(
+                                modifier = Modifier.weight(2f),
+                                painter = painterResource(id = drawableId),
+                                contentDescription = "",
+                                tint = MaterialTheme.colorScheme.secondary
                             )
+                            Text(
+                                modifier = Modifier
+                                    .weight(8f)
+                                    .padding(10.dp, 0.dp, 0.dp, 0.dp),
+                                text = item.title,
+                                color = MaterialTheme.colorScheme.secondary,
+                                fontFamily = FontFamily(Font(R.font.neosanspro_bold)),
+                                fontSize = 16.sp,
+                                textAlign = TextAlign.Center,
 
-                    }
-                    if (item.id!! < list.size) {
-                        Divider(
-                            color = MaterialTheme.colorScheme.primary,
-                            thickness = 2.dp,
-                            modifier = Modifier.padding(15.dp, 10.dp)
-                        )
+                                )
+
+                        }
+                        if (item.id!! < list.size) {
+                            Divider(
+                                color = MaterialTheme.colorScheme.primary,
+                                thickness = 2.dp,
+                                modifier = Modifier.padding(15.dp, 10.dp)
+                            )
+                        }
                     }
                 }
             }
@@ -130,45 +132,45 @@ fun TestScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun CustomSearchView(
-    search: String,
-    modifier: Modifier = Modifier,
-    onValueChange: (String) -> Unit
-) {
-    Box(
-        modifier = modifier
-            .padding(20.dp)
-            .clip(RoundedCornerShape(10.dp))
-            .background(Color(0XFFF5F5F9))
-
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    fun CustomSearchView(
+        search: String,
+        modifier: Modifier = Modifier,
+        onValueChange: (String) -> Unit
     ) {
-        TextField(
-            value = search,
-            onValueChange = onValueChange,
-            colors = TextFieldDefaults.textFieldColors(
-                containerColor = Color(0XFFF5F5F9),
-                focusedIndicatorColor = Color.Transparent,
-                focusedTextColor = Color.Black,
-                disabledIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                cursorColor = MaterialTheme.colorScheme.onTertiary
-            ),
-            modifier = Modifier.background(Color(0XFFF5F5F9)),
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Search, contentDescription = "",
-                    tint = MaterialTheme.colorScheme.onTertiary
-                )
-            },
-            placeholder = {
-                Text(
-                    text = "Искать направление",
-                    color = MaterialTheme.colorScheme.onSecondary
-                )
-            }
-        )
+        Box(
+            modifier = modifier
+                .padding(20.dp)
+                .clip(RoundedCornerShape(10.dp))
+                .background(Color(0XFFF5F5F9))
 
+        ) {
+            TextField(
+                value = search,
+                onValueChange = onValueChange,
+                colors = TextFieldDefaults.textFieldColors(
+                    containerColor = Color(0XFFF5F5F9),
+                    focusedIndicatorColor = Color.Transparent,
+                    focusedTextColor = Color.Black,
+                    disabledIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    cursorColor = MaterialTheme.colorScheme.onTertiary
+                ),
+                modifier = Modifier.background(Color(0XFFF5F5F9)),
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Search, contentDescription = "",
+                        tint = MaterialTheme.colorScheme.onTertiary
+                    )
+                },
+                placeholder = {
+                    Text(
+                        text = "Искать направление",
+                        color = MaterialTheme.colorScheme.onSecondary
+                    )
+                }
+            )
+
+        }
     }
-}

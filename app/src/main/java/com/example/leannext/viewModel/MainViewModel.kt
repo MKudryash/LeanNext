@@ -1,4 +1,4 @@
-package com.example.leannext
+package com.example.leannext.viewModel
 
 import android.app.Application
 import android.util.Log
