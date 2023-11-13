@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.leannext.db.MainDb
 import com.example.leannext.db.Repository
 import com.example.leannext.db.modelsDb.AnswerCriterias
@@ -13,6 +14,8 @@ import com.example.leannext.db.modelsDb.Criterias
 import com.example.leannext.db.modelsDb.DevelopmentIndex
 import com.example.leannext.db.modelsDb.Directions
 import com.example.leannext.utlis.CheckWeek
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.util.Date
 
 
@@ -57,6 +60,9 @@ class MainViewModel(application: Application) : ViewModel() {
     fun getAnswerCriteries(idDirections: Int)
     {
         repository.changeListAnswerCriterias(Date(),idDirections)
+        viewModelScope.launch {
+            delay(1000L)
+        }
     }
     fun getItemsCriterias(id:Int)
     {

@@ -2,6 +2,7 @@ package com.example.leannext.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -44,6 +46,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.leannext.viewModel.MainViewModel
 import com.example.leannext.R
+import kotlinx.coroutines.delay
 
 @Composable
 fun TestScreen(
@@ -51,31 +54,104 @@ fun TestScreen(
 ) {
     var search: String by rememberSaveable { mutableStateOf("") }
     val allDirections by viewModel.allDirection.observeAsState(listOf())
-    val searchDirection by viewModel.searchDirections.observeAsState(listOf())
     var searching by remember { mutableStateOf(false) }
+    var searching1 by remember { mutableStateOf(false) }
+    val itemsForDiagram by viewModel.itemsAllDiagrams.observeAsState(listOf())
 
 
+    val searchResults by viewModel.searchResults.observeAsState(listOf())
     BoxWithConstraints(
     ) {
         val derivedDimension = this.maxWidth
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
 
-            CustomSearchView(search = search, onValueChange = {
-                search = it
-                searching = !search.isEmpty()
-                viewModel.getDirectionsWithText(search)
-            })
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(1f)
+                    .wrapContentHeight()
+                    .padding(0.dp,25.dp,0.dp,15.dp),
+                horizontalArrangement = Arrangement.SpaceAround,
+                verticalAlignment = Alignment.CenterVertically
+            )
+            {
+                Box(
+                    Modifier
+                        .weight(1f)
+                        .clickable {
+                            --viewModel.week.value
+                            viewModel.checkday()
+                            viewModel.findDevelopmentIndex()
+                            searching1 = viewModel.week.value != 0
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.arrowleft),
+                        contentDescription = "",
+                        tint = MaterialTheme.colorScheme.secondary
+                    )
+                }
+                Column(
+                    Modifier.weight(4f),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                )
+                {
+                    Text(
+                        text = "Еженедельный отчет",
+                        color = MaterialTheme.colorScheme.secondary,
+                        fontFamily = FontFamily(Font(R.font.neosanspro_bold)),
+                        fontSize = 18.sp,
+                        textAlign = TextAlign.Center,
+                    )
+                    Text(
+                        text = "${format.format(viewModel.startDate.value)} - ${
+                            format.format(
+                                viewModel.endDate.value
+                            )
+                        }",
+                        modifier = Modifier.padding(top = 10.dp),
+                        color = MaterialTheme.colorScheme.secondary,
+                        fontFamily = FontFamily(Font(R.font.neosanspro_regular)),
+                        fontSize = 14.sp,
+                        textAlign = TextAlign.Center,
+                    )
+                }
+                Box(
+                    Modifier
+                        .weight(1f)
+                        .clickable {
+                            if (viewModel.week.value<0)  ++viewModel.week.value
+                            viewModel.checkday()
+                            viewModel.findDevelopmentIndex()
+                            searching1 = viewModel.week.value != 0
+                        },
+                    contentAlignment = Alignment.Center
 
-            val list = if (searching) searchDirection else allDirections
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.arrowright),
+                        contentDescription = "",
+                        tint = MaterialTheme.colorScheme.secondary
+                    )
+                }
+            }
+            val list = if (searching1) searchResults else itemsForDiagram
+            var sum = 0.0
             if (list != null) {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(bottom = 92.dp),
                 )
                 {
-                    items(list) { item ->
+                    items(allDirections) { item ->
+                        var index = 0.0
+                        list.forEach {
+                            if (it.idDirection == item.id) index = it.mark
+                        }
+                        sum+=index
                         Row(
                             Modifier
                                 .fillMaxWidth()
@@ -86,8 +162,8 @@ fun TestScreen(
                                 {
                                     viewModel.getItemsCriterias(item.id!!)
                                     viewModel.getAnswerCriteries(item.id)
-                                    navHostController.navigate("directionTestScreen/" + item.id + "/" + item.title)
 
+                                    navHostController.navigate("directionTestScreen/" + item.id + "/" + item.title)
                                 }),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -107,7 +183,7 @@ fun TestScreen(
                             )
                             Text(
                                 modifier = Modifier
-                                    .weight(8f)
+                                    .weight(6f)
                                     .padding(10.dp, 0.dp, 0.dp, 0.dp),
                                 text = item.title,
                                 color = MaterialTheme.colorScheme.secondary,
@@ -116,9 +192,20 @@ fun TestScreen(
                                 textAlign = TextAlign.Center,
 
                                 )
+                            Text(
+                                modifier = Modifier
+                                    .weight(2f)
+                                    .padding(10.dp, 0.dp, 0.dp, 0.dp),
+                                text = String.format("%.1f", index),
+                                color = MaterialTheme.colorScheme.secondary,
+                                fontFamily = FontFamily(Font(R.font.neosanspro_bold)),
+                                fontSize = 16.sp,
+                                textAlign = TextAlign.Center,
+
+                                )
 
                         }
-                        if (item.id!! < list.size) {
+                        if (item.id!! < allDirections.size) {
                             Divider(
                                 color = MaterialTheme.colorScheme.primary,
                                 thickness = 2.dp,
@@ -132,45 +219,4 @@ fun TestScreen(
     }
 }
 
-    @OptIn(ExperimentalMaterial3Api::class)
-    @Composable
-    fun CustomSearchView(
-        search: String,
-        modifier: Modifier = Modifier,
-        onValueChange: (String) -> Unit
-    ) {
-        Box(
-            modifier = modifier
-                .padding(20.dp)
-                .clip(RoundedCornerShape(10.dp))
-                .background(Color(0XFFF5F5F9))
 
-        ) {
-            TextField(
-                value = search,
-                onValueChange = onValueChange,
-                colors = TextFieldDefaults.textFieldColors(
-                    containerColor = Color(0XFFF5F5F9),
-                    focusedIndicatorColor = Color.Transparent,
-                    focusedTextColor = Color.Black,
-                    disabledIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    cursorColor = MaterialTheme.colorScheme.onTertiary
-                ),
-                modifier = Modifier.background(Color(0XFFF5F5F9)),
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Search, contentDescription = "",
-                        tint = MaterialTheme.colorScheme.onTertiary
-                    )
-                },
-                placeholder = {
-                    Text(
-                        text = "Искать направление",
-                        color = MaterialTheme.colorScheme.onSecondary
-                    )
-                }
-            )
-
-        }
-    }

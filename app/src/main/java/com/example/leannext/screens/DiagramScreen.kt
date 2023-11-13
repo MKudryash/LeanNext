@@ -52,7 +52,7 @@ import java.util.Locale
 val format = SimpleDateFormat("dd MMMM", Locale("ru"))
 
 @Composable
-fun RadarChartSample(itemsListDirectionIndex: List<DevelopmentIndex>?,w: Dp) {
+fun RadarChartSample(itemsListDirectionIndex: List<DevelopmentIndex>?, w: Dp) {
     val labelDirection =
         listOf(
             "5S и Визуальный менеджмент",
@@ -96,7 +96,7 @@ fun RadarChartSample(itemsListDirectionIndex: List<DevelopmentIndex>?,w: Dp) {
     )
 
     RadarChart(
-        modifier = Modifier.size(w),
+        modifier = Modifier.size(w + 50.dp),
         radarLabels = labelDirection,
         labelsStyle = labelsStyle,
         netLinesStyle = NetLinesStyle(
@@ -140,6 +140,8 @@ fun DiagramScreen(
     BoxWithConstraints(
     ) {
         val derivedDimension = this.maxWidth
+        var colorWeek = if (viewModel.week.value == 0) MaterialTheme.colorScheme.primary
+        else MaterialTheme.colorScheme.secondary
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -155,7 +157,7 @@ fun DiagramScreen(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    modifier = Modifier.padding(derivedDimension*0.04f,derivedDimension*0.09f),
+                    modifier = Modifier.padding(derivedDimension * 0.04f, derivedDimension * 0.09f),
                     text = "Индекс развития технологий и инструментов Кайдзен (КDI)",
                     color = MaterialTheme.colorScheme.secondary,
                     fontFamily = FontFamily(Font(R.font.neosanspro_medium)),
@@ -217,14 +219,15 @@ fun DiagramScreen(
                     Modifier
                         .weight(1f)
                         .clickable {
-                            ++viewModel.week.value
+                            if (viewModel.week.value < 0) ++viewModel.week.value
                             viewModel.checkday()
                             viewModel.findDevelopmentIndex()
                             searching = viewModel.week.value != 0
                         },
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.Center,
 
-                ) {
+
+                    ) {
                     Icon(
                         painter = painterResource(id = R.drawable.arrowright),
                         contentDescription = "",
@@ -234,142 +237,68 @@ fun DiagramScreen(
             }
 
             val list = if (searching) searchResults else itemsForDiagram
-            RadarChartSample(list,derivedDimension)
-
-
-            Box {
-                var sum = 0.0
-                LazyColumn(
-                    modifier = Modifier
-                        // fillMaxWidth instead of fillMaxSize
-                        .fillMaxWidth()
-                        // explicit height modifier
-                        .height(this@BoxWithConstraints.maxHeight)
-                        .padding(0.dp,0.dp,0.dp,90.dp)
+            RadarChartSample(list, derivedDimension)
+            var sum =0.0
+                list.forEach {
+                sum+= it.mark
+            }
+           try{ sum/=allDirections.size} catch(ex:Exception){}
+            val colorItem = if(sum!=0.0)   MaterialTheme.colorScheme.primary
+            else Color(0xFFFF6864)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .padding(derivedDimension * 0.01f, derivedDimension * 0.02f),
+                verticalAlignment = Alignment.CenterVertically
+            )
+            {
+                Box(
+                    Modifier
+                        .weight(12f)
+                        .wrapContentHeight()
+                        .padding(derivedDimension * 0.02f, 0.dp)
+                        .border(
+                            2.dp,
+                            colorItem,
+                            RoundedCornerShape(20.dp)
+                        ),
+                    contentAlignment = Alignment.Center
                 )
                 {
-
-                    items(allDirections) { item ->
-                        var index = 0.0
-                        list.forEach {
-                            if (it.idDirection == item.id) index = it.mark
-                        }
-                        sum+=index
-                        val colorItem = if(index!=0.0)   MaterialTheme.colorScheme.primary
-                        else Color(0xFFFF6864)
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .wrapContentHeight()
-                                .padding(derivedDimension*0.01f,derivedDimension*0.02f),
-                            verticalAlignment = Alignment.CenterVertically
-                        )
-                        {
-                            Box(
-                                Modifier
-                                    .weight(12f)
-                                    .wrapContentHeight()
-                                    .padding(derivedDimension*0.02f, 0.dp)
-                                    .border(
-                                        2.dp,
-                                        colorItem,
-                                        RoundedCornerShape(20.dp)
-                                    ),
-                                contentAlignment = Alignment.Center
-                            )
-                            {
-                                Text(
-                                    modifier = Modifier.padding(derivedDimension*0.01f, derivedDimension*0.04f),
-                                    text = item.title,
-                                    color = MaterialTheme.colorScheme.secondary,
-                                    fontFamily = FontFamily(Font(R.font.neosanspro_regular)),
-                                    fontSize = 14.sp,
-                                    textAlign = TextAlign.Center,
-                                )
-                            }
-                            Box(
-                                Modifier
-                                    .weight(2.3f)
-                                    .wrapContentHeight()
-                                    .padding(derivedDimension*0.02f, 0.dp)
-                                    .border(
-                                        2.dp,
-                                        colorItem,
-                                        RoundedCornerShape(20.dp)
-                                    ),
-                                contentAlignment = Alignment.Center
-                            )
-                            {
-
-
-                                Text(
-                                    modifier = Modifier.padding(0.dp, derivedDimension*0.04f),
-                                    text = String.format("%.1f", index),
-                                    color = MaterialTheme.colorScheme.secondary,
-                                    fontFamily = FontFamily(Font(R.font.neosanspro_regular)),
-                                    fontSize = 14.sp,
-                                    textAlign = TextAlign.Center,
-                                )
-                            }
-                        }
-                    }
-                    item {
-                        val colorItem = if(sum!=0.0)   MaterialTheme.colorScheme.primary
-                        else Color(0xFFFF6864)
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .wrapContentHeight()
-                                .padding(derivedDimension*0.01f,derivedDimension*0.02f),
-                            verticalAlignment = Alignment.CenterVertically
-                        )
-                        {
-                            Box(
-                                Modifier
-                                    .weight(12f)
-                                    .wrapContentHeight()
-                                    .padding(derivedDimension*0.02f, 0.dp)
-                                    .border(
-                                        2.dp,
-                                        colorItem,
-                                        RoundedCornerShape(20.dp)
-                                    ),
-                                contentAlignment = Alignment.Center
-                            )
-                            {
-                                Text(
-                                    modifier = Modifier.padding(derivedDimension*0.01f, derivedDimension*0.04f),
-                                    text = "Итог",
-                                    color = MaterialTheme.colorScheme.secondary,
-                                    fontFamily = FontFamily(Font(R.font.neosanspro_regular)),
-                                    fontSize = 14.sp,
-                                    textAlign = TextAlign.Center,
-                                )
-                            }
-                            Box(
-                                Modifier
-                                    .weight(2.3f)
-                                    .wrapContentHeight()
-                                    .padding(derivedDimension*0.02f, 0.dp)
-                                    .border(
-                                        2.dp,
-                                        colorItem,
-                                        RoundedCornerShape(20.dp)
-                                    ),
-                                contentAlignment = Alignment.Center
-                            )
-                            {
-                                Text(
-                                    modifier = Modifier.padding(0.dp, derivedDimension*0.04f),
-                                    text = String.format("%.1f", sum),
-                                    color = MaterialTheme.colorScheme.secondary,
-                                    fontFamily = FontFamily(Font(R.font.neosanspro_regular)),
-                                    fontSize = 14.sp,
-                                    textAlign = TextAlign.Center,
-                                )
-                            }
-                        }
-                    }
+                    Text(
+                        modifier = Modifier.padding(
+                            derivedDimension * 0.01f,
+                            derivedDimension * 0.04f
+                        ),
+                        text = "Итог",
+                        color = MaterialTheme.colorScheme.secondary,
+                        fontFamily = FontFamily(Font(R.font.neosanspro_regular)),
+                        fontSize = 14.sp,
+                        textAlign = TextAlign.Center,
+                    )
+                }
+                Box(
+                    Modifier
+                        .weight(2.3f)
+                        .wrapContentHeight()
+                        .padding(derivedDimension * 0.02f, 0.dp)
+                        .border(
+                            2.dp,
+                            colorItem,
+                            RoundedCornerShape(20.dp)
+                        ),
+                    contentAlignment = Alignment.Center
+                )
+                {
+                    Text(
+                        modifier = Modifier.padding(0.dp, derivedDimension * 0.04f),
+                        text = String.format("%.1f", sum),
+                        color = MaterialTheme.colorScheme.secondary,
+                        fontFamily = FontFamily(Font(R.font.neosanspro_regular)),
+                        fontSize = 14.sp,
+                        textAlign = TextAlign.Center,
+                    )
                 }
             }
         }

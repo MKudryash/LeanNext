@@ -41,5 +41,6 @@ private fun Path.drawPolygon(polygonCorners: List<Offset>) {
     polygonCorners.forEachIndexed { index, offset ->
         lineTo(offset.x, offset.y)
     }
+
     close()
 }
