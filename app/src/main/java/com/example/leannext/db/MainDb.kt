@@ -20,11 +20,12 @@ import com.example.leannext.utlis.Converters
         Directions::class,
         Users::class
     ],
-    version = 1
+    version = 2
 )
 @TypeConverters(Converters::class)
 abstract class MainDb : RoomDatabase() {
     abstract fun dao(): Dao
+
     companion object {
 
         private var INSTANCE: MainDb? = null
@@ -37,8 +38,8 @@ abstract class MainDb : RoomDatabase() {
                         context.applicationContext,
                         MainDb::class.java,
                         "leannext"
-                    ).createFromAsset("leannext.db")
-                        .fallbackToDestructiveMigration()
+                    )
+                        .createFromAsset("leannext2.db")
                         .build()
                     INSTANCE = instance
 

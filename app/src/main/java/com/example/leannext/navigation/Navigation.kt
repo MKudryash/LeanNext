@@ -6,9 +6,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.leannext.screens.MainScreen
 import com.example.leannext.screens.SplashScreen
+import com.example.leannext.viewModel.MainViewModel
 
 @Composable
-fun Navigation() {
+fun Navigation(viewModel: MainViewModel) {
     val navController = rememberNavController()
     NavHost(
         navController = navController,
@@ -20,7 +21,7 @@ fun Navigation() {
 
         // Main Screen
         composable("main_screen") {
-            MainScreen()
+            MainScreen(viewModel)
         }
     }
 }

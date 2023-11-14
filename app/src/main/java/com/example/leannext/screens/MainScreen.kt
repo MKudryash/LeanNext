@@ -20,29 +20,16 @@ import com.example.leannext.bottom_navigation.NavGraph
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun MainScreen() {
+fun MainScreen(viewModel: MainViewModel) {
     val navHostController = rememberNavController()
     Scaffold(
         Modifier.background(MaterialTheme.colorScheme.background),
         bottomBar = { BottomNavigation(navHostController = navHostController) }
     ) {
-        val owner = LocalViewModelStoreOwner.current
-
-        owner?.let {
-            val viewModel: MainViewModel = viewModel(
-                it,
-                "MainViewModel",
-                MainViewModelFactory(
-                    LocalContext.current.applicationContext
-                            as Application
-                )
-            )
-
-
-            NavGraph(navHostController = navHostController, viewModel)
-        }
+        NavGraph(navHostController = navHostController, viewModel)
     }
 }
+
 
 
 

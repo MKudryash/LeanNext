@@ -34,7 +34,7 @@ fun NavGraph(
         }
         composable(Constants.MainScreen.route)
         {
-            MainScreen()
+            MainScreen(viewModel)
         }
         composable(
             route = Constants.DirectionTestScreen.route,

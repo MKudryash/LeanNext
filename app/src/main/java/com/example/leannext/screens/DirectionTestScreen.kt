@@ -71,7 +71,6 @@ fun DirectionTestScreen(
     val itemsListCriterias by viewModel.itemsCriterias.observeAsState(listOf())
     val itemsListAnswerCriterias by viewModel.answerResult.observeAsState(listOf())
     val allDirections by viewModel.allDirection.observeAsState(listOf())
-    var title = allDirections.first { it -> it.id == id }.title
 
     BoxWithConstraints(
     ) {
@@ -244,14 +243,17 @@ fun DirectionTestScreen(
 
                             ) { index, items ->
                                 var borderColor: Color
-                                itemsListAnswerCriterias.forEach {
-                                    if (it.idCriterias == item.id) {
-                                        when (it.mark) {
-                                            1.0 -> selectedIndex = 0
-                                            2.0 -> selectedIndex = 1
-                                            3.0 -> selectedIndex = 2
-                                            4.0 -> selectedIndex = 3
-                                            5.0 -> selectedIndex = 4
+                                selectedIndex =-1
+                                if(itemsListAnswerCriterias.isNotEmpty()) {
+                                    itemsListAnswerCriterias.forEach {
+                                        if (it.idCriterias == item.id) {
+                                            when (it.mark) {
+                                                1.0 -> selectedIndex = 0
+                                                2.0 -> selectedIndex = 1
+                                                3.0 -> selectedIndex = 2
+                                                4.0 -> selectedIndex = 3
+                                                5.0 -> selectedIndex = 4
+                                            }
                                         }
                                     }
                                 }
