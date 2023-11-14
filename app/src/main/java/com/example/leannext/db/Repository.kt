@@ -1,5 +1,6 @@
 package com.example.leannext.db
 
+import android.database.Cursor
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -25,10 +26,21 @@ class Repository(private val dao: Dao) {
     val allItemCriterias = MutableLiveData<List<Criterias>>()
     val answerCriteries = MutableLiveData<List<AnswerCriterias>>()
     val searchDirections = MutableLiveData<List<Directions>>()
+    val excelCursor = MutableLiveData<Cursor>()
 
 
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
+    fun test()
+    {
+        coroutineScope.launch(Dispatchers.Main) {
+            excelCursor.value = asyncTest().await()
+        }
+    }
+    private fun asyncTest(): Deferred<Cursor> =
+        coroutineScope.async(Dispatchers.IO) {
+            return@async dao.getAllItemsDirectionCursor()
+        }
 
 
     fun foundItemCriteriasWithName(text: String) {

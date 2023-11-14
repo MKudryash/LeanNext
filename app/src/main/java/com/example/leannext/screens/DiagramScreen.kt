@@ -45,6 +45,7 @@ import androidx.navigation.NavHostController
 import com.example.leannext.viewModel.MainViewModel
 import com.example.leannext.R
 import com.example.leannext.db.modelsDb.DevelopmentIndex
+import com.example.leannext.utlis.ExportDataToCsv
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -135,7 +136,8 @@ fun DiagramScreen(
     val searchResults by viewModel.searchResults.observeAsState(listOf())
     var searching by remember { mutableStateOf(false) }
 
-
+    var exportDataToCsv = ExportDataToCsv()
+    exportDataToCsv.createXlFile(itemsForDiagram,allDirections,format.format(viewModel.startDate.value))
     // Column Composable,
     BoxWithConstraints(
     ) {

@@ -1,6 +1,7 @@
 package com.example.leannext.viewModel
 
 import android.app.Application
+import android.database.Cursor
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
@@ -53,9 +54,11 @@ class MainViewModel(application: Application) : ViewModel() {
         startDate.value = CheckWeek.PreviousNextWeekModay(week.value)
         endDate.value = CheckWeek.PreviousNextWeekSunday(week.value)
     }
-    fun getDirectionsWithText(text:String)
+
+    fun testCursor(): Cursor?
     {
-        repository.foundItemCriteriasWithName(text)
+        repository.test()
+        return repository.excelCursor.value
     }
     fun getAnswerCriteries(idDirections: Int)
     {

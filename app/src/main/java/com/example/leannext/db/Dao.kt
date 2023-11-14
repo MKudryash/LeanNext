@@ -1,5 +1,6 @@
 package com.example.leannext.db
 
+import android.database.Cursor
 import android.graphics.Path
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
@@ -85,6 +86,8 @@ interface Dao {
 
     @Query("SELECT * FROM Directions")
     fun getAllItemsDirection(): LiveData<List<Directions>>
+    @Query("SELECT * FROM Directions")
+    fun getAllItemsDirectionCursor(): Cursor
 
 
 
