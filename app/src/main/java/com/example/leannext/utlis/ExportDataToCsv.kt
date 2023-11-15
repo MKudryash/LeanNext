@@ -1,8 +1,12 @@
 package com.example.leannext.utlis
 
 
+import android.content.Context
+import android.content.Intent
 import android.os.Environment
 import android.util.Log
+import android.widget.Toast
+import androidx.core.content.FileProvider
 import com.example.leannext.db.modelsDb.DevelopmentIndex
 import com.example.leannext.db.modelsDb.Directions
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
@@ -13,15 +17,17 @@ import org.apache.poi.ss.usermodel.Workbook
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import kotlin.math.round
 
+class ExportDataToCsv() {
 
-class ExportDataToCsv () {
+    fun createXlFile(
+        devindex: List<DevelopmentIndex>,
+        nameDirections: List<Directions>,
+        startDate: String,
+        save: Boolean,
+        context: Context
+    ) {
 
-    fun createXlFile(devindex:List<DevelopmentIndex>,nameDirections: List<Directions>,startDate:String) {
-
-
-        // File filePath = new File(Environment.getExternalStorageDirectory() + "/Demo.xls");
         val wb: Workbook = HSSFWorkbook()
         var cell: Cell? = null
         var sheet: Sheet? = null
@@ -32,7 +38,7 @@ class ExportDataToCsv () {
         cell.setCellValue("Наименование критерия")
         cell = row.createCell(1)
         cell.setCellValue("Оценка")
-        for(i in nameDirections.indices){
+        for (i in nameDirections.indices) {
             val row1: Row = sheet.createRow(i + 1)
             cell = row1.createCell(0)
             cell.setCellValue(nameDirections[i].title)
@@ -46,36 +52,39 @@ class ExportDataToCsv () {
             cell.setCellValue(String.format("%.1f", index))
         }
 
-        val folder: File =
-            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
 
-        // Storing the data in file with name as geeksData.txt
-
-
-        val fileName = "Отчет от $startDate.xls"
-        val path =  ""+folder+File.separator + fileName
-        val file =
-            File(folder, fileName)
-        /*    if (!file.exists()) {
-                file.mkdirs()
-            }*/
+        val folder =
+            if (save) Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+            else context.cacheDir
+        val fileName = "Отчет от $startDate.xlsx"
+        val file = File(folder, fileName)
+        val path = "" + folder + File.separator + fileName
         var outputStream: FileOutputStream? = null
         try {
             outputStream = FileOutputStream(path)
             wb.write(outputStream)
-            // ShareViaEmail(file.getParentFile().getName(),file.getName());
-            Log.d("TEST", "Excel Created in $path")
+            if (save) Toast.makeText(context, "Файл сохранен в загрузки", Toast.LENGTH_LONG).show()
+            Log.d("EXPORT", "Excel Created in $path")
         } catch (e: IOException) {
             e.printStackTrace()
-            Log.d("TEST", e.message.toString())
+            Log.d("EXPORT", e.message.toString())
             try {
                 outputStream!!.close()
             } catch (ex: Exception) {
                 ex.printStackTrace()
             }
         }
-        
+
+        if (!save) {
+            val uris = FileProvider.getUriForFile(context, "com.anni.shareimage.fileprovider", file)
+
+            val intent = Intent(Intent.ACTION_SEND)
+            intent.putExtra(Intent.EXTRA_STREAM, uris)
+            intent.type = "text/*"
+
+            context.startActivity(Intent.createChooser(intent, "Share Via"))
+        }
 
     }
-
 }
+

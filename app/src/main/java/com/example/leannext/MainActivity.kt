@@ -18,12 +18,11 @@ import com.example.leannext.ui.theme.LeanNextTheme
 import com.example.leannext.utlis.ExportDataToCsv
 import com.example.leannext.viewModel.MainViewModel
 import com.example.leannext.viewModel.MainViewModelFactory
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {
-    @OptIn(ExperimentalPermissionsApi::class)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
