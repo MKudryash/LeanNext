@@ -23,7 +23,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -143,6 +146,7 @@ fun DiagramScreen(
 
     var exportDataToCsv = ExportDataToCsv()
     val context = LocalContext.current
+    var expanded by remember { mutableStateOf(false) }
 
     // Column Composable,
     BoxWithConstraints(
@@ -165,13 +169,96 @@ fun DiagramScreen(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    modifier = Modifier.padding(derivedDimension * 0.04f, derivedDimension * 0.09f),
+                    modifier = Modifier
+                        .padding(derivedDimension * 0.04f, derivedDimension * 0.09f)
+                        .weight(7f),
                     text = "Индекс развития технологий и инструментов Кайдзен (КDI)",
                     color = MaterialTheme.colorScheme.secondary,
                     fontFamily = FontFamily(Font(R.font.neosanspro_medium)),
                     fontSize = 20.sp,
                     textAlign = TextAlign.Center,
                 )
+                Box()
+                {
+                    IconButton(onClick = { expanded = true }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.menuicon),
+                            contentDescription = "Показать меню"
+                        )
+                    }
+                    DropdownMenu(
+                        modifier = Modifier
+                            .border(
+                                3.dp,
+                                MaterialTheme.colorScheme.primary,
+                                RoundedCornerShape(20.dp)
+                            )
+                            .background(MaterialTheme.colorScheme.background),
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    exportDataToCsv.createXlFile(
+                                        itemsForDiagram,
+                                        allDirections,
+                                        format.format(viewModel.startDate.value),
+                                        true,
+                                        context
+                                    )
+                                }
+                        )
+                        {
+                            IconButton(onClick = { expanded = true }) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.saveicon),
+                                    contentDescription = ""
+                                )
+                            }
+                            Text(
+                                "Скачать",
+                                fontFamily = FontFamily(Font(R.font.neosanspro_medium)),
+                                fontSize = 16.sp,
+                                modifier = Modifier
+                                    .padding(10.dp)
+                            )
+                        }
+                        Divider(
+                            color = MaterialTheme.colorScheme.primary,
+                            thickness = 2.dp
+                        )
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    exportDataToCsv.createXlFile(
+                                        itemsForDiagram,
+                                        allDirections,
+                                        format.format(viewModel.startDate.value),
+                                        false,
+                                        context
+                                    )
+                                }
+                        )
+                        {
+                            IconButton(onClick = { expanded = true }) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.shareicon),
+                                    contentDescription = ""
+                                )
+                            }
+                            Text(
+                                "Поделиться",
+                                fontFamily = FontFamily(Font(R.font.neosanspro_medium)),
+                                fontSize = 16.sp,
+                                modifier = Modifier
+                                    .padding(10.dp)
+                            )
+                        }
+                    }
+                }
             }
             Row(
                 modifier = Modifier
@@ -312,67 +399,6 @@ fun DiagramScreen(
                     )
                 }
             }
-
-
-
-
-            Button(modifier = Modifier.background(MaterialTheme.colorScheme.background)
-                .padding(0.dp,5.dp),
-                colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.background),
-                border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary),
-                shape = RoundedCornerShape(40), // = 50% percent
-                // or shape = CircleShape
-                onClick = {
-                exportDataToCsv.createXlFile(
-                    itemsForDiagram,
-                    allDirections,
-                    format.format(viewModel.startDate.value),
-                    true,
-                    context
-                )
-            }) {
-                Text(
-                    modifier = Modifier.padding(
-                        derivedDimension * 0.01f,
-                        derivedDimension * 0.015f
-                    ),
-                    text = "Сохранить отчет выбранной недели",
-                    color = MaterialTheme.colorScheme.secondary,
-                    fontFamily = FontFamily(Font(R.font.neosanspro_regular)),
-                    fontSize = 14.sp,
-                    textAlign = TextAlign.Center,
-                )
-            }
-            Button(modifier = Modifier.background(MaterialTheme.colorScheme.background)
-                .padding(0.dp,5.dp),
-                colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.background),
-                border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary),
-                shape = RoundedCornerShape(40), // = 50% percent
-                onClick = {
-                exportDataToCsv.createXlFile(
-                    itemsForDiagram,
-                    allDirections,
-                    format.format(viewModel.startDate.value),
-                    false,
-                    context
-                )
-            }) {
-                Text(
-                    modifier = Modifier.padding(
-                        derivedDimension * 0.01f,
-                        derivedDimension * 0.015f
-                    ),
-                    text = "Отправить отчет выбранной недели",
-                    color = MaterialTheme.colorScheme.secondary,
-                    fontFamily = FontFamily(Font(R.font.neosanspro_regular)),
-                    fontSize = 14.sp,
-                    textAlign = TextAlign.Center,
-                )
-            }
         }
-
     }
 }
-
-
-

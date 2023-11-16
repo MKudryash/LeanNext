@@ -1,9 +1,13 @@
 package com.example.leannext.screens
 
 import android.util.Log
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
@@ -37,8 +41,7 @@ internal fun DrawScope.drawAxisData(
     val textVerticalOffset = 20.toDp().toPx()
     val labelHeight = textMeasurer.measure(AnnotatedString("M")).size.height
 
-
-    for (step in 0 until scalarSteps+1) {
+    for (step in 0 until scalarSteps + 1) {
         drawText(
             textMeasurer = textMeasurer,
             text = (scalarStep * step).toString() + " " + unit,
@@ -48,29 +51,52 @@ internal fun DrawScope.drawAxisData(
                 nextStartPoints[step].y - textVerticalOffset
             )
         )
-        Log.d("DRAW",(scalarStep * step).toString())
+        Log.d("DRAW", (scalarStep * step).toString())
     }
     for (line in labelsEndPoints.indices) {
-        val rect = Rect(Offset(
-            labelsEndPoints[line].x - textMeasurer.measure(
-                AnnotatedString(
-                    text = radarLabels[line],
-                ), style = labelsStyle
-            ).size.width / 2,
-            labelsEndPoints[line].y - labelHeight /2
-        ), size.minDimension)
-        var degrees = 0f
-        rotate(degrees = degrees, rect.center){
-        drawText(
-            textMeasurer = textMeasurer,
-            text = radarLabels[line],
-            style = labelsStyle,
-            topLeft = Offset(
-                rect.center.x,
-                rect.center.y
-            )
+        val rect = Rect(
+            Offset(
+                labelsEndPoints[line].x - textMeasurer.measure(
+                    AnnotatedString(
+                        text = radarLabels[line],
+                    ), style = labelsStyle
+                ).size.width / 2,
+                labelsEndPoints[line].y - labelHeight / 2
+            ), size.minDimension
         )
-    }
-}
 
+        var degrees = 0f
+        rotate(degrees = degrees, rect.center) {
+            drawText(
+                textMeasurer = textMeasurer,
+                text = radarLabels[line],
+                style = labelsStyle,
+                topLeft = Offset(
+                    rect.center.x,
+                    rect.center.y
+                )
+
+            )
+        }
+/*        Spacer(
+            modifier = Modifier.clickable { Log.d("CLICK",radarLabels[line]) }
+                .drawWithCache {
+                    onDrawBehind {
+                        rotate(degrees = degrees, rect.center) {
+                            drawText(
+                                textMeasurer = textMeasurer,
+                                text = radarLabels[line],
+                                style = labelsStyle,
+                                topLeft = Offset(
+                                    rect.center.x,
+                                    rect.center.y
+                                )
+
+                            )
+                        }
+                    }
+                }
+                .wrapContentSize()
+        )*/
+    }
 }
