@@ -61,7 +61,7 @@ import java.util.Locale
 val format = SimpleDateFormat("dd MMMM", Locale("ru"))
 
 @Composable
-fun RadarChartSample(itemsListDirectionIndex: List<DevelopmentIndex>?, w: Dp) {
+fun RadarChartSample(itemsListDirectionIndex: List<DevelopmentIndex>?, w: Dp, navHostController: NavHostController,viewModel: MainViewModel) {
     val labelDirection =
         listOf(
             "5S и Визуальный менеджмент",
@@ -129,7 +129,9 @@ fun RadarChartSample(itemsListDirectionIndex: List<DevelopmentIndex>?, w: Dp) {
                     borderStrokeCap = StrokeCap.Butt,
                 )
             )
-        )
+        ),
+        navHostController =navHostController,
+        viewModel = viewModel
     )
 }
 
@@ -332,7 +334,7 @@ fun DiagramScreen(
             }
 
             val list = if (searching) searchResults else itemsForDiagram
-            RadarChartSample(list, derivedDimension)
+            RadarChartSample(list, derivedDimension,navHostController,viewModel)
             var sum = 0.0
             list.forEach {
                 sum += it.mark

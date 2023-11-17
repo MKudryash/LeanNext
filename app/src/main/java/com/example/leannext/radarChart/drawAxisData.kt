@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.draw.rotate
@@ -75,28 +76,8 @@ internal fun DrawScope.drawAxisData(
                     rect.center.x,
                     rect.center.y
                 )
-
             )
         }
-/*        Spacer(
-            modifier = Modifier.clickable { Log.d("CLICK",radarLabels[line]) }
-                .drawWithCache {
-                    onDrawBehind {
-                        rotate(degrees = degrees, rect.center) {
-                            drawText(
-                                textMeasurer = textMeasurer,
-                                text = radarLabels[line],
-                                style = labelsStyle,
-                                topLeft = Offset(
-                                    rect.center.x,
-                                    rect.center.y
-                                )
-
-                            )
-                        }
-                    }
-                }
-                .wrapContentSize()
-        )*/
     }
 }
+

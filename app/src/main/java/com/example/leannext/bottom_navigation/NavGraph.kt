@@ -40,10 +40,7 @@ fun NavGraph(
             route = Constants.DirectionTestScreen.route,
             arguments = listOf(navArgument("id") {
                 type = NavType.IntType
-            },
-                navArgument("name") {
-                    type = NavType.StringType
-                })
+            })
         ) {
             var id = it.arguments?.getInt("id")
             var name = it.arguments?.getString("name")
