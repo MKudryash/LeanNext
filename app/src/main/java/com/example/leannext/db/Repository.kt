@@ -26,37 +26,9 @@ class Repository(private val dao: Dao) {
     val allItemCriterias = MutableLiveData<List<Criterias>>()
     val answerCriteries = MutableLiveData<List<AnswerCriterias>>()
     val searchDirections = MutableLiveData<List<Directions>>()
-    val excelCursor = MutableLiveData<Cursor>()
-
 
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
-    fun test()
-    {
-        coroutineScope.launch(Dispatchers.Main) {
-            excelCursor.value = asyncTest().await()
-        }
-    }
-    private fun asyncTest(): Deferred<Cursor> =
-        coroutineScope.async(Dispatchers.IO) {
-            return@async dao.getAllItemsDirectionCursor()
-        }
-
-
-    fun foundItemCriteriasWithName(text: String) {
-        coroutineScope.launch(Dispatchers.Main) {
-            searchDirections.value = asyncfoundItemCriteriasWithName("%" + text+"%").await()
-            searchDirections.value?.forEach {
-                Log.d("DIRECTION",it.title)
-            }
-        }
-    }
-    private fun asyncfoundItemCriteriasWithName(
-        text: String
-    ): Deferred<List<Directions>?> =
-        coroutineScope.async(Dispatchers.IO) {
-            return@async dao.foundItemDirectionWithName( text)
-        }
     fun changeListDevelopmentIndex(startDate: Date, endDate: Date) {
         coroutineScope.launch(Dispatchers.Main) {
             searchResults.value = asyncFindDevelopmentIndex(startDate, endDate).await()

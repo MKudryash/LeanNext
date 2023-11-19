@@ -55,17 +55,9 @@ class MainViewModel(application: Application) : ViewModel() {
         endDate.value = CheckWeek.PreviousNextWeekSunday(week.value)
     }
 
-    fun testCursor(): Cursor?
-    {
-        repository.test()
-        return repository.excelCursor.value
-    }
     fun getAnswerCriteries(idDirections: Int)
     {
         repository.changeListAnswerCriterias(Date(),idDirections)
-        viewModelScope.launch {
-            delay(1000L)
-        }
     }
     fun getItemsCriterias(id:Int)
     {
