@@ -3,9 +3,11 @@ package com.example.leannext.utlis
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Environment
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.core.content.FileProvider
 import com.example.leannext.db.modelsDb.DevelopmentIndex
 import com.example.leannext.db.modelsDb.Directions
@@ -17,9 +19,12 @@ import org.apache.poi.ss.usermodel.Workbook
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.nio.file.Files
+import java.nio.file.Paths
 
 class ExportDataToCsv() {
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun createXlFile(
         devindex: List<DevelopmentIndex>,
         nameDirections: List<Directions>,
@@ -56,14 +61,28 @@ class ExportDataToCsv() {
         val folder =
             if (save) Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
             else context.cacheDir
-        val fileName = "Отчет от $startDate.xlsx"
+
+        var fileName = "Отчет от $startDate.xlsx"
+
+        var path = "" + folder + File.separator + fileName
+        var flag = true
+        var index = 1
+        while (flag) {
+            if (Files.exists(Paths.get(path))) {
+                fileName = "Отчет от $startDate ($index).xlsx"
+                path = "" + folder + File.separator + fileName
+                index++
+            } else {
+                flag = false
+            }
+        }
         val file = File(folder, fileName)
-        val path = "" + folder + File.separator + fileName
         var outputStream: FileOutputStream? = null
         try {
             outputStream = FileOutputStream(path)
             wb.write(outputStream)
-            if (save) Toast.makeText(context, "Файл сохранен в загрузки", Toast.LENGTH_LONG).show()
+            if (save) Toast.makeText(context, "Файл сохранен в загрузки", Toast.LENGTH_LONG)
+                .show()
             Log.d("EXPORT", "Excel Created in $path")
         } catch (e: IOException) {
             e.printStackTrace()
@@ -86,5 +105,9 @@ class ExportDataToCsv() {
         }
 
     }
+}
+
+fun isFileExists(file: File): Boolean {
+    return file.exists() && !file.isDirectory
 }
 

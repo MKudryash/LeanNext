@@ -23,6 +23,13 @@ import androidx.navigation.NavHost
 import androidx.navigation.NavHostController
 import com.example.leannext.radarChart.calculatePoints
 import com.example.leannext.viewModel.MainViewModel
+import kotlin.math.atan2
+
+
+data class test(
+    var angle: Float,
+    var id: Int
+)
 
 @OptIn(ExperimentalTextApi::class)
 @Composable
@@ -50,30 +57,59 @@ fun RadarChart(
         mutableStateOf(listOf<Offset>())
     }
 
-    // validateRadarChartConfiguration(radarLabels, scalarValue, polygons, scalarSteps)
 
     Canvas(modifier = modifier.pointerInput(true) {
         detectTapGestures(
             onTap = { offset ->
-            /*    var index = 0
-                labelsEndPoints1.size
-                labelsEndPoints.forEach {
-                    Log.d("TapX", offset.x.toString())
-                    Log.d("TapY", offset.y.toString())
-                    var k = 0f
-                    var b = 0f
-                    var k1 = 0f
-                    var b1 = 0f
+                var index = 1
+                val listAngle = mutableListOf<test>()
 
-                    k = (centre.y - it.y) / ((centre.x - it.x))
-                    b = it.y - k * it.x
-                    var i = if (index + 1 == labelsEndPoints.size) 0
-                    else index+1
-                    k1 = (centre.y - labelsEndPoints[i].y) / ((centre.x - labelsEndPoints[i].x))
-                    b1 = labelsEndPoints[i].y - k1 * labelsEndPoints[i].x
-                    if (offset.y >= k * offset.x + b && offset.y >= k1 * offset.x + b1)
-                        Log.d("Tap", (index + 1).toString())
-                    *//*  if ((it.x >= offset.x - 30 && it.x < offset.x + 30) && (it.y >= offset.y - 30 && it.y < offset.y + 30)) {
+                labelsEndPoints.forEach {
+                    listAngle += test(atan2(it.y - centre.y, it.x - centre.x), index)
+                    index++
+                }
+
+                listAngle += test(3.0f, listAngle.maxBy { it.angle }.id)
+                listAngle += test(-3.0f, listAngle.maxBy { it.angle }.id)
+                listAngle.sortBy { it.angle }
+
+                index = 0
+
+                val angle = atan2(offset.y - centre.y, offset.x - centre.x)
+                Log.d("TapX", offset.x.toString())
+                Log.d("TapY", offset.y.toString())
+                listAngle.forEach lit@{
+                    val i = if (index + 1 != listAngle.size) index + 1
+                    else return@lit
+                    if (angle in it.angle..listAngle[i].angle)
+                    {
+                        viewModel.getItemsCriterias(it.id)
+                        viewModel.getAnswerCriteries(it.id)
+                        navHostController.navigate("directionTestScreen/${it.id}/" + radarLabels[it.id-1])
+                    }
+                    index++
+                }
+
+
+                /*    var index = 0
+                    labelsEndPoints1.size
+                    labelsEndPoints.forEach {
+                        Log.d("TapX", offset.x.toString())
+                        Log.d("TapY", offset.y.toString())
+                        var k = 0f
+                        var b = 0f
+                        var k1 = 0f
+                        var b1 = 0f
+
+                        k = (centre.y - it.y) / ((centre.x - it.x))
+                        b = it.y - k * it.x
+                        var i = if (index + 1 == labelsEndPoints.size) 0
+                        else index+1
+                        k1 = (centre.y - labelsEndPoints[i].y) / ((centre.x - labelsEndPoints[i].x))
+                        b1 = labelsEndPoints[i].y - k1 * labelsEndPoints[i].x
+                        if (offset.y >= k * offset.x + b && offset.y >= k1 * offset.x + b1)
+                            Log.d("Tap", (index + 1).toString())
+                        *//*  if ((it.x >= offset.x - 30 && it.x < offset.x + 30) && (it.y >= offset.y - 30 && it.y < offset.y + 30)) {
                           Log.d("Tap", index.toString())
                           viewModel.getItemsCriterias(index)
                           viewModel.getAnswerCriteries(index)
@@ -107,7 +143,8 @@ fun RadarChart(
         val numLines = radarLabels.size
         val radarChartConfig =
             calculateRadarConfig(labelRadius, radius, size, numLines, scalarSteps)
-        labelsEndPoints = calculatePoints(labelRadius, radius, size, numLines, scalarSteps).labelsPoints
+        labelsEndPoints =
+            calculatePoints(labelRadius, radius, size, numLines, scalarSteps).labelsPoints
         labelsEndPoints1 = radarChartConfig.labelsPoints
 
         drawRadarNet(netLinesStyle, radarChartConfig)
