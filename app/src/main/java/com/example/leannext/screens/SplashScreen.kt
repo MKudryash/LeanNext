@@ -8,6 +8,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -27,7 +28,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun SplashScreen(navController: NavController) {
     val scale = remember {
-        Animatable(3f)
+        Animatable(0.5f)
     }
     var darkTheme: Boolean = isSystemInDarkTheme()
     val configuration = LocalConfiguration.current
@@ -41,7 +42,7 @@ fun SplashScreen(navController: NavController) {
                     animationSpec = tween(
                         durationMillis = 1500,
                         easing = {
-                            OvershootInterpolator(3f).getInterpolation(it)
+                            OvershootInterpolator(0.5f).getInterpolation(it)
                         })
                 )
                 // Customize the delay time
@@ -51,11 +52,14 @@ fun SplashScreen(navController: NavController) {
                 }}
             }
 
-
+        BoxWithConstraints(
+        ) {
+            val derivedDimension = this.maxWidth
             // Image
             Box(
                 contentAlignment = Alignment.Center,
-                modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).padding(20.dp)
+                modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)
+                    .padding(20.dp)
             ) {
                 // Change the logo
                 Image(
@@ -67,6 +71,7 @@ fun SplashScreen(navController: NavController) {
                     modifier = Modifier.scale(scale.value)
                 )
             }
+        }
     }
 
 }

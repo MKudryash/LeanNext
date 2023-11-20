@@ -1,7 +1,12 @@
 package com.example.leannext.screens
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Build
+import android.util.Log
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -52,11 +57,14 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import com.example.leannext.viewModel.MainViewModel
 import com.example.leannext.R
 import com.example.leannext.db.modelsDb.DevelopmentIndex
 import com.example.leannext.utlis.ExportDataToCsv
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberPermissionState
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -138,12 +146,15 @@ fun RadarChartSample(itemsListDirectionIndex: List<DevelopmentIndex>?, w: Dp, na
     )
 }
 
+@OptIn(ExperimentalPermissionsApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DiagramScreen(
     navHostController: NavHostController,
     viewModel: MainViewModel
 ) {
+
+    val cameraPermissionState = rememberPermissionState(android.Manifest.permission.POST_NOTIFICATIONS)
 
     val allDirections by viewModel.allDirection.observeAsState(listOf())
     val itemsForDiagram by viewModel.itemsAllDiagrams.observeAsState(listOf())
@@ -158,8 +169,7 @@ fun DiagramScreen(
     BoxWithConstraints(
     ) {
         val derivedDimension = this.maxWidth
-        var colorWeek = if (viewModel.week.value == 0) MaterialTheme.colorScheme.primary
-        else MaterialTheme.colorScheme.secondary
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -187,6 +197,7 @@ fun DiagramScreen(
                 )
                 Box()
                 {
+
                     IconButton(onClick = { expanded = true }) {
                         Icon(
                             painter = painterResource(id = R.drawable.menuicon),
@@ -209,6 +220,7 @@ fun DiagramScreen(
                                 .fillMaxWidth()
                                 .padding(0.dp,0.dp,derivedDimension * 0.03f,0.dp)
                                 .clickable {
+
                                     exportDataToCsv.createXlFile(
                                         itemsForDiagram,
                                         allDirections,
@@ -229,6 +241,7 @@ fun DiagramScreen(
                                 "Скачать",
                                 fontFamily = FontFamily(Font(R.font.neosanspro_medium)),
                                 fontSize = 4.em,
+                                color = MaterialTheme.colorScheme.secondary,
                                 modifier = Modifier
                                     .padding(10.dp)
                             )
@@ -260,6 +273,7 @@ fun DiagramScreen(
                             Text(
                                 "Поделиться",
                                 fontFamily = FontFamily(Font(R.font.neosanspro_medium)),
+                                color = MaterialTheme.colorScheme.secondary,
                                 fontSize = 4.em,
                                 modifier = Modifier
                                     .padding(10.dp)
@@ -305,6 +319,7 @@ fun DiagramScreen(
                         fontSize = 4.em,
                         textAlign = TextAlign.Center,
                     )
+                    cameraPermissionState.launchPermissionRequest()
                     Text(
                         text = "${format.format(viewModel.startDate.value)} - ${
                             format.format(

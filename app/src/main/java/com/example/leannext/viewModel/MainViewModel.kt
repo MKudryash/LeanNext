@@ -1,13 +1,26 @@
 package com.example.leannext.viewModel
 
+import android.Manifest
 import android.app.Application
-import android.database.Cursor
-import android.util.Log
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
 import androidx.compose.runtime.mutableStateOf
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.work.Constraints
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
+import androidx.work.workDataOf
+import com.example.leannext.R
 import com.example.leannext.db.MainDb
 import com.example.leannext.db.Repository
 import com.example.leannext.db.modelsDb.AnswerCriterias
@@ -15,30 +28,35 @@ import com.example.leannext.db.modelsDb.Criterias
 import com.example.leannext.db.modelsDb.DevelopmentIndex
 import com.example.leannext.db.modelsDb.Directions
 import com.example.leannext.utlis.CheckWeek
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import com.example.leannext.utlis.NotificationWorker
+import java.util.Calendar
 import java.util.Date
+import java.util.TimeZone
+import java.util.concurrent.TimeUnit
+import javax.sql.DataSource
 
 
 class MainViewModel(application: Application) : ViewModel() {
     val allDirection: LiveData<List<Directions>>
     val itemsAllDiagrams: LiveData<List<DevelopmentIndex>>
-    val itemsCriterias:LiveData<List<Criterias>>
+    val itemsCriterias: LiveData<List<Criterias>>
 
     val searchResults: MutableLiveData<List<DevelopmentIndex>>
     val searchDirections: MutableLiveData<List<Directions>>
     val answerResult: MutableLiveData<List<AnswerCriterias>>
 
 
-
-    private val repository:Repository
+    private val repository: Repository
 
 
     var week = mutableStateOf(0)
     val startDate = mutableStateOf(CheckWeek.PreviousNextWeekModay(week.value))
     val endDate = mutableStateOf(CheckWeek.PreviousNextWeekSunday(week.value))
 
-    init{
+
+    private val workManager = WorkManager.getInstance(application)
+
+    init {
         val db = MainDb.createDataBase(application)
         val dao = db.dao()
         repository = Repository(dao)
@@ -50,25 +68,60 @@ class MainViewModel(application: Application) : ViewModel() {
         answerResult = repository.answerCriteries
         searchDirections = repository.searchDirections
     }
+
     fun checkday() {
         startDate.value = CheckWeek.PreviousNextWeekModay(week.value)
         endDate.value = CheckWeek.PreviousNextWeekSunday(week.value)
     }
 
-    fun getAnswerCriteries(idDirections: Int)
-    {
-        repository.changeListAnswerCriterias(Date(),idDirections)
+    fun getAnswerCriteries(idDirections: Int) {
+        repository.changeListAnswerCriterias(Date(), idDirections)
     }
-    fun getItemsCriterias(id:Int)
-    {
+
+    fun getItemsCriterias(id: Int) {
         repository.changeListCriterias(id)
     }
 
-    fun insertAnswerCriteries(idCriteries:Int,mark:Double,idDirections: Int) {
-        repository.insertAnswerCriteries(AnswerCriterias(null,idCriteries,mark, Date()),idDirections)
+    fun insertAnswerCriteries(idCriteries: Int, mark: Double, idDirections: Int) {
+        repository.insertAnswerCriteries(
+            AnswerCriterias(null, idCriteries, mark, Date()),
+            idDirections
+        )
     }
+
     fun findDevelopmentIndex() {
-        repository.changeListDevelopmentIndex(startDate.value,endDate.value)
+        repository.changeListDevelopmentIndex(startDate.value, endDate.value)
+    }
+
+     fun scheduleReminder() {
+
+
+        val myWorkRequestBuilder = OneTimeWorkRequestBuilder<NotificationWorker>()
+
+         val updateTime: Calendar = Calendar.getInstance()
+         updateTime.timeZone = TimeZone.getTimeZone("GMT+3")
+         updateTime.set(Calendar.HOUR_OF_DAY, 16)
+         updateTime.set(Calendar.MINUTE, 5)
+        myWorkRequestBuilder.setInitialDelay(1, TimeUnit.MINUTES)
+        workManager.enqueue(myWorkRequestBuilder.build())
+    }
+
+
+
+    fun createNotificationChannel(context: Context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = "Notification"
+            val descriptionText = "Кажется вы забыли заполнить отчет"
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel("Channel_id", name, importance).apply {
+                description = descriptionText
+            }
+
+            val notificationManager =
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+        scheduleReminder()
     }
 }
 

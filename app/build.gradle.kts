@@ -104,4 +104,5 @@ dependencies {
 
     implementation ("com.google.accompanist:accompanist-permissions:0.21.1-beta")
 
+    implementation("androidx.work:work-runtime-ktx:2.8.1")
 }

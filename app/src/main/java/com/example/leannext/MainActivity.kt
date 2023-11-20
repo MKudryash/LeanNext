@@ -1,21 +1,21 @@
 package com.example.leannext
 
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
-import android.Manifest.permission.READ_MEDIA_IMAGES
-import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.app.Application
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.leannext.Navigation.Navigation
 import com.example.leannext.ui.theme.LeanNextTheme
-import com.example.leannext.utlis.ExportDataToCsv
 import com.example.leannext.viewModel.MainViewModel
 import com.example.leannext.viewModel.MainViewModelFactory
 
@@ -23,6 +23,7 @@ import com.example.leannext.viewModel.MainViewModelFactory
 @OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -42,6 +43,8 @@ class MainActivity : ComponentActivity() {
                                     as Application
                         )
                     )
+                    //viewModel.createNotificationChannel(context = LocalContext.current)
+
                     Navigation(viewModel)
                 }
             }
