@@ -1,6 +1,8 @@
 package com.example.leannext.screens
 
+import android.os.Build
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -48,6 +50,7 @@ import androidx.compose.ui.text.style.Hyphens
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.leannext.viewModel.MainViewModel
@@ -93,7 +96,7 @@ fun RadarChartSample(itemsListDirectionIndex: List<DevelopmentIndex>?, w: Dp, na
     val labelsStyle = TextStyle(
         color = MaterialTheme.colorScheme.secondary,
         fontFamily = FontFamily(Font(R.font.neosanspro_bold)),
-        fontSize = 10.sp,
+        fontSize = 2.5.em,
         textAlign = TextAlign.Center,
         hyphens = Hyphens.Auto
     )
@@ -101,7 +104,7 @@ fun RadarChartSample(itemsListDirectionIndex: List<DevelopmentIndex>?, w: Dp, na
     val scalarValuesStyle = TextStyle(
         color = MaterialTheme.colorScheme.secondary,
         fontFamily = FontFamily(Font(R.font.neosanspro_regular)),
-        fontSize = 10.sp
+        fontSize = 2.5.em
     )
 
     RadarChart(
@@ -135,6 +138,7 @@ fun RadarChartSample(itemsListDirectionIndex: List<DevelopmentIndex>?, w: Dp, na
     )
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DiagramScreen(
     navHostController: NavHostController,
@@ -172,12 +176,13 @@ fun DiagramScreen(
             ) {
                 Text(
                     modifier = Modifier
-                        .padding(derivedDimension * 0.04f, derivedDimension * 0.09f)
+                        .padding(derivedDimension * 0.03f, derivedDimension * 0.09f)
                         .weight(7f),
                     text = "Индекс развития технологий и инструментов Кайдзен (КDI)",
                     color = MaterialTheme.colorScheme.secondary,
                     fontFamily = FontFamily(Font(R.font.neosanspro_medium)),
-                    fontSize = 20.sp,
+                    fontSize = 5.em,
+                    lineHeight = 1.em,
                     textAlign = TextAlign.Center,
                 )
                 Box()
@@ -202,6 +207,7 @@ fun DiagramScreen(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
+                                .padding(0.dp,0.dp,derivedDimension * 0.03f,0.dp)
                                 .clickable {
                                     exportDataToCsv.createXlFile(
                                         itemsForDiagram,
@@ -222,7 +228,7 @@ fun DiagramScreen(
                             Text(
                                 "Скачать",
                                 fontFamily = FontFamily(Font(R.font.neosanspro_medium)),
-                                fontSize = 16.sp,
+                                fontSize = 4.em,
                                 modifier = Modifier
                                     .padding(10.dp)
                             )
@@ -254,7 +260,7 @@ fun DiagramScreen(
                             Text(
                                 "Поделиться",
                                 fontFamily = FontFamily(Font(R.font.neosanspro_medium)),
-                                fontSize = 16.sp,
+                                fontSize = 4.em,
                                 modifier = Modifier
                                     .padding(10.dp)
                             )
@@ -296,7 +302,7 @@ fun DiagramScreen(
                         text = "Еженедельный отчет",
                         color = MaterialTheme.colorScheme.secondary,
                         fontFamily = FontFamily(Font(R.font.neosanspro_bold)),
-                        fontSize = 18.sp,
+                        fontSize = 4.em,
                         textAlign = TextAlign.Center,
                     )
                     Text(
@@ -308,7 +314,7 @@ fun DiagramScreen(
                         modifier = Modifier.padding(top = 10.dp),
                         color = MaterialTheme.colorScheme.secondary,
                         fontFamily = FontFamily(Font(R.font.neosanspro_regular)),
-                        fontSize = 14.sp,
+                        fontSize = 3.5.em,
                         textAlign = TextAlign.Center,
                     )
                 }
@@ -374,7 +380,7 @@ fun DiagramScreen(
                         text = "Итог",
                         color = MaterialTheme.colorScheme.secondary,
                         fontFamily = FontFamily(Font(R.font.neosanspro_regular)),
-                        fontSize = 14.sp,
+                        fontSize = 4.em,
                         textAlign = TextAlign.Center,
                     )
                 }
@@ -396,7 +402,7 @@ fun DiagramScreen(
                         text = String.format("%.1f", sum),
                         color = MaterialTheme.colorScheme.secondary,
                         fontFamily = FontFamily(Font(R.font.neosanspro_regular)),
-                        fontSize = 14.sp,
+                        fontSize = 4.em,
                         textAlign = TextAlign.Center,
                     )
                 }

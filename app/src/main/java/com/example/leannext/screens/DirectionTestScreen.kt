@@ -52,6 +52,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.LiveData
 import androidx.navigation.NavHostController
@@ -114,7 +115,7 @@ fun DirectionTestScreen(
                     text = name,
                     color = MaterialTheme.colorScheme.secondary,
                     fontFamily = FontFamily(Font(R.font.neosanspro_medium)),
-                    fontSize = 17.sp,
+                    fontSize = 5.em,
                     textAlign = TextAlign.Center,
                 )
                 Box(
@@ -182,7 +183,7 @@ fun DirectionTestScreen(
                             Text(
                                 text = "${count} вопрос",
                                 fontFamily = FontFamily(Font(R.font.neosanspro_bold)),
-                                fontSize = 24.sp,
+                                fontSize = 6.em,
                                 color = MaterialTheme.colorScheme.secondary,
                                 textAlign = TextAlign.Center,
                                 modifier = Modifier.padding(7.dp, 5.dp)
@@ -202,7 +203,7 @@ fun DirectionTestScreen(
                                 Text(
                                     text = "i",
                                     fontFamily = FontFamily(Font(R.font.neosanspro_bold)),
-                                    fontSize = 18.sp,
+                                    fontSize = 6.em,
                                     color = MaterialTheme.colorScheme.secondary,
                                     modifier = Modifier.padding(12.dp, 3.dp),
                                     textAlign = TextAlign.Center
@@ -285,7 +286,7 @@ fun DirectionTestScreen(
                                     Text(
                                         text = items.toString(),
                                         fontFamily = FontFamily(Font(R.font.neosanspro_regular)),
-                                        fontSize = 16.sp,
+                                        fontSize = 4.em,
                                         color = MaterialTheme.colorScheme.secondary,
                                         modifier = Modifier
                                             .padding(derivedDimension * 0.04f)
@@ -319,7 +320,7 @@ fun DirectionTestScreen(
                                         text = "Рекомендация по критерию",
                                         color = MaterialTheme.colorScheme.secondary,
                                         fontFamily = FontFamily(Font(R.font.neosanspro_medium)),
-                                        fontSize = 22.sp,
+                                        fontSize = 18.sp,
                                         textAlign = TextAlign.Center,
                                     )
                                     Row(
@@ -341,7 +342,7 @@ fun DirectionTestScreen(
                                             text = item.recommendations,
                                             color = MaterialTheme.colorScheme.secondary,
                                             fontFamily = FontFamily(Font(R.font.neosanspro_regular)),
-                                            fontSize = 18.sp,
+                                            fontSize = 16.sp,
                                             textAlign = TextAlign.Start, softWrap = true
                                         )
                                     }

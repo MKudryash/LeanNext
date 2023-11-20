@@ -25,6 +25,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -68,7 +69,7 @@ fun BottomNavigation(navHostController: NavHostController) {
                 label = {
                     Text(
                         text = item.title, fontFamily = FontFamily(Font(R.font.neosanspro_regular)),
-                        fontSize = 16.sp
+                        fontSize = 4.em
                     )
                 },
                 colors = NavigationBarItemDefaults.colors(

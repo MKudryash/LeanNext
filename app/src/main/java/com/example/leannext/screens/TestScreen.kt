@@ -37,7 +37,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -110,7 +112,7 @@ fun TestScreen(
                         text = "Еженедельный отчет",
                         color = MaterialTheme.colorScheme.secondary,
                         fontFamily = FontFamily(Font(R.font.neosanspro_bold)),
-                        fontSize = 18.sp,
+                        fontSize = 4.5.em,
                         textAlign = TextAlign.Center,
                     )
                     Text(
@@ -122,7 +124,7 @@ fun TestScreen(
                         modifier = Modifier.padding(top = 10.dp),
                         color = MaterialTheme.colorScheme.secondary,
                         fontFamily = FontFamily(Font(R.font.neosanspro_regular)),
-                        fontSize = 14.sp,
+                        fontSize = 3.em,
                         textAlign = TextAlign.Center,
                     )
                 }
@@ -164,7 +166,7 @@ fun TestScreen(
                                 .fillMaxWidth()
                                 .padding(derivedDimension*0.04f, 10.dp)
                                 .weight(1f)
-                                .height(75.dp)
+                                .wrapContentHeight()
                                 .clickable(onClick =
                                 {
                                     viewModel.getItemsCriterias(item.id!!)
@@ -183,7 +185,7 @@ fun TestScreen(
                                 )
                             }
                             Icon(
-                                modifier = Modifier.weight(2f),
+                                modifier = Modifier.weight(2f).height(75.dp),
                                 painter = painterResource(id = drawableId),
                                 contentDescription = "",
                                 tint = MaterialTheme.colorScheme.secondary
@@ -191,12 +193,15 @@ fun TestScreen(
                             Text(
                                 modifier = Modifier
                                     .weight(6f)
+                                    .wrapContentHeight()
                                     .padding(10.dp, 0.dp, 0.dp, 0.dp),
                                 text = item.title,
                                 color = MaterialTheme.colorScheme.secondary,
                                 fontFamily = FontFamily(Font(R.font.neosanspro_bold)),
-                                fontSize = 16.sp,
+                                fontSize = 4.em,
+                                lineHeight = 1.5.em,
                                 textAlign = TextAlign.Center,
+                                softWrap = true
 
                                 )
                             Text(
@@ -206,7 +211,7 @@ fun TestScreen(
                                 text = String.format("%.1f", index),
                                 color = MaterialTheme.colorScheme.secondary,
                                 fontFamily = FontFamily(Font(R.font.neosanspro_bold)),
-                                fontSize = 16.sp,
+                                fontSize = 4.em,
                                 textAlign = TextAlign.Center,
 
                                 )
