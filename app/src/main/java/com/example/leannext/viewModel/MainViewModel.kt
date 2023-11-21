@@ -73,7 +73,8 @@ class MainViewModel(application: Application) : ViewModel() {
     fun insertAnswerCriteries(idCriteries: Int, mark: Double, idDirections: Int) {
         repository.insertAnswerCriteries(
             AnswerCriterias(null, idCriteries, mark, Date()),
-            idDirections
+            idDirections,
+            startDate.value, endDate.value
         )
     }
 

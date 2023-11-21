@@ -208,7 +208,7 @@ fun DirectionTestScreen(
                                 Text(
                                     text = "i",
                                     fontFamily = FontFamily(Font(R.font.neosanspro_bold)),
-                                    fontSize = 6.em,
+                                    fontSize = 4.em,
                                     color = MaterialTheme.colorScheme.secondary,
                                     modifier = Modifier.padding(12.dp, 3.dp),
                                     textAlign = TextAlign.Center

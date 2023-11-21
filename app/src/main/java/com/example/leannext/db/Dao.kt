@@ -38,8 +38,8 @@ interface Dao {
     suspend fun updateItemAnswerCriterias(answerCriterias: AnswerCriterias?)
     @Query("Update AnswerCriterias set mark = :answer where date=:date and idCriterias = :idCriterias")
     suspend fun updateItemAnswerCriterias(answer:Double, date: Date, idCriterias: Int)
-    @Query(value = "SELECT * FROM AnswerCriterias WHERE idCriterias =:idCriterias and date=:date")
-    fun foundItemAnswerCriteriasIndexForDate( idCriterias: Int,date:Date): AnswerCriterias
+    @Query(value = "SELECT * FROM AnswerCriterias WHERE idCriterias =:idCriterias and date(date)>= :startWeek and date(date)<=:endWeek")
+    fun foundItemAnswerCriteriasIndexForDate( idCriterias: Int,startWeek: Date,endWeek:Date): AnswerCriterias
 
     @Query(value = "select *\n" +
             "from AnswerCriterias as AC join Criterias as C on AC.idCriterias = C.id\n" +

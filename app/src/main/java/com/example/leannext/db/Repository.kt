@@ -64,11 +64,11 @@ class Repository(private val dao: Dao) {
         }
 
 
-    fun insertAnswerCriteries(answerCriterias: AnswerCriterias, idDirection:Int) {
+    fun insertAnswerCriteries(answerCriterias: AnswerCriterias, idDirection:Int,startDate: Date,endDate:Date) {
         coroutineScope.launch(Dispatchers.IO) {
             if (dao.foundItemAnswerCriteriasIndexForDate(
                     answerCriterias.idCriterias,
-                    answerCriterias.date
+                    startDate, endDate
                 ) == null
             ) {
                 dao.insertItemAnswerCriterias(answerCriterias = answerCriterias)
