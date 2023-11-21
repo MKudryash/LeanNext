@@ -23,12 +23,15 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,6 +54,7 @@ import com.example.leannext.db.modelsDb.DevelopmentIndex
 import com.example.leannext.utlis.ExportDataToCsv
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -76,6 +80,8 @@ fun DiagramScreen(
     val context = LocalContext.current
     var expanded by remember { mutableStateOf(false) }
 
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { mutableStateOf(SnackbarHostState()) }
     BoxWithConstraints(
     ) {
         val derivedDimension = this.maxWidth
@@ -169,6 +175,7 @@ fun DiagramScreen(
                                         false,
                                         context
                                     )
+
                                 }
                         )
                         {

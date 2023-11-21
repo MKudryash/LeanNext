@@ -103,6 +103,11 @@ fun DirectionTestScreen(
                                 viewModel.getAnswerCriteries(id - 1)
                                 navHostController.navigate("directionTestScreen/" + (id - 1) + "/" + allDirections.first { it -> it.id == id - 1 }.title)
                             }
+                            else{
+                                viewModel.getItemsCriterias(allDirections.size)
+                                viewModel.getAnswerCriteries(allDirections.size)
+                                navHostController.navigate("directionTestScreen/" + (allDirections.size) + "/" + allDirections.first { it -> it.id == (allDirections.size)}.title)
+                            }
                         }, contentAlignment = Alignment.Center
                 ) {
                     Icon(
@@ -133,6 +138,15 @@ fun DirectionTestScreen(
                                 viewModel.getAnswerCriteries(id + 1)
 
                                 navHostController.navigate("directionTestScreen/" + (id + 1) + "/" + allDirections.first { it -> it.id == id + 1 }.title) {
+
+                                    popUpTo("directionTestScreen/" + id + "/" + allDirections.first { it -> it.id == id }.title)
+                                }
+                            }
+                            else{
+                                viewModel.getItemsCriterias(1)
+                                viewModel.getAnswerCriteries(1)
+
+                                navHostController.navigate("directionTestScreen/" + (1) + "/" + allDirections.first { it -> it.id == 1 }.title) {
 
                                     popUpTo("directionTestScreen/" + id + "/" + allDirections.first { it -> it.id == id }.title)
                                 }

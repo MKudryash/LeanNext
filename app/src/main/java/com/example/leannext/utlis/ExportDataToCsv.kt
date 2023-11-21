@@ -57,7 +57,29 @@ object ExportDataToCsv {
             cell.setCellValue(String.format("%.1f", index))
         }
 
+        val file = checkFile(save, context, startDate)
 
+        streamFolder(file,wb)
+
+        if (!save) {
+            SendOtherApp(context,file)
+        }
+        else Toast.makeText(context,"Успешно сохранено в загрузки!",Toast.LENGTH_LONG).show()
+
+    }
+    fun SendOtherApp(context: Context,file: File)
+    {
+        val uris = FileProvider.getUriForFile(context, "com.anni.shareimage.fileprovider", file)
+
+        val intent = Intent(Intent.ACTION_SEND)
+        intent.putExtra(Intent.EXTRA_STREAM, uris)
+        intent.type = "text/*"
+
+        context.startActivity(Intent.createChooser(intent, "Share Via"))
+    }
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun checkFile(save:Boolean, context:Context, startDate: String):File
+    {
         val folder =
             if (save) Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
             else context.cacheDir
@@ -76,33 +98,21 @@ object ExportDataToCsv {
                 flag = false
             }
         }
-        val file = File(folder, fileName)
+        return File(folder, fileName)
+    }
+    fun streamFolder(file:File,wb:Workbook)
+    {
         var outputStream: FileOutputStream? = null
         try {
-            outputStream = FileOutputStream(path)
+            outputStream = FileOutputStream(file.path)
             wb.write(outputStream)
-            if (save) Toast.makeText(context, "Файл сохранен в загрузки", Toast.LENGTH_LONG)
-                .show()
-            Log.d("EXPORT", "Excel Created in $path")
         } catch (e: IOException) {
             e.printStackTrace()
-            Log.d("EXPORT", e.message.toString())
             try {
                 outputStream!!.close()
             } catch (ex: Exception) {
                 ex.printStackTrace()
             }
         }
-
-        if (!save) {
-            val uris = FileProvider.getUriForFile(context, "com.anni.shareimage.fileprovider", file)
-
-            val intent = Intent(Intent.ACTION_SEND)
-            intent.putExtra(Intent.EXTRA_STREAM, uris)
-            intent.type = "text/*"
-
-            context.startActivity(Intent.createChooser(intent, "Share Via"))
-        }
-
     }
 }
