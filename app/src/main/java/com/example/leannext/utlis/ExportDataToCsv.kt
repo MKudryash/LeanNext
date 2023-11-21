@@ -22,7 +22,7 @@ import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Paths
 
-class ExportDataToCsv() {
+object ExportDataToCsv {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun createXlFile(
@@ -106,8 +106,3 @@ class ExportDataToCsv() {
 
     }
 }
-
-fun isFileExists(file: File): Boolean {
-    return file.exists() && !file.isDirectory
-}
-

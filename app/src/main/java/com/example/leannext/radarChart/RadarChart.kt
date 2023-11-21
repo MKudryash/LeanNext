@@ -18,18 +18,12 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.rememberTextMeasurer
-import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHost
 import androidx.navigation.NavHostController
-import com.example.leannext.radarChart.calculatePoints
+import com.example.leannext.radarChart.modelRadarChart.AngleTitle
 import com.example.leannext.viewModel.MainViewModel
 import kotlin.math.atan2
 
 
-data class test(
-    var angle: Float,
-    var id: Int
-)
 
 @OptIn(ExperimentalTextApi::class)
 @Composable
@@ -53,24 +47,22 @@ fun RadarChart(
     var labelsEndPoints by remember {
         mutableStateOf(listOf<Offset>())
     }
-    var labelsEndPoints1 by remember {
-        mutableStateOf(listOf<Offset>())
-    }
+
 
 
     Canvas(modifier = modifier.pointerInput(true) {
         detectTapGestures(
             onTap = { offset ->
                 var index = 1
-                val listAngle = mutableListOf<test>()
+                val listAngle = mutableListOf<AngleTitle>()
 
                 labelsEndPoints.forEach {
-                    listAngle += test(atan2(it.y - centre.y, it.x - centre.x), index)
+                    listAngle += AngleTitle(atan2(it.y - centre.y, it.x - centre.x), index)
                     index++
                 }
 
-                listAngle += test(3.0f, listAngle.maxBy { it.angle }.id)
-                listAngle += test(-3.0f, listAngle.maxBy { it.angle }.id)
+                listAngle += AngleTitle(3.0f, listAngle.maxBy { it.angle }.id)
+                listAngle += AngleTitle(-3.0f, listAngle.maxBy { it.angle }.id)
                 listAngle.sortBy { it.angle }
 
                 index = 0
@@ -101,9 +93,7 @@ fun RadarChart(
         val numLines = radarLabels.size
         val radarChartConfig =
             calculateRadarConfig(labelRadius, radius, size, numLines, scalarSteps)
-        labelsEndPoints =
-            calculatePoints(labelRadius, radius, size, numLines, scalarSteps).labelsPoints
-        labelsEndPoints1 = radarChartConfig.labelsPoints
+        labelsEndPoints = radarChartConfig.labelsPoints
 
         drawRadarNet(netLinesStyle, radarChartConfig)
 

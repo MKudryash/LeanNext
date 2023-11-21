@@ -243,7 +243,7 @@ fun DirectionTestScreen(
                                 )
 
                             ) { index, items ->
-                                var borderColor: Color
+                                val borderColor: Color
                                 selectedIndex =-1
                                 if(itemsListAnswerCriterias.isNotEmpty()) {
                                     itemsListAnswerCriterias.forEach {
@@ -258,23 +258,23 @@ fun DirectionTestScreen(
                                         }
                                     }
                                 }
-                                if (index == selectedIndex) borderColor =
-                                    MaterialTheme.colorScheme.primary
-                                else borderColor = Color(0xFFB8C1CC)
+                                borderColor = if (index == selectedIndex) MaterialTheme.colorScheme.primary
+                                else Color(0xFFB8C1CC)
                                 Box(
                                     modifier = Modifier
                                         .border(
                                             2.dp, borderColor, RoundedCornerShape(20.dp)
                                         )
                                         .selectable(
-                                            selected = index == selectedIndex,
                                             onClick = {
-                                                if (selectedIndex != index) selectedIndex =
-                                                    index else selectedIndex = -1
-                                                viewModel.insertAnswerCriteries(item.id, items, id)
-                                                viewModel.getAnswerCriteries(id)
+                                            selectedIndex =
+                                                if (selectedIndex != index) index else -1
+                                            viewModel.insertAnswerCriteries(item.id, items, id)
+                                            viewModel.getAnswerCriteries(id)
 
-                                            },
+                                        },
+                                            selected = index == selectedIndex,
+
                                             interactionSource = remember { MutableInteractionSource() },
                                             indication = rememberRipple(
                                                 bounded = false,

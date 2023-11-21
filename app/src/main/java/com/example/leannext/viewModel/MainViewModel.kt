@@ -1,26 +1,16 @@
 package com.example.leannext.viewModel
 
-import android.Manifest
 import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
-import android.content.pm.PackageManager
 import android.os.Build
 import androidx.compose.runtime.mutableStateOf
-import androidx.core.app.ActivityCompat
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.work.Constraints
-import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkInfo
 import androidx.work.WorkManager
-import androidx.work.workDataOf
-import com.example.leannext.R
 import com.example.leannext.db.MainDb
 import com.example.leannext.db.Repository
 import com.example.leannext.db.modelsDb.AnswerCriterias
@@ -28,12 +18,10 @@ import com.example.leannext.db.modelsDb.Criterias
 import com.example.leannext.db.modelsDb.DevelopmentIndex
 import com.example.leannext.db.modelsDb.Directions
 import com.example.leannext.utlis.CheckWeek
-import com.example.leannext.utlis.NotificationWorker
 import java.util.Calendar
 import java.util.Date
 import java.util.TimeZone
 import java.util.concurrent.TimeUnit
-import javax.sql.DataSource
 
 
 class MainViewModel(application: Application) : ViewModel() {
@@ -91,37 +79,6 @@ class MainViewModel(application: Application) : ViewModel() {
 
     fun findDevelopmentIndex() {
         repository.changeListDevelopmentIndex(startDate.value, endDate.value)
-    }
-
-     fun scheduleReminder() {
-
-
-        val myWorkRequestBuilder = OneTimeWorkRequestBuilder<NotificationWorker>()
-
-         val updateTime: Calendar = Calendar.getInstance()
-         updateTime.timeZone = TimeZone.getTimeZone("GMT+3")
-         updateTime.set(Calendar.HOUR_OF_DAY, 16)
-         updateTime.set(Calendar.MINUTE, 5)
-        myWorkRequestBuilder.setInitialDelay(1, TimeUnit.MINUTES)
-        workManager.enqueue(myWorkRequestBuilder.build())
-    }
-
-
-
-    fun createNotificationChannel(context: Context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = "Notification"
-            val descriptionText = "Кажется вы забыли заполнить отчет"
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel("Channel_id", name, importance).apply {
-                description = descriptionText
-            }
-
-            val notificationManager =
-                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
-        }
-        scheduleReminder()
     }
 }
 

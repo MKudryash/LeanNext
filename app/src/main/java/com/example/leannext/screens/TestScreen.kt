@@ -1,8 +1,5 @@
 package com.example.leannext.screens
 
-import android.Manifest.permission.READ_EXTERNAL_STORAGE
-import android.util.Log
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,51 +19,36 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
-import androidx.compose.ui.unit.sp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavHostController
 import com.example.leannext.viewModel.MainViewModel
 import com.example.leannext.R
-import com.example.leannext.utlis.ExportDataToCsv
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberPermissionState
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun TestScreen(
     navHostController: NavHostController,     viewModel: MainViewModel
 ) {
-    var search: String by rememberSaveable { mutableStateOf("") }
     val allDirections by viewModel.allDirection.observeAsState(listOf())
     var searching by remember { mutableStateOf(false) }
-    var searching1 by remember { mutableStateOf(false) }
     val itemsForDiagram by viewModel.itemsAllDiagrams.observeAsState(listOf())
 
 
     val searchResults by viewModel.searchResults.observeAsState(listOf())
-
-
-
-
 
 
     BoxWithConstraints(
@@ -93,7 +75,7 @@ fun TestScreen(
                             --viewModel.week.value
                             viewModel.checkday()
                             viewModel.findDevelopmentIndex()
-                            searching1 = viewModel.week.value != 0
+                            searching = viewModel.week.value != 0
                         },
                     contentAlignment = Alignment.Center
                 ) {
@@ -135,7 +117,7 @@ fun TestScreen(
                             if (viewModel.week.value<0)  ++viewModel.week.value
                             viewModel.checkday()
                             viewModel.findDevelopmentIndex()
-                            searching1 = viewModel.week.value != 0
+                            searching = viewModel.week.value != 0
                         },
                     contentAlignment = Alignment.Center
 
@@ -147,7 +129,7 @@ fun TestScreen(
                     )
                 }
             }
-            val list = if (searching1) searchResults else itemsForDiagram
+            val list = if (searching) searchResults else itemsForDiagram
             var sum = 0.0
             if (list != null) {
                 LazyColumn(
