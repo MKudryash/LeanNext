@@ -104,16 +104,4 @@ interface Dao {
                 "where c.idDirection = :idDirection and date =  :date"
     )
     fun CalculationMartForDevelopmentIndex(idDirection: Int, date: Date): Double
-/*
-    @Query(
-        value = "select title, COALESCE(\n" +
-                "(select mark\n" +
-                "from directions as dd  join developmentindex as DI on dd.id = DI.idDirection\n" +
-                "and dd.title = d.title\n" +
-                "Where DI.Date = :date\n" +
-                "),0) as mark\n" +
-                "from directions as d\n" +
-                "left join developmentindex as DI on d.id = DI.idDirection"
-    )
-    fun FoundDirectionForDiagram(date: String): Flow<List<dir>>*/
 }

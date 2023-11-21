@@ -46,23 +46,6 @@ class MainActivity : ComponentActivity() {
                                     as Application
                         )
                     )
-                  /*  val calendar: Calendar = Calendar.getInstance()
-                    calendar.timeInMillis = System.currentTimeMillis()
-                    calendar.set(Calendar.HOUR_OF_DAY, 18)
-                    calendar.set(Calendar.MINUTE, 13)
-                    calendar.set(Calendar.SECOND, 1)
-                    //viewModel.createNotificationChannel(context = LocalContext.current)
-                    val notifyIntent = Intent(this, MyReceiver::class.java)
-                    val pendingIntent = PendingIntent.getBroadcast(
-                        LocalContext.current,
-                       0,
-                        notifyIntent,
-                        PendingIntent.FLAG_MUTABLE
-                    )
-                    var manager:AlarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                        manager.setRepeating(
-                            AlarmManager.RTC_WAKEUP, System.currentTimeMillis(),
-                            calendar.timeInMillis, pendingIntent)*/
                     Navigation(viewModel)
                 }
             }
