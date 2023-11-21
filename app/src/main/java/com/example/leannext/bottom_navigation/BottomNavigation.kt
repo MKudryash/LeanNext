@@ -36,8 +36,7 @@ import com.example.leannext.utlis.Constants
 fun BottomNavigation(navHostController: NavHostController) {
     val listItems = listOf(
         Constants.TestScreen,
-        Constants.DiagramScreen,
-        Constants.ProfileScreen
+        Constants.DiagramScreen
     )
     NavigationBar(
         Modifier.background(Color.White).height(90.dp).border(2.dp,Color(0xFFB1B1B1),
