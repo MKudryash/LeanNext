@@ -12,12 +12,15 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.leannext.Navigation.Navigation
+import com.example.leannext.dataStore.StoreData
 import com.example.leannext.ui.theme.LeanNextTheme
+import com.example.leannext.utlis.Constants
 import com.example.leannext.viewModel.MainViewModel
 import com.example.leannext.viewModel.MainViewModelFactory
 import java.util.Calendar
@@ -34,7 +37,9 @@ class MainActivity : ComponentActivity() {
                 ActivityCompat.requestPermissions(
                     this, arrayOf(READ_EXTERNAL_STORAGE), 23
                 )
-
+                val dataStore = StoreData(LocalContext.current)
+                val flag = dataStore.getData.collectAsState(initial = "")
+                Constants.userName = flag.value
                 val owner = LocalViewModelStoreOwner.current
 
                 owner?.let {

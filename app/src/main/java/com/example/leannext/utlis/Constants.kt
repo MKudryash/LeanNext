@@ -12,5 +12,6 @@ object Constants {
     object TestScreen : BottomItem("Test", R.drawable.test,"test")
     object DirectionTestScreen:Screen("directionTestScreen/{id}/{name}")
     object MainScreen:Screen("mainScreen")
+    var userName:String = ""
 
 }

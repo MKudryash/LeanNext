@@ -7,8 +7,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.Constraints
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
@@ -16,6 +18,8 @@ import com.example.leannext.viewModel.MainViewModel
 import com.example.leannext.viewModel.MainViewModelFactory
 import com.example.leannext.bottom_navigation.BottomNavigation
 import com.example.leannext.bottom_navigation.NavGraph
+import com.example.leannext.dataStore.StoreData
+import com.example.leannext.utlis.Constants
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -26,6 +30,7 @@ fun MainScreen(viewModel: MainViewModel) {
         Modifier.background(MaterialTheme.colorScheme.background),
         bottomBar = { BottomNavigation(navHostController = navHostController) }
     ) {
+
         NavGraph(navHostController = navHostController, viewModel)
     }
 }

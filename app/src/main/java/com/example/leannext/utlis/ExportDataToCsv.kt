@@ -36,13 +36,15 @@ object ExportDataToCsv {
         val wb: Workbook = HSSFWorkbook()
         var cell: Cell? = null
         var sheet: Sheet? = null
-        sheet = wb.createSheet("Result")
+        sheet = wb.createSheet(Constants.userName)
         //Now column and row
         val row: Row = sheet.createRow(0)
         cell = row.createCell(0)
         cell.setCellValue("Наименование критерия")
         cell = row.createCell(1)
         cell.setCellValue("Оценка")
+        cell = row.createCell(2)
+        cell.setCellValue(Constants.userName)
         for (i in nameDirections.indices) {
             val row1: Row = sheet.createRow(i + 1)
             cell = row1.createCell(0)
@@ -84,14 +86,14 @@ object ExportDataToCsv {
             if (save) Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
             else context.cacheDir
 
-        var fileName = "Отчет от $startDate.xlsx"
+        var fileName = "Отчет от $startDate.xls"
 
         var path = "" + folder + File.separator + fileName
         var flag = true
         var index = 1
         while (flag) {
             if (Files.exists(Paths.get(path))) {
-                fileName = "Отчет от $startDate ($index).xlsx"
+                fileName = "Отчет от $startDate ($index).xls"
                 path = "" + folder + File.separator + fileName
                 index++
             } else {

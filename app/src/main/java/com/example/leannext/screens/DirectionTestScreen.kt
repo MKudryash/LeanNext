@@ -32,6 +32,7 @@ import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -64,6 +65,8 @@ import com.example.leannext.viewModel.MainViewModel
 import com.example.leannext.R
 import com.example.leannext.db.modelsDb.Directions
 import kotlinx.coroutines.delay
+import java.util.Timer
+import kotlin.concurrent.schedule
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -102,11 +105,10 @@ fun DirectionTestScreen(
                                 viewModel.getItemsCriterias(id - 1)
                                 viewModel.getAnswerCriteries(id - 1)
                                 navHostController.navigate("directionTestScreen/" + (id - 1) + "/" + allDirections.first { it -> it.id == id - 1 }.title)
-                            }
-                            else{
+                            } else {
                                 viewModel.getItemsCriterias(allDirections.size)
                                 viewModel.getAnswerCriteries(allDirections.size)
-                                navHostController.navigate("directionTestScreen/" + (allDirections.size) + "/" + allDirections.first { it -> it.id == (allDirections.size)}.title)
+                                navHostController.navigate("directionTestScreen/" + (allDirections.size) + "/" + allDirections.first { it -> it.id == (allDirections.size) }.title)
                             }
                         }, contentAlignment = Alignment.Center
                 ) {
@@ -141,8 +143,7 @@ fun DirectionTestScreen(
 
                                     popUpTo("directionTestScreen/" + id + "/" + allDirections.first { it -> it.id == id }.title)
                                 }
-                            }
-                            else{
+                            } else {
                                 viewModel.getItemsCriterias(1)
                                 viewModel.getAnswerCriteries(1)
 
@@ -181,7 +182,9 @@ fun DirectionTestScreen(
                         thickness = 8.dp
                     )
                 }
+
             }
+
             LazyColumn(
                 verticalArrangement = Arrangement.SpaceEvenly,
                 modifier = Modifier.fillMaxSize(),
@@ -252,47 +255,49 @@ fun DirectionTestScreen(
                         LazyRow(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(derivedDimension * 0.03f),
+                                .padding(derivedDimension * 0.01f),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             itemsIndexed(
                                 listOf(
-                                    1.0, 2.0, 3.0, 4.0, 5.0
+                                    0, 1, 2, 3, 4, 5
                                 )
 
                             ) { index, items ->
-                                val borderColor: Color
-                                selectedIndex = -1
                                 if (itemsListAnswerCriterias.isNotEmpty()) {
                                     itemsListAnswerCriterias.forEach {
                                         if (it.idCriterias == item.id) {
                                             when (it.mark) {
-                                                1.0 -> selectedIndex = 0
-                                                2.0 -> selectedIndex = 1
-                                                3.0 -> selectedIndex = 2
-                                                4.0 -> selectedIndex = 3
-                                                5.0 -> selectedIndex = 4
+                                                0.0 -> selectedIndex = 0
+                                                1.0 -> selectedIndex = 1
+                                                2.0 -> selectedIndex = 2
+                                                3.0 -> selectedIndex = 3
+                                                4.0 -> selectedIndex = 4
+                                                5.0 -> selectedIndex = 5
                                             }
                                         }
                                     }
                                 }
-                                borderColor =
+                                else selectedIndex = -1
+                                val borderColor: Color =
                                     if (index == selectedIndex) MaterialTheme.colorScheme.primary
                                     else Color(0xFFB8C1CC)
                                 Box(
                                     modifier = Modifier
                                         .border(
-                                            2.dp, borderColor, RoundedCornerShape(20.dp)
+                                            2.5.dp, borderColor, RoundedCornerShape(20.dp)
                                         )
                                         .selectable(
                                             onClick = {
+
                                                 selectedIndex =
                                                     if (selectedIndex != index) index else -1
                                                 try {
+
                                                     viewModel.insertAnswerCriteries(
                                                         item.id,
-                                                        items,
+                                                        items.toDouble(),
                                                         id
                                                     )
                                                     viewModel.getAnswerCriteries(id)
@@ -317,28 +322,33 @@ fun DirectionTestScreen(
                                     )
                                     Text(
                                         text = items.toString(),
-                                        modifier = Modifier.clickable(
-                                            onClick = {
-                                                selectedIndex =
-                                                    if (selectedIndex != index) index else -1
-                                                try {
-                                                    viewModel.insertAnswerCriteries(
-                                                        item.id,
-                                                        items,
-                                                        id
-                                                    )
-                                                    viewModel.getAnswerCriteries(id)
-                                                } catch (_: Exception) {
-                                                }
-                                            },
-                                            interactionSource = remember { MutableInteractionSource() },
-                                            indication = rememberRipple(
-                                                bounded = false,
-                                                radius = 30.dp,
-                                                color = MaterialTheme.colorScheme.primary
-                                            )
+                                        modifier = Modifier
+                                            .clickable(
+                                                onClick = {
+                                                    selectedIndex =
+                                                        if (selectedIndex != index) index else -1
+                                                    try {
+                                                        viewModel.insertAnswerCriteries(
+                                                            item.id,
+                                                            items.toDouble(),
+                                                            id
+                                                        )
+                                                        viewModel.getAnswerCriteries(id)
+                                                    } catch (_: Exception) {
+                                                    }
+                                                },
+                                                interactionSource = remember { MutableInteractionSource() },
+                                                indication = rememberRipple(
+                                                    bounded = false,
+                                                    radius = 30.dp,
+                                                    color = MaterialTheme.colorScheme.primary
+                                                )
 
-                                        ) .padding(derivedDimension * 0.04f),
+                                            )
+                                            .padding(
+                                                derivedDimension * 0.05f,
+                                                derivedDimension * 0.035f
+                                            ),
                                         style = labelsStyle,
                                     )
                                 }

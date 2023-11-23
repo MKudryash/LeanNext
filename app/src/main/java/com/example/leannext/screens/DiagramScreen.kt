@@ -18,15 +18,20 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -47,10 +52,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
+import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
 import com.example.leannext.viewModel.MainViewModel
 import com.example.leannext.R
+import com.example.leannext.dataStore.StoreData
 import com.example.leannext.db.modelsDb.DevelopmentIndex
+import com.example.leannext.utlis.Constants
 import com.example.leannext.utlis.ExportDataToCsv
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
@@ -66,10 +74,11 @@ val format = SimpleDateFormat("dd MMMM", Locale("ru"))
 @Composable
 fun DiagramScreen(
     navHostController: NavHostController,
-    viewModel: MainViewModel
+    viewModel: MainViewModel,
 ) {
 
-    val notificationPermissionState = rememberPermissionState(android.Manifest.permission.POST_NOTIFICATIONS)
+    val notificationPermissionState =
+        rememberPermissionState(android.Manifest.permission.POST_NOTIFICATIONS)
 
     val allDirections by viewModel.allDirection.observeAsState(listOf())
     val itemsForDiagram by viewModel.itemsAllDiagrams.observeAsState(listOf())
@@ -80,8 +89,12 @@ fun DiagramScreen(
     val context = LocalContext.current
     var expanded by remember { mutableStateOf(false) }
 
-    val scope = rememberCoroutineScope()
-    val snackbarHostState = remember { mutableStateOf(SnackbarHostState()) }
+    var show by remember {
+        mutableStateOf(false)
+    }
+    var showInformation by remember {
+        mutableStateOf(false)
+    }
     BoxWithConstraints(
     ) {
         val derivedDimension = this.maxWidth
@@ -94,6 +107,23 @@ fun DiagramScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
+            Row {
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(derivedDimension * 0.01f, derivedDimension * 0.04f, 0.dp, 0.dp)
+                        .weight(7f)
+                        .clickable {
+                            show = true
+                        },
+                    text = "Добро пожаловать ${Constants.userName}!",
+                    color = MaterialTheme.colorScheme.secondary,
+                    fontFamily = FontFamily(Font(R.font.neosanspro_medium)),
+                    fontSize = 5.em,
+                    lineHeight = 1.em,
+                    textAlign = TextAlign.Center,
+                )
+            }
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -105,7 +135,7 @@ fun DiagramScreen(
                     text = "Индекс развития технологий и инструментов Кайдзен (КDI)",
                     color = MaterialTheme.colorScheme.secondary,
                     fontFamily = FontFamily(Font(R.font.neosanspro_medium)),
-                    fontSize = 5.em,
+                    fontSize = 4.5.em,
                     lineHeight = 1.em,
                     textAlign = TextAlign.Center,
                 )
@@ -132,7 +162,7 @@ fun DiagramScreen(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(0.dp,0.dp,derivedDimension * 0.03f,0.dp)
+                                .padding(0.dp, 0.dp, derivedDimension * 0.03f, 0.dp)
                                 .clickable {
 
                                     ExportDataToCsv.createXlFile(
@@ -270,21 +300,25 @@ fun DiagramScreen(
             }
 
             val list = if (searching) searchResults else itemsForDiagram
-            RadarChartSample(list, derivedDimension,navHostController,viewModel)
+            RadarChartSample(list, derivedDimension, navHostController, viewModel)
             var sum = 0.0
             list.forEach {
                 sum += it.mark
             }
             try {
                 sum /= allDirections.size
-            } catch (_: Exception) { }
+            } catch (_: Exception) {
+            }
             val colorItem = if (sum != 0.0) MaterialTheme.colorScheme.primary
             else Color(0xFFFF6864)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .wrapContentHeight()
-                    .padding(derivedDimension * 0.01f, derivedDimension * 0.02f),
+                    .padding(derivedDimension * 0.01f, derivedDimension * 0.02f)
+                    .clickable {
+                        showInformation = true
+                    },
                 verticalAlignment = Alignment.CenterVertically
             )
             {
@@ -297,7 +331,8 @@ fun DiagramScreen(
                             2.dp,
                             colorItem,
                             RoundedCornerShape(20.dp)
-                        ),
+                        )
+                       ,
                     contentAlignment = Alignment.Center
                 )
                 {
@@ -336,11 +371,29 @@ fun DiagramScreen(
                     )
                 }
             }
+
+            if (Constants.userName == "" || show) {
+                InputDialogView {
+                    show = !show
+                }
+            }
+            if (showInformation) {
+                InforamtionView {
+                    showInformation = !showInformation
+                }
+            }
+
         }
     }
 }
+
 @Composable
-fun RadarChartSample(itemsListDirectionIndex: List<DevelopmentIndex>?, w: Dp, navHostController: NavHostController,viewModel: MainViewModel) {
+fun RadarChartSample(
+    itemsListDirectionIndex: List<DevelopmentIndex>?,
+    w: Dp,
+    navHostController: NavHostController,
+    viewModel: MainViewModel
+) {
     val labelDirection =
         listOf(
             "5S и Визуальный менеджмент",
@@ -409,7 +462,148 @@ fun RadarChartSample(itemsListDirectionIndex: List<DevelopmentIndex>?, w: Dp, na
                 )
             )
         ),
-        navHostController =navHostController,
+        navHostController = navHostController,
         viewModel = viewModel
     )
+}
+
+@Composable
+fun InputDialogView(onDismiss: () -> Unit) {
+    val context = LocalContext.current
+    val dataStore = StoreData(context)
+
+    var nameUser by remember {
+        mutableStateOf(Constants.userName)
+    }
+    val scope = rememberCoroutineScope()
+
+    Dialog(onDismissRequest = { onDismiss() }) {
+        Card(
+            //shape = MaterialTheme.shapes.medium,
+            shape = RoundedCornerShape(10.dp),
+            // modifier = modifier.size(280.dp, 240.dp)
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.background),
+
+            ) {
+            Column(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.background)
+            ) {
+
+                Text(
+                    text = "Введите имя пользователя",
+                    modifier = Modifier.padding(8.dp),
+                    fontSize = 4.em,
+                    fontFamily = FontFamily(Font(R.font.neosanspro_medium)),
+                    color = MaterialTheme.colorScheme.secondary
+                )
+
+                OutlinedTextField(
+                    value = nameUser,
+                    onValueChange = { nameUser = it },
+                    modifier = Modifier.padding(8.dp),
+                    label = {
+                        Text(
+                            "Имя пользователя"
+                        )
+                    },
+
+                    )
+                Row()
+                {
+                    Button(
+                        onClick = {
+                            scope.launch {
+                                dataStore.saveData(nameUser)
+                            }
+                            onDismiss()
+                        },
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                            .weight(1f)
+                            .border(
+                                2.dp,
+                                MaterialTheme.colorScheme.primary,
+                                RoundedCornerShape(20.dp)
+                            ),
+                        colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.background)
+
+                    ) {
+                        Text(
+                            text = "Сохранить",
+                            fontSize = 3.em,
+                            fontFamily = FontFamily(Font(R.font.neosanspro_bold)),
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                    }
+                }
+
+
+            }
+        }
+    }
+}
+
+@Composable
+fun InforamtionView(onDismiss: () -> Unit) {
+    val context = LocalContext.current
+    val dataStore = StoreData(context)
+
+    var nameUser by remember {
+        mutableStateOf(Constants.userName)
+    }
+    val scope = rememberCoroutineScope()
+
+    Dialog(onDismissRequest = { onDismiss() }) {
+        Card(
+            shape = RoundedCornerShape(30.dp),
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.background),
+
+            ) {
+            Column(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.background)
+            ) {
+
+                Text(
+                    text = "Точки роста есть! Напишите нам в ТГ!Возьмите наш опыт себе на развитие",
+                    modifier = Modifier.padding(10.dp),
+                    fontSize = 5.em,
+                    fontFamily = FontFamily(Font(R.font.neosanspro_medium)),
+                    color = MaterialTheme.colorScheme.secondary,
+                    textAlign = TextAlign.Center
+                )
+
+
+                Button(
+                    onClick = {
+                        scope.launch {
+                            dataStore.saveData(nameUser)
+                        }
+                        onDismiss()
+                    },
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                        .border(
+                            2.dp,
+                            MaterialTheme.colorScheme.primary,
+                            RoundedCornerShape(20.dp)
+                        ),
+                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.background)
+
+                ) {
+                    Text(
+                        text = "Спасибо!",
+                        fontSize = 3.em,
+                        fontFamily = FontFamily(Font(R.font.neosanspro_bold)),
+                        color = MaterialTheme.colorScheme.secondary
+                    )
+                }
+            }
+        }
+    }
 }
