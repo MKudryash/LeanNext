@@ -1,5 +1,6 @@
 package com.example.leannext.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -49,6 +50,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
@@ -65,6 +67,7 @@ import com.example.leannext.viewModel.MainViewModel
 import com.example.leannext.R
 import com.example.leannext.db.modelsDb.Directions
 import kotlinx.coroutines.delay
+import java.sql.Time
 import java.util.Timer
 import kotlin.concurrent.schedule
 
@@ -79,6 +82,8 @@ fun DirectionTestScreen(
     val itemsListCriterias by viewModel.itemsCriterias.observeAsState(listOf())
     val itemsListAnswerCriterias by viewModel.answerResult.observeAsState(listOf())
     val allDirections by viewModel.allDirection.observeAsState(listOf())
+
+    val context = LocalContext.current
 
     BoxWithConstraints(
     ) {
@@ -288,32 +293,6 @@ fun DirectionTestScreen(
                                         .border(
                                             2.5.dp, borderColor, RoundedCornerShape(20.dp)
                                         )
-                                        .selectable(
-                                            onClick = {
-
-                                                selectedIndex =
-                                                    if (selectedIndex != index) index else -1
-                                                try {
-
-                                                    viewModel.insertAnswerCriteries(
-                                                        item.id,
-                                                        items.toDouble(),
-                                                        id
-                                                    )
-                                                    viewModel.getAnswerCriteries(id)
-                                                } catch (_: Exception) {
-                                                }
-
-                                            },
-                                            selected = index == selectedIndex,
-
-                                            interactionSource = remember { MutableInteractionSource() },
-                                            indication = rememberRipple(
-                                                bounded = false,
-                                                radius = 30.dp,
-                                                color = MaterialTheme.colorScheme.primary
-                                            ),
-                                        )
                                 ) {
                                     val labelsStyle = TextStyle(
                                         fontFamily = FontFamily(Font(R.font.neosanspro_regular)),
@@ -334,6 +313,7 @@ fun DirectionTestScreen(
                                                             id
                                                         )
                                                         viewModel.getAnswerCriteries(id)
+                                                        Timer().schedule(2000) {}
                                                     } catch (_: Exception) {
                                                     }
                                                 },
