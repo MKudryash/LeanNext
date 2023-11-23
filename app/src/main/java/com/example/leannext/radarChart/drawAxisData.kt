@@ -38,11 +38,11 @@ internal fun DrawScope.drawAxisData(
     nextStartPoints.add(0, center)
     //nextStartPoints.removeAt(nextStartPoints.size - 1)
 
-    val scalarStep = scalarValue / (scalarSteps - 1)
+    val scalarStep = scalarValue / (scalarSteps)
     val textVerticalOffset = 20.toDp().toPx()
     val labelHeight = textMeasurer.measure(AnnotatedString("M")).size.height
 
-    for (step in 0 until scalarSteps + 1) {
+    for (step in 0 until scalarSteps+1) {
         drawText(
             textMeasurer = textMeasurer,
             text = (scalarStep * step).toString() + " " + unit,

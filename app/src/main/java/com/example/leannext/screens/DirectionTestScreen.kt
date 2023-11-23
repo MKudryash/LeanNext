@@ -1,5 +1,6 @@
 package com.example.leannext.screens
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -15,8 +16,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -260,13 +263,13 @@ fun DirectionTestScreen(
                         LazyRow(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(derivedDimension * 0.01f),
+                                .padding(derivedDimension * 0.02f),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             itemsIndexed(
                                 listOf(
-                                    0, 1, 2, 3, 4, 5
+                                    0, 25, 50, 75, 100
                                 )
 
                             ) { index, items ->
@@ -283,8 +286,7 @@ fun DirectionTestScreen(
                                             }
                                         }
                                     }
-                                }
-                                else selectedIndex = -1
+                                } else selectedIndex = -1
                                 val borderColor: Color =
                                     if (index == selectedIndex) MaterialTheme.colorScheme.primary
                                     else Color(0xFFB8C1CC)
@@ -293,43 +295,38 @@ fun DirectionTestScreen(
                                         .border(
                                             2.5.dp, borderColor, RoundedCornerShape(20.dp)
                                         )
-                                ) {
-                                    val labelsStyle = TextStyle(
+                                        .width(derivedDimension / 5f - derivedDimension * 0.05f)
+                                        .height(derivedDimension / 5f - derivedDimension * 0.05f)
+                                        .clickable(
+                                            onClick = {
+                                                selectedIndex =
+                                                    if (selectedIndex != index) index else -1
+                                                try {
+                                                    viewModel.insertAnswerCriteries(
+                                                        item.id,
+                                                        items.toDouble(),
+                                                        id
+                                                    )
+                                                    viewModel.getAnswerCriteries(id)
+                                                    Timer().schedule(3000) {}
+                                                    Log.d("Test", selectedIndex.toString())
+                                                } catch (_: Exception) {
+                                                }
+                                            },
+                                            interactionSource = remember { MutableInteractionSource() },
+                                            indication = rememberRipple(
+                                                bounded = false,
+                                                radius = 35.dp,
+                                                color = MaterialTheme.colorScheme.primary
+                                            )
+                                        ),
+                                    contentAlignment = Alignment.Center
+                                    ) {
+                                    Text(
+                                        text = items.toString(),
                                         fontFamily = FontFamily(Font(R.font.neosanspro_regular)),
                                         fontSize = 4.em,
                                         color = MaterialTheme.colorScheme.secondary
-                                    )
-                                    Text(
-                                        text = items.toString(),
-                                        modifier = Modifier
-                                            .clickable(
-                                                onClick = {
-                                                    selectedIndex =
-                                                        if (selectedIndex != index) index else -1
-                                                    try {
-                                                        viewModel.insertAnswerCriteries(
-                                                            item.id,
-                                                            items.toDouble(),
-                                                            id
-                                                        )
-                                                        viewModel.getAnswerCriteries(id)
-                                                        Timer().schedule(2000) {}
-                                                    } catch (_: Exception) {
-                                                    }
-                                                },
-                                                interactionSource = remember { MutableInteractionSource() },
-                                                indication = rememberRipple(
-                                                    bounded = false,
-                                                    radius = 30.dp,
-                                                    color = MaterialTheme.colorScheme.primary
-                                                )
-
-                                            )
-                                            .padding(
-                                                derivedDimension * 0.05f,
-                                                derivedDimension * 0.035f
-                                            ),
-                                        style = labelsStyle,
                                     )
                                 }
                             }

@@ -1,6 +1,9 @@
 package com.example.leannext.screens
 
+import android.app.Activity
 import android.os.Build
+import android.util.Log
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -27,11 +30,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -264,7 +264,7 @@ fun DiagramScreen(
                         fontSize = 4.em,
                         textAlign = TextAlign.Center,
                     )
-                    notificationPermissionState.launchPermissionRequest()
+                   // notificationPermissionState.launchPermissionRequest()
                     Text(
                         text = "${format.format(viewModel.startDate.value)} - ${
                             format.format(
@@ -374,6 +374,10 @@ fun DiagramScreen(
 
             if (Constants.userName == "" || show) {
                 InputDialogView {
+                }
+            }
+            if (show) {
+                InputDialogView {
                     show = !show
                 }
             }
@@ -385,6 +389,7 @@ fun DiagramScreen(
 
         }
     }
+
 }
 
 @Composable
@@ -445,8 +450,8 @@ fun RadarChartSample(
             netLinesStrokeWidth = 3f,
             netLinesStrokeCap = StrokeCap.Butt
         ),
-        scalarSteps = 5,
-        scalarValue = 5.00,
+        scalarSteps = 4,
+        scalarValue = 100.0,
         scalarValuesStyle = scalarValuesStyle,
         polygons = listOf(
             Polygon(
@@ -471,6 +476,7 @@ fun RadarChartSample(
 fun InputDialogView(onDismiss: () -> Unit) {
     val context = LocalContext.current
     val dataStore = StoreData(context)
+    Log.d("Dialog","Here")
 
     var nameUser by remember {
         mutableStateOf(Constants.userName)
@@ -507,17 +513,16 @@ fun InputDialogView(onDismiss: () -> Unit) {
                         Text(
                             "Имя пользователя"
                         )
-                    },
-
-                    )
+                    },)
                 Row()
                 {
                     Button(
                         onClick = {
+                            onDismiss()
                             scope.launch {
                                 dataStore.saveData(nameUser)
                             }
-                            onDismiss()
+
                         },
                         Modifier
                             .fillMaxWidth()

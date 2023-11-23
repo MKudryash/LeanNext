@@ -103,7 +103,7 @@ fun RadarChart(
                 this,
                 it,
                 radius,
-                scalarValue - 1,
+                scalarValue ,
                 Offset(size.width / 2, size.height / 2),
                 scalarSteps
             )
@@ -115,7 +115,7 @@ fun RadarChart(
             textMeasurer,
             radarChartConfig,
             radarLabels,
-            scalarValue - 1,
+            scalarValue,
             scalarSteps,
             polygons[0].unit
         )
