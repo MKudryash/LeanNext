@@ -274,18 +274,10 @@ fun DirectionTestScreen(
 
                             ) { index, items ->
                                 if (itemsListAnswerCriterias.isNotEmpty()) {
-                                    itemsListAnswerCriterias.forEach {
-                                        if (it.idCriterias == item.id) {
-                                            when (it.mark) {
-                                                0.0 -> selectedIndex = 0
-                                                1.0 -> selectedIndex = 1
-                                                2.0 -> selectedIndex = 2
-                                                3.0 -> selectedIndex = 3
-                                                4.0 -> selectedIndex = 4
-                                                5.0 -> selectedIndex = 5
-                                            }
-                                        }
-                                    }
+                                   try {
+                                       selectedIndex = itemsListAnswerCriterias.find { it.idCriterias == item.id }?.mark!!.toInt() / 25
+                                   }
+                                   catch (_:Exception){}
                                 } else selectedIndex = -1
                                 val borderColor: Color =
                                     if (index == selectedIndex) MaterialTheme.colorScheme.primary
@@ -321,7 +313,7 @@ fun DirectionTestScreen(
                                             )
                                         ),
                                     contentAlignment = Alignment.Center
-                                    ) {
+                                ) {
                                     Text(
                                         text = items.toString(),
                                         fontFamily = FontFamily(Font(R.font.neosanspro_regular)),
