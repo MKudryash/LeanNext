@@ -350,7 +350,7 @@ fun DiagramScreen(
                 }
                 Box(
                     Modifier
-                        .weight(2.3f)
+                        .weight(2.7f)
                         .wrapContentHeight()
                         .padding(derivedDimension * 0.02f, 0.dp)
                         .border(
@@ -507,6 +507,7 @@ fun InputDialogView(onDismiss: () -> Unit) {
 
                 OutlinedTextField(
                     value = nameUser,
+                    singleLine = true,
                     onValueChange = { nameUser = it },
                     modifier = Modifier.padding(8.dp),
                     label = {
