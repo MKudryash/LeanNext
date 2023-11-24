@@ -1,9 +1,9 @@
 package com.example.leannext.screens
 
-import android.app.Activity
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.util.Log
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -13,11 +13,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -26,42 +28,49 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.Hyphens
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.window.Dialog
+import androidx.core.content.ContextCompat.startActivity
 import androidx.navigation.NavHostController
-import com.example.leannext.viewModel.MainViewModel
 import com.example.leannext.R
 import com.example.leannext.dataStore.StoreData
 import com.example.leannext.db.modelsDb.DevelopmentIndex
+import com.example.leannext.screens.constantsUI.ConstantsUI
 import com.example.leannext.utlis.Constants
 import com.example.leannext.utlis.ExportDataToCsv
+import com.example.leannext.viewModel.MainViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberPermissionState
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -69,7 +78,7 @@ import java.util.Locale
 
 val format = SimpleDateFormat("dd MMMM", Locale("ru"))
 
-@OptIn(ExperimentalPermissionsApi::class)
+@OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DiagramScreen(
@@ -77,9 +86,12 @@ fun DiagramScreen(
     viewModel: MainViewModel,
 ) {
 
-    val notificationPermissionState =
-        rememberPermissionState(android.Manifest.permission.POST_NOTIFICATIONS)
-
+    /* val notificationPermissionState =
+         rememberPermissionState(android.Manifest.permission.POST_NOTIFICATIONS)*/
+    var isSheetOpen by rememberSaveable {
+        mutableStateOf(false)
+    }
+    val sheetState = rememberModalBottomSheetState()
     val allDirections by viewModel.allDirection.observeAsState(listOf())
     val itemsForDiagram by viewModel.itemsAllDiagrams.observeAsState(listOf())
     val searchResults by viewModel.searchResults.observeAsState(listOf())
@@ -96,12 +108,13 @@ fun DiagramScreen(
         mutableStateOf(false)
     }
     BoxWithConstraints(
+        Modifier.padding(0.dp, 0.dp, 0.dp, 95.dp)
     ) {
         val derivedDimension = this.maxWidth
-
         Column(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
+                .height(this@BoxWithConstraints.maxHeight)
                 .background(MaterialTheme.colorScheme.background)
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -139,13 +152,15 @@ fun DiagramScreen(
                     lineHeight = 1.em,
                     textAlign = TextAlign.Center,
                 )
-                Box()
+                Box(
+                )
                 {
 
                     IconButton(onClick = { expanded = true }) {
                         Icon(
                             painter = painterResource(id = R.drawable.menuicon),
-                            contentDescription = "Показать меню"
+                            contentDescription = "Показать меню",
+                            tint = MaterialTheme.colorScheme.secondary
                         )
                     }
                     DropdownMenu(
@@ -163,8 +178,8 @@ fun DiagramScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(0.dp, 0.dp, derivedDimension * 0.03f, 0.dp)
+                                .background(MaterialTheme.colorScheme.background.copy(alpha = 0f))
                                 .clickable {
-
                                     ExportDataToCsv.createXlFile(
                                         itemsForDiagram,
                                         allDirections,
@@ -178,7 +193,8 @@ fun DiagramScreen(
                             IconButton(onClick = { expanded = true }) {
                                 Icon(
                                     painter = painterResource(id = R.drawable.saveicon),
-                                    contentDescription = ""
+                                    contentDescription = "",
+                                    tint = MaterialTheme.colorScheme.secondary
                                 )
                             }
                             Text(
@@ -197,6 +213,7 @@ fun DiagramScreen(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
+                                .background(MaterialTheme.colorScheme.background.copy(alpha = 1f))
                                 .clickable {
                                     ExportDataToCsv.createXlFile(
                                         itemsForDiagram,
@@ -212,7 +229,8 @@ fun DiagramScreen(
                             IconButton(onClick = { expanded = true }) {
                                 Icon(
                                     painter = painterResource(id = R.drawable.shareicon),
-                                    contentDescription = ""
+                                    contentDescription = "",
+                                    tint = MaterialTheme.colorScheme.secondary
                                 )
                             }
                             Text(
@@ -264,7 +282,7 @@ fun DiagramScreen(
                         fontSize = 4.em,
                         textAlign = TextAlign.Center,
                     )
-                   // notificationPermissionState.launchPermissionRequest()
+                    // notificationPermissionState.launchPermissionRequest()
                     Text(
                         text = "${format.format(viewModel.startDate.value)} - ${
                             format.format(
@@ -315,7 +333,7 @@ fun DiagramScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .wrapContentHeight()
-                    .padding(derivedDimension * 0.01f, derivedDimension * 0.02f)
+                    .padding(derivedDimension * 0.01f, derivedDimension * 0.04f)
                     .clickable {
                         showInformation = true
                     },
@@ -331,8 +349,7 @@ fun DiagramScreen(
                             2.dp,
                             colorItem,
                             RoundedCornerShape(20.dp)
-                        )
-                       ,
+                        ),
                     contentAlignment = Alignment.Center
                 )
                 {
@@ -371,8 +388,56 @@ fun DiagramScreen(
                     )
                 }
             }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .padding(derivedDimension * 0.08f, 0.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .padding(derivedDimension * 0.02f, 0.dp)
+                        .border(
+                            2.dp,
+                            colorItem,
+                            RoundedCornerShape(20.dp)
+                        )
+                        .clickable {
+                            isSheetOpen = true
+                        },
+                    contentAlignment = Alignment.Center
+                )
+                {
+                    Text(
+                        modifier = Modifier.padding(
+                            derivedDimension * 0.01f,
+                            derivedDimension * 0.04f
+                        ),
+                        text = "Свяжитесь с нами!",
+                        color = MaterialTheme.colorScheme.secondary,
+                        fontFamily = FontFamily(Font(R.font.neosanspro_regular)),
+                        fontSize = 4.em,
+                        textAlign = TextAlign.Center,
+                    )
+                }
+            }
+            if (isSheetOpen) {
+                ModalBottomSheet(
+                    sheetState = sheetState,
+                    onDismissRequest = { isSheetOpen = false },
+                ) {
+                    BottomConnect()
+                }
+            }
 
-            if (Constants.userName == "" || show) {
+
+
+
+            if (Constants.userName == "") {
                 InputDialogView {
                 }
             }
@@ -476,7 +541,7 @@ fun RadarChartSample(
 fun InputDialogView(onDismiss: () -> Unit) {
     val context = LocalContext.current
     val dataStore = StoreData(context)
-    Log.d("Dialog","Here")
+    Log.d("Dialog", "Here")
 
     var nameUser by remember {
         mutableStateOf(Constants.userName)
@@ -514,7 +579,8 @@ fun InputDialogView(onDismiss: () -> Unit) {
                         Text(
                             "Имя пользователя"
                         )
-                    },)
+                    },
+                )
                 Row()
                 {
                     Button(
@@ -555,6 +621,7 @@ fun InputDialogView(onDismiss: () -> Unit) {
 @Composable
 fun InforamtionView(onDismiss: () -> Unit) {
     val context = LocalContext.current
+
     val dataStore = StoreData(context)
 
     var nameUser by remember {
@@ -575,7 +642,7 @@ fun InforamtionView(onDismiss: () -> Unit) {
             ) {
 
                 Text(
-                    text = "Точки роста есть! Напишите нам в ТГ!Возьмите наш опыт себе на развитие",
+                    text = "Точки роста есть! Напишите нам в ТГ! Возьмите наш опыт себе на развитие",
                     modifier = Modifier.padding(10.dp),
                     fontSize = 5.em,
                     fontFamily = FontFamily(Font(R.font.neosanspro_medium)),
@@ -586,9 +653,7 @@ fun InforamtionView(onDismiss: () -> Unit) {
 
                 Button(
                     onClick = {
-                        scope.launch {
-                            dataStore.saveData(nameUser)
-                        }
+
                         onDismiss()
                     },
                     Modifier
@@ -609,6 +674,56 @@ fun InforamtionView(onDismiss: () -> Unit) {
                         color = MaterialTheme.colorScheme.secondary
                     )
                 }
+            }
+        }
+    }
+}
+@Composable
+@Preview
+fun BottomConnect() {
+var context = LocalContext.current
+    val uriHandler =  LocalUriHandler.current
+
+    LazyColumn(
+        modifier = Modifier
+            .background(MaterialTheme.colorScheme.background)
+            .fillMaxWidth()
+            .padding(0.dp,25.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        items(ConstantsUI.connectionWithUs) { it ->
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.background)
+                    .padding(0.dp,1.dp)
+                    .clickable {
+                         uriHandler.openUri(it.link)
+                    },
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            )
+            {
+                Icon(
+                    painter = painterResource(id = it.idIcon),
+                    contentDescription = "",
+                    tint = MaterialTheme.colorScheme.secondary,
+
+                )
+                Text(
+                    it.title,
+                    fontFamily = FontFamily(Font(R.font.neosanspro_regular)),
+                    fontSize = 5.em,
+                    color = MaterialTheme.colorScheme.secondary,
+                    modifier = Modifier
+                        .padding(10.dp)
+                )
+                Icon(
+                    painter = painterResource(id = R.drawable.arrowoutward),
+                    contentDescription = "",
+                    tint = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f)
+                )
             }
         }
     }
