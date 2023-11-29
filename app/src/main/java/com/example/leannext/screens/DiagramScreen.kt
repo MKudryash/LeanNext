@@ -679,7 +679,6 @@ fun InforamtionView(onDismiss: () -> Unit) {
     }
 }
 @Composable
-@Preview
 fun BottomConnect() {
 var context = LocalContext.current
     val uriHandler =  LocalUriHandler.current

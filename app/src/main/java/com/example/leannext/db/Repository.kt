@@ -66,26 +66,39 @@ class Repository(private val dao: Dao) {
 
     fun insertAnswerCriteries(answerCriterias: AnswerCriterias, idDirection:Int,startDate: Date,endDate:Date) {
         coroutineScope.launch(Dispatchers.IO) {
-            if (dao.foundItemAnswerCriteriasIndexForDate(
-                    answerCriterias.idCriterias,
-                    startDate, endDate
-                ) == null
-            ) {
-                dao.insertItemAnswerCriterias(answerCriterias = answerCriterias)
-                var local = dao.foundItemDevelopmentIndexForDate(Date(),idDirection)
-                val mark =  dao.CalculationMartForDevelopmentIndex(idDirection,Date())
-                if(local==null)
-                {
-                    dao.insertItemDevelopmentIndex(DevelopmentIndex(null,1,Date(),idDirection,mark))
-                }
-                else dao.updateDevelopmentIndex(local.id!!, mark)
-            } else {
-                dao.updateItemAnswerCriterias(answerCriterias.mark,answerCriterias.date,answerCriterias.idCriterias)
-                var local = dao.foundItemDevelopmentIndexForDate(Date(),idDirection)
-                val mark =  dao.CalculationMartForDevelopmentIndex(idDirection,Date())
-                dao.updateDevelopmentIndex(local.id!!, mark)
+            try {
+                if (dao.foundItemAnswerCriteriasIndexForDate(
+                        answerCriterias.idCriterias,
+                        startDate, endDate
+                    ) == null
+                ) {
+                    dao.insertItemAnswerCriterias(answerCriterias = answerCriterias)
+                    var local = dao.foundItemDevelopmentIndexForDate(Date(), idDirection)
+                    val mark = dao.CalculationMartForDevelopmentIndex(idDirection, Date())
+                    if (local == null) {
+                        dao.insertItemDevelopmentIndex(
+                            DevelopmentIndex(
+                                null,
+                                1,
+                                Date(),
+                                idDirection,
+                                mark
+                            )
+                        )
+                    } else dao.updateDevelopmentIndex(local.id!!, mark)
+                } else {
+                    dao.updateItemAnswerCriterias(
+                        answerCriterias.mark,
+                        answerCriterias.date,
+                        answerCriterias.idCriterias
+                    )
+                    var local = dao.foundItemDevelopmentIndexForDate(Date(), idDirection)
+                    val mark = dao.CalculationMartForDevelopmentIndex(idDirection, Date())
+                    dao.updateDevelopmentIndex(local.id!!, mark)
 
+                }
             }
+            catch (_:Exception){}
         }
     }
 }
