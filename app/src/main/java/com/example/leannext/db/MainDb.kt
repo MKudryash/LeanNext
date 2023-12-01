@@ -39,7 +39,7 @@ abstract class MainDb : RoomDatabase() {
                         MainDb::class.java,
                         "leannext"
                     )
-                        .createFromAsset("leannext2.db")
+                        .createFromAsset("leannext_default.db")
                         .build()
                     INSTANCE = instance
 

@@ -7,6 +7,6 @@ object ConstantsUI {
     var  connectionWithUs = listOf<ConnectionWithUs>(
         ConnectionWithUs(R.drawable.telegram,"Telegram","https://t.me/SergeiKorchagin"),
         ConnectionWithUs(R.drawable.phone,"Позвонить (Иван)","tel:+79307014004"),
-        ConnectionWithUs(R.drawable.book,"Что почитать","https://ridero.ru/books/catalog/economics-finance-business-management/?q=Корчагин%20Сергей&offset=0"),
+        ConnectionWithUs(R.drawable.book,"Что почитать","https://ridero.ru/books/povyshenie_effektivnosti_proizvodstvennoi_sistemy_kompanii/"),
         )
 }

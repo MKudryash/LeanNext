@@ -642,7 +642,7 @@ fun InforamtionView(onDismiss: () -> Unit) {
             ) {
 
                 Text(
-                    text = "Точки роста есть! Напишите нам в ТГ! Возьмите наш опыт себе на развитие",
+                    text = "Точки роста есть! Напишите нам в Telegram! Возьмите наш опыт себе на развитие",
                     modifier = Modifier.padding(10.dp),
                     fontSize = 5.em,
                     fontFamily = FontFamily(Font(R.font.neosanspro_medium)),

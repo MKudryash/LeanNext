@@ -61,6 +61,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.Hyphens
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
@@ -274,10 +275,11 @@ fun DirectionTestScreen(
 
                             ) { index, items ->
                                 if (itemsListAnswerCriterias.isNotEmpty()) {
-                                   try {
-                                       selectedIndex = itemsListAnswerCriterias.find { it.idCriterias == item.id }?.mark!!.toInt() / 25
-                                   }
-                                   catch (_:Exception){}
+                                    try {
+                                        selectedIndex =
+                                            itemsListAnswerCriterias.find { it.idCriterias == item.id }?.mark!!.toInt() / 25
+                                    } catch (_: Exception) {
+                                    }
                                 } else selectedIndex = -1
                                 val borderColor: Color =
                                     if (index == selectedIndex) MaterialTheme.colorScheme.primary
@@ -341,37 +343,48 @@ fun DirectionTestScreen(
                                         .wrapContentSize(),
                                     verticalArrangement = Arrangement.Center
                                 ) {
-                                    Text(
-                                        modifier = Modifier
-                                            .padding(13.dp, 25.dp)
-                                            .fillMaxWidth(),
-                                        text = "Рекомендация по критерию",
-                                        color = MaterialTheme.colorScheme.secondary,
-                                        fontFamily = FontFamily(Font(R.font.neosanspro_medium)),
-                                        fontSize = 18.sp,
-                                        textAlign = TextAlign.Center,
-                                    )
                                     Row(
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .padding(30.dp, 20.dp),
+                                            .padding(derivedDimension*0.01f, 20.dp),
                                         verticalAlignment = Alignment.CenterVertically,
                                         horizontalArrangement = Arrangement.SpaceBetween
                                     ) {
-                                        Image(
-                                            painter = painterResource(id = R.drawable.icin_recomendation),
+                                        Icon(
+                                            modifier = Modifier
+                                                .weight(2f)
+                                                .height(65.dp),
+                                            painter = painterResource(id = R.drawable.iconrecom),
                                             contentDescription = "",
-                                            modifier = Modifier.size(80.dp)
+                                            tint = MaterialTheme.colorScheme.secondary
                                         )
                                         Text(
                                             modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(45.dp, 0.dp, 0.dp, 0.dp),
+                                                .weight(8f)
+                                                .padding(13.dp, 25.dp)
+                                                .fillMaxWidth(),
+                                            text = "Рекомендация по критерию",
+                                            color = MaterialTheme.colorScheme.secondary,
+                                            fontFamily = FontFamily(Font(R.font.neosanspro_medium)),
+                                            fontSize = 18.sp,
+                                            textAlign = TextAlign.Center,
+                                        )
+                                    }
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(derivedDimension*0.04f, 0.dp,derivedDimension*0.04f,10.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Text(
+                                            modifier = Modifier
+                                                .fillMaxWidth(),
                                             text = item.recommendations,
                                             color = MaterialTheme.colorScheme.secondary,
                                             fontFamily = FontFamily(Font(R.font.neosanspro_regular)),
                                             fontSize = 16.sp,
-                                            textAlign = TextAlign.Start, softWrap = true
+                                            textAlign = TextAlign.Justify, softWrap = true
                                         )
                                     }
                                 }
