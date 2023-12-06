@@ -52,7 +52,6 @@ internal fun DrawScope.drawAxisData(
                 nextStartPoints[step].y - textVerticalOffset
             )
         )
-        Log.d("DRAW", (scalarStep * step).toString())
     }
     for (line in labelsEndPoints.indices) {
         val rect = Rect(

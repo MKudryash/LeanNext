@@ -71,6 +71,7 @@ import com.example.leannext.utlis.Constants
 import com.example.leannext.utlis.ExportDataToCsv
 import com.example.leannext.viewModel.MainViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberPermissionState
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -86,8 +87,8 @@ fun DiagramScreen(
     viewModel: MainViewModel,
 ) {
 
-    /* val notificationPermissionState =
-         rememberPermissionState(android.Manifest.permission.POST_NOTIFICATIONS)*/
+     val notificationPermissionState =
+         rememberPermissionState(android.Manifest.permission.POST_NOTIFICATIONS)
     var isSheetOpen by rememberSaveable {
         mutableStateOf(false)
     }
@@ -111,6 +112,7 @@ fun DiagramScreen(
         Modifier.padding(0.dp, 0.dp, 0.dp, 95.dp)
     ) {
         val derivedDimension = this.maxWidth
+        notificationPermissionState.launchPermissionRequest()
         Column(
             modifier = Modifier
                 .fillMaxWidth()

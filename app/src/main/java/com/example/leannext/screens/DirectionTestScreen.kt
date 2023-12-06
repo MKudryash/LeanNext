@@ -144,7 +144,7 @@ fun DirectionTestScreen(
                         .clip(RoundedCornerShape(10.dp))
                         .background(Color(0XFFF5F5F9))
                         .clickable {
-                            if (id < allDirections.size - 1) {
+                            if (id < allDirections.size) {
                                 viewModel.getItemsCriterias(id + 1)
                                 viewModel.getAnswerCriteries(id + 1)
 

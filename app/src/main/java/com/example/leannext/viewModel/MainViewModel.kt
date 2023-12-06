@@ -5,6 +5,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -17,6 +18,8 @@ import com.example.leannext.db.modelsDb.AnswerCriterias
 import com.example.leannext.db.modelsDb.Criterias
 import com.example.leannext.db.modelsDb.DevelopmentIndex
 import com.example.leannext.db.modelsDb.Directions
+import com.example.leannext.notification.PreferenceStore
+import com.example.leannext.notification.ReminderNotificationWorker
 import com.example.leannext.utlis.CheckWeek
 import java.util.Calendar
 import java.util.Date
@@ -25,24 +28,22 @@ import java.util.concurrent.TimeUnit
 
 
 class MainViewModel(application: Application) : ViewModel() {
-    val allDirection: LiveData<List<Directions>>
-    val itemsAllDiagrams: LiveData<List<DevelopmentIndex>>
-    val itemsCriterias: LiveData<List<Criterias>>
 
-    val searchResults: MutableLiveData<List<DevelopmentIndex>>
-    val searchDirections: MutableLiveData<List<Directions>>
-    val answerResult: MutableLiveData<List<AnswerCriterias>>
+    val allDirection: LiveData<List<Directions>> //Лист всех направлений
+    val itemsAllDiagrams: LiveData<List<DevelopmentIndex>>// Результаты тестов текущей недели, для построения диаграммы
+    val itemsCriterias: LiveData<List<Criterias>> //Вопросы по определенному навправлению
 
-
-    private val repository: Repository
+    val searchResults: MutableLiveData<List<DevelopmentIndex>>//Поиск результатов тестов, для определенной недели
+    val answerResult: MutableLiveData<List<AnswerCriterias>> //Ответы на вопросы определенного напрваления
 
 
-    var week = mutableStateOf(0)
-    val startDate = mutableStateOf(CheckWeek.PreviousNextWeekModay(week.value))
-    val endDate = mutableStateOf(CheckWeek.PreviousNextWeekSunday(week.value))
+    private val repository: Repository //Репозиторий
 
 
-    private val workManager = WorkManager.getInstance(application)
+    var week = mutableStateOf(0) //Переменная для перемещения по неделям
+    val startDate = mutableStateOf(CheckWeek.PreviousNextWeekModay(week.value)) //Дата начала недели относительно сдвига
+    val endDate = mutableStateOf(CheckWeek.PreviousNextWeekSunday(week.value)) //Дата конца недели относительно сдвига
+
 
     init {
         val db = MainDb.createDataBase(application)
@@ -54,7 +55,6 @@ class MainViewModel(application: Application) : ViewModel() {
         searchResults = repository.searchResults
         itemsCriterias = repository.allItemCriterias
         answerResult = repository.answerCriteries
-        searchDirections = repository.searchDirections
     }
 
     fun checkday() {
@@ -81,79 +81,31 @@ class MainViewModel(application: Application) : ViewModel() {
     fun findDevelopmentIndex() {
         repository.changeListDevelopmentIndex(startDate.value, endDate.value)
     }
-}
-
-/*    fun view(): Flow<List<DevelopmentIndex>> {
-
-          viewModelScope.launch {
-              itemsListDirectionIndex.collectIndexed { index, value ->
-                  value.forEach {
-                      Log.d("ITEMS", it.idDirection.toString())
-                      Log.d("ITEMSS", it.mark.toString())
-                      Log.d("ITEMSS", startDate.value.toString())
-                      Log.d("ITEMSS", endDate.value.toString())
-                  }
-              }
-          }
-          return itemsListDirectionIndex
-      }*/
 
 
-//var itemsListDirectionForDiagram = database.dao.FoundDirectionForDiagram(format.format(Date()))
+    private val app = application
+    private val prefStore = PreferenceStore(application)
 
-/*
-init {
-    addDataToFirestore()
-}
-    fun addDataToFirestore() {
-        viewModelScope.launch {
-            val db = FirebaseFirestore.getInstance()
-            try {
-                db.collection("directions").get().await().map {
-                    val result = it.toObject(directions::class.java)
-                    Log.d("TAG", result.toString())
-                    itemsListDirection.value.add(result)
-                }
-            }
-            catch (ex:Exception)
-            {
-                Log.w("TAG", ex.message.toString())
-            }
-            Log.d("Tag",itemsListDirection.value.size.toString())
-        }
-       */
-/* val dataBase = FirebaseFirestore.getInstance()
-        val data = HashMap<String, Any>()
-        data["first_name"] = "Julia"
-        data["last_name"] = "Mamsheva"
-        dataBase.collection("usersss")
-            .add(data)
-            .addOnSuccessListener { documentReference ->
-                Log.d("TAG", "DocumentSnapshot added with ID: ${documentReference.id}")
-            }
-            .addOnFailureListener { e ->
-                Log.w("TAG", "Error adding document", e)
-
-            }
-        dataBase.collection("directions")
-            .get()
-            .addOnSuccessListener { result ->
-                for (document in result) {
-                    Log.d("TAG", "${document.id} => ${document.data}")
-                }
-            }
-            .addOnFailureListener { exception ->
-                Log.w("TAG", "Error getting documents.", exception)
-            }*//*
-
-    }*/
-/*data class directions(
-    var iconName:String? = null,
-    var id: Int? = null,
-    var title: String? = null
-) {
-    //var value: FireFranValue = FireFranValue(false, 0)
-    companion object Factory {
-        var COLLECTION = "directions"
+    fun scheduleReminderNotification(hourOfDay: Int, minute: Int) {
+        prefStore.setReminderTime(14, 33)
+        ReminderNotificationWorker.schedule(app, 14, 33)
     }
-}*/
+
+    fun getReminderTime() = prefStore.getReminderTime()
+
+    fun cancelReminderNotification() {
+        Log.d("TAGNOTF", "Cancelling reminder notification")
+        prefStore.cancelReminder()
+        WorkManager.getInstance(app).cancelAllWorkByTag("TAG_REMINDER_WORKER")
+    }
+
+    /**
+     * This sets the default time at the first launch of the app
+     */
+    private fun checkAndSetDefaultReminder() {
+        if (!prefStore.isDefaultReminderSet()) {
+            scheduleReminderNotification(12, 34)
+            prefStore.saveDefaultReminderIsSet()
+        }
+    }
+}
