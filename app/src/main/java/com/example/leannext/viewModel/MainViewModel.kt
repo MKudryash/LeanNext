@@ -18,8 +18,6 @@ import com.example.leannext.db.modelsDb.AnswerCriterias
 import com.example.leannext.db.modelsDb.Criterias
 import com.example.leannext.db.modelsDb.DevelopmentIndex
 import com.example.leannext.db.modelsDb.Directions
-import com.example.leannext.notification.PreferenceStore
-import com.example.leannext.notification.ReminderNotificationWorker
 import com.example.leannext.utlis.CheckWeek
 import java.util.Calendar
 import java.util.Date
@@ -82,30 +80,4 @@ class MainViewModel(application: Application) : ViewModel() {
         repository.changeListDevelopmentIndex(startDate.value, endDate.value)
     }
 
-
-    private val app = application
-    private val prefStore = PreferenceStore(application)
-
-    fun scheduleReminderNotification(hourOfDay: Int, minute: Int) {
-        prefStore.setReminderTime(14, 33)
-        ReminderNotificationWorker.schedule(app, 14, 33)
-    }
-
-    fun getReminderTime() = prefStore.getReminderTime()
-
-    fun cancelReminderNotification() {
-        Log.d("TAGNOTF", "Cancelling reminder notification")
-        prefStore.cancelReminder()
-        WorkManager.getInstance(app).cancelAllWorkByTag("TAG_REMINDER_WORKER")
-    }
-
-    /**
-     * This sets the default time at the first launch of the app
-     */
-    private fun checkAndSetDefaultReminder() {
-        if (!prefStore.isDefaultReminderSet()) {
-            scheduleReminderNotification(12, 34)
-            prefStore.saveDefaultReminderIsSet()
-        }
-    }
 }
