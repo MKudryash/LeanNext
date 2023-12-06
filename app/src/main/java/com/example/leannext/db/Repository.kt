@@ -17,17 +17,17 @@ import kotlinx.coroutines.launch
 import java.util.Date
 
 class Repository(private val dao: Dao) {
-    val allItemDirection: LiveData<List<Directions>> = dao.getAllItemsDirection()
+    val allItemDirection: LiveData<List<Directions>> = dao.getAllItemsDirection() //Список всех напрвлений
     val itemsForDiagram: LiveData<List<DevelopmentIndex>> = dao.getAllDevelopmentIndexDate(
         CheckWeek.PreviousNextWeekModay(0),
         CheckWeek.PreviousNextWeekSunday(0)
-    )
-    val searchResults = MutableLiveData<List<DevelopmentIndex>>()
-    val allItemCriterias = MutableLiveData<List<Criterias>>()
-    val answerCriteries = MutableLiveData<List<AnswerCriterias>>()
-    val searchDirections = MutableLiveData<List<Directions>>()
+    ) //Список для построения диаграмммы по текущей неделе
+    val searchResults = MutableLiveData<List<DevelopmentIndex>>() //Поиск результатов для определенной недели
+    val allItemCriterias = MutableLiveData<List<Criterias>>() //Список вопрос для определенного направления
+    val answerCriteries = MutableLiveData<List<AnswerCriterias>>() //Список ответов определенного направления
+    val searchDirections = MutableLiveData<List<Directions>>() //
 
-    private val coroutineScope = CoroutineScope(Dispatchers.Main)
+    private val coroutineScope = CoroutineScope(Dispatchers.Main) //Main поток
 
     fun changeListDevelopmentIndex(startDate: Date, endDate: Date) {
         coroutineScope.launch(Dispatchers.Main) {
@@ -67,24 +67,12 @@ class Repository(private val dao: Dao) {
     fun insertAnswerCriteries(answerCriterias: AnswerCriterias, idDirection:Int,startDate: Date,endDate:Date) {
         coroutineScope.launch(Dispatchers.IO) {
             try {
-                if (dao.foundItemAnswerCriteriasIndexForDate(
-                        answerCriterias.idCriterias,
-                        startDate, endDate
-                    ) == null
-                ) {
+                if (dao.foundItemAnswerCriteriasIndexForDate(answerCriterias.idCriterias, startDate, endDate) == null) {
                     dao.insertItemAnswerCriterias(answerCriterias = answerCriterias)
-                    var local = dao.foundItemDevelopmentIndexForDate(Date(), idDirection)
+                    val local = dao.foundItemDevelopmentIndexForDate(Date(), idDirection)
                     val mark = dao.CalculationMartForDevelopmentIndex(idDirection, Date())
                     if (local == null) {
-                        dao.insertItemDevelopmentIndex(
-                            DevelopmentIndex(
-                                null,
-                                1,
-                                Date(),
-                                idDirection,
-                                mark
-                            )
-                        )
+                        dao.insertItemDevelopmentIndex(DevelopmentIndex(null, 1, Date(), idDirection, mark))
                     } else dao.updateDevelopmentIndex(local.id!!, mark)
                 } else {
                     dao.updateItemAnswerCriterias(
@@ -92,7 +80,7 @@ class Repository(private val dao: Dao) {
                         answerCriterias.date,
                         answerCriterias.idCriterias
                     )
-                    var local = dao.foundItemDevelopmentIndexForDate(Date(), idDirection)
+                    val local = dao.foundItemDevelopmentIndexForDate(Date(), idDirection)
                     val mark = dao.CalculationMartForDevelopmentIndex(idDirection, Date())
                     dao.updateDevelopmentIndex(local.id!!, mark)
 
