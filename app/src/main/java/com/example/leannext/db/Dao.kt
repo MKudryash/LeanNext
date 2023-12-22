@@ -23,19 +23,9 @@ import java.util.Locale
 
 @Dao
 interface Dao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertItemUsers(users: Users)
-    @Query("SELECT * FROM Users")
-    fun getAllItemsUsers(): Flow<List<Users>>
-    @Query(value = "SELECT * FROM Users WHERE login LIKE  :login")
-    fun foundItemUsersWithLogin(login: String): LiveData<Users>
-
-
-
+    /**Запросы к таблице Ответы на критерий*/
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertItemAnswerCriterias(answerCriterias: AnswerCriterias?)
-    @Update
-    suspend fun updateItemAnswerCriterias(answerCriterias: AnswerCriterias?)
     @Query("Update AnswerCriterias set mark = :answer where date=:date and idCriterias = :idCriterias")
     suspend fun updateItemAnswerCriterias(answer:Double, date: Date, idCriterias: Int)
     @Query(value = "SELECT * FROM AnswerCriterias WHERE idCriterias =:idCriterias and date(date)>= :startWeek and date(date)<=:endWeek")
@@ -49,23 +39,12 @@ interface Dao {
 
 
 
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertItemCriterias(criterias: Criterias)
-
-    @Query("SELECT * FROM Criterias")
-    fun getAllItemsCriterias(): LiveData<List<Criterias>>
-
-    @Query(value = "SELECT * FROM Criterias WHERE title LIKE  :title")
-    fun foundItemCriteriasWithName(title: String): List<Criterias>
-
+    /**Запросы к таблице Критерии*/
     @Query(value = "SELECT * FROM Criterias WHERE idDirection = :id")
-    fun foundItemCriteriasForDirection(id: Int): LiveData<List<Criterias>>
-    @Query(value = "SELECT * FROM Criterias WHERE idDirection = :id")
-    fun foundItemCriteriasForDirection1(id: Int): List<Criterias>
+    fun foundItemCriteriasForDirection(id: Int): List<Criterias>
 
 
-
+    /**Запросы к таблице Индекс развития*/
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertItemDevelopmentIndex(developmentIndex: DevelopmentIndex)
     @Query(value = "SELECT * FROM DevelopmentIndex WHERE date = :date and idDirection = :idDirection")
@@ -74,29 +53,16 @@ interface Dao {
     @Query(value = "SELECT * FROM DevelopmentIndex WHERE date(date)>= :startWeek and date(date)<=:endWeek")
     fun getAllDevelopmentIndexDate(startWeek: Date,endWeek:Date): LiveData<List<DevelopmentIndex>>
 
-
     @Query(value = "SELECT * FROM DevelopmentIndex WHERE date(date)>= :startWeek and date(date)<=:endWeek")
     fun getAllDevelopmentIndexDate1(startWeek: Date,endWeek:Date): List<DevelopmentIndex>
     @Query("Update DevelopmentIndex set mark = :mark where id = :id")
     fun updateDevelopmentIndex(id: Int,mark:Double)
 
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertItemDirection(directions: Directions)
+    /**Запросы к таблице Навправления*/
 
     @Query("SELECT * FROM Directions")
     fun getAllItemsDirection(): LiveData<List<Directions>>
-    @Query("SELECT * FROM Directions")
-    fun getAllItemsDirectionCursor(): Cursor
-
-
-
-    @Query(value = "SELECT * FROM Directions WHERE title LIKE :title")
-    fun foundItemDirectionWithName(title: String): List<Directions>
-
-    @Query(value = "SELECT * FROM Directions WHERE id = :ids")
-    fun foundNameItemDirectionWithId(ids: Int): LiveData<Directions>
-
     @Query(
         value = "select sum(mark)/(select count(id) from Criterias as C where c.idDirection = :idDirection)\n" +
                 "from Criterias as C\n" +

@@ -1,7 +1,8 @@
-package com.example.leannext.screens
+package com.example.leannext.radarChart
 
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import com.example.leannext.screens.RadarChartConfig
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
@@ -74,7 +75,7 @@ internal fun getPolygonShapeEndPoints(
         val angleOfFirstLine = 0 * angleBetweenLines
         val offsetAngle = -PI / 2 - angleOfFirstLine
         val angle = index * angleBetweenLines + offsetAngle
-        val polygonRadius = radius - (radius / scalarSteps)
+        val polygonRadius = radius - (radius / scalarValue / (scalarSteps))
 
         val value = values[index]
         val scalarRadius = (value / scalarValue) * polygonRadius

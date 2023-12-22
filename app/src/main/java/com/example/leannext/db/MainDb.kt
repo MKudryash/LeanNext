@@ -11,7 +11,13 @@ import com.example.leannext.db.modelsDb.DevelopmentIndex
 import com.example.leannext.db.modelsDb.Directions
 import com.example.leannext.db.modelsDb.Users
 import com.example.leannext.utlis.Converters
-
+/**Создание базы данных
+ * Таблицы:
+ * Направления
+ * Критерии (критерий принадлежит одному напрвалению)
+ * Ответы на критерии
+ * Индекс развития - хранит данные ответов пользователя (подсчитанный критерий за определенную дату)
+ * */
 @Database(
     entities = [
         AnswerCriterias::class,
@@ -39,7 +45,7 @@ abstract class MainDb : RoomDatabase() {
                         MainDb::class.java,
                         "leannext"
                     )
-                        .createFromAsset("leannext_default.db")
+                        .createFromAsset("leannext_default.db") //Направления и критерия заполнены по умолчанию
                         .build()
                     INSTANCE = instance
 

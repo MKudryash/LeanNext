@@ -7,7 +7,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.leannext.screens.MainScreen
 import com.example.leannext.screens.SplashScreen
 import com.example.leannext.viewModel.MainViewModel
-
+/**Навгиция после запуска SplachScreen*/
 @Composable
 fun Navigation(viewModel: MainViewModel) {
     val navController = rememberNavController()

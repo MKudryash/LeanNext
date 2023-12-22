@@ -1,5 +1,7 @@
 package com.example.leannext.bottom_navigation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -13,7 +15,8 @@ import com.example.leannext.screens.MainScreen
 import com.example.leannext.screens.ProfileScreen
 import com.example.leannext.screens.TestScreen
 import com.example.leannext.utlis.Constants
-
+/*Класс для перемещения по страницам*/
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NavGraph(
     navHostController: NavHostController,viewModel: MainViewModel

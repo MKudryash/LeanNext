@@ -1,7 +1,6 @@
 package com.example.leannext.bottom_navigation
 
-import com.example.leannext.R
-
+/*Класс для нижний панели*/
 open class BottomItem(
     val title: String,
     val iconId: Int,

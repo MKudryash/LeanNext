@@ -24,7 +24,7 @@ import java.util.Date
 import java.util.TimeZone
 import java.util.concurrent.TimeUnit
 
-
+/**Модель данных между UI и DB*/
 class MainViewModel(application: Application) : ViewModel() {
 
     val allDirection: LiveData<List<Directions>> //Лист всех направлений

@@ -1,5 +1,6 @@
 package com.example.leannext.screens.modelsUI
 
+/**Модель для обратной связи*/
 class ConnectionWithUs(
     val idIcon: Int,
     val title: String,

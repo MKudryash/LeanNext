@@ -79,7 +79,8 @@ import java.util.Locale
 
 val format = SimpleDateFormat("dd MMMM", Locale("ru"))
 
-@OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
+
+@OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DiagramScreen(
@@ -87,8 +88,7 @@ fun DiagramScreen(
     viewModel: MainViewModel,
 ) {
 
-     /*val notificationPermissionState =
-         rememberPermissionState(android.Manifest.permission.POST_NOTIFICATIONS)*/
+
     var isSheetOpen by rememberSaveable {
         mutableStateOf(false)
     }
@@ -112,7 +112,7 @@ fun DiagramScreen(
         Modifier.padding(0.dp, 0.dp, 0.dp, 95.dp)
     ) {
         val derivedDimension = this.maxWidth
-        //notificationPermissionState.launchPermissionRequest()
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()

@@ -5,7 +5,6 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -19,6 +18,9 @@ import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.navigation.NavHostController
+import com.example.leannext.radarChart.calculateRadarConfig
+import com.example.leannext.radarChart.drawPolygonShape
+import com.example.leannext.radarChart.drawRadarNet
 import com.example.leannext.radarChart.modelRadarChart.AngleTitle
 import com.example.leannext.viewModel.MainViewModel
 import kotlin.math.atan2

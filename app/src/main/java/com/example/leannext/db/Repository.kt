@@ -15,19 +15,19 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.util.Date
-
+/**Репозиторий методов обращающихся к Dao (SQL - запросам)*/
 class Repository(private val dao: Dao) {
-    val allItemDirection: LiveData<List<Directions>> = dao.getAllItemsDirection()
-    val itemsForDiagram: LiveData<List<DevelopmentIndex>> = dao.getAllDevelopmentIndexDate(
+    val allItemDirection: LiveData<List<Directions>> = dao.getAllItemsDirection() //Список всех направлений
+    val itemsForDiagram: LiveData<List<DevelopmentIndex>> = dao.getAllDevelopmentIndexDate( //Получение индексов текущей недели
         CheckWeek.PreviousNextWeekModay(0),
         CheckWeek.PreviousNextWeekSunday(0)
     )
-    val searchResults = MutableLiveData<List<DevelopmentIndex>>()
-    val allItemCriterias = MutableLiveData<List<Criterias>>()
-    val answerCriteries = MutableLiveData<List<AnswerCriterias>>()
-    val searchDirections = MutableLiveData<List<Directions>>()
+    val searchResults = MutableLiveData<List<DevelopmentIndex>>() //Поиск индексов по выбраннйо неделе
+    val allItemCriterias = MutableLiveData<List<Criterias>>() // Список критериев
+    val answerCriteries = MutableLiveData<List<AnswerCriterias>>() //Список ответов для навправления
 
-    private val coroutineScope = CoroutineScope(Dispatchers.Main)
+
+    private val coroutineScope = CoroutineScope(Dispatchers.Main) //Поток корутины
 
     fun changeListDevelopmentIndex(startDate: Date, endDate: Date) {
         coroutineScope.launch(Dispatchers.Main) {
@@ -50,7 +50,7 @@ class Repository(private val dao: Dao) {
 
     private fun asyncFindAnswerCriterias(id: Int): Deferred<List<Criterias>?> =
         coroutineScope.async(Dispatchers.IO) {
-            return@async dao.foundItemCriteriasForDirection1(id)
+            return@async dao.foundItemCriteriasForDirection(id)
         }
     fun changeListAnswerCriterias(date: Date,idDirection:Int) {
         coroutineScope.launch(Dispatchers.Main) {

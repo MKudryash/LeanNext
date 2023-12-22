@@ -3,6 +3,7 @@ package com.example.leannext.utlis
 import java.util.Calendar
 import java.util.Date
 
+/**Метод для поиска начала и конца недели*/
 object CheckWeek {
     fun PreviousNextWeekModay(privioisWeek: Int): Date {
         return Calendar.getInstance().apply {

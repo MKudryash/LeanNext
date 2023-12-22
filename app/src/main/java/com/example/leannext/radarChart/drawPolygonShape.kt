@@ -1,10 +1,11 @@
-package com.example.leannext.screens
+package com.example.leannext.radarChart
 
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
+import com.example.leannext.screens.Polygon
 
 internal fun drawPolygonShape(
     drawScope: DrawScope,
@@ -38,7 +39,7 @@ internal fun drawPolygonShape(
 
 private fun Path.drawPolygon(polygonCorners: List<Offset>) {
     moveTo(polygonCorners[0].x, polygonCorners[0].y)
-    polygonCorners.forEachIndexed { index, offset ->
+    polygonCorners.forEachIndexed { _, offset ->
         lineTo(offset.x, offset.y)
     }
 

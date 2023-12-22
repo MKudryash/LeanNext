@@ -31,7 +31,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.leannext.R
 import com.example.leannext.utlis.Constants
-
+/*Класс отвечающий за построение нижнего бара и листа*/
 @Composable
 fun BottomNavigation(navHostController: NavHostController) {
     val listItems = listOf(

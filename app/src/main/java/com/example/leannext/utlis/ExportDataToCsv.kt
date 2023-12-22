@@ -22,8 +22,10 @@ import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Paths
 
+/**Заполнение excel с возможностью отправки или сохранения*/
 object ExportDataToCsv {
 
+    //Создание и заполнение файла
     @RequiresApi(Build.VERSION_CODES.O)
     fun createXlFile(
         devindex: List<DevelopmentIndex>,
@@ -69,6 +71,7 @@ object ExportDataToCsv {
         else Toast.makeText(context,"Успешно сохранено в загрузки!",Toast.LENGTH_LONG).show()
 
     }
+    //Отправка в другое приложение
     fun SendOtherApp(context: Context,file: File)
     {
         val uris = FileProvider.getUriForFile(context, "com.anni.shareimage.fileprovider", file)
@@ -79,9 +82,11 @@ object ExportDataToCsv {
 
         context.startActivity(Intent.createChooser(intent, "Share Via"))
     }
+    //Проверка файла в сохраненных
     @RequiresApi(Build.VERSION_CODES.O)
     fun checkFile(save:Boolean, context:Context, startDate: String):File
     {
+        context.cacheDir.deleteRecursively()
         val folder =
             if (save) Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
             else context.cacheDir
@@ -102,6 +107,7 @@ object ExportDataToCsv {
         }
         return File(folder, fileName)
     }
+    //Запись файла в нужную папку
     fun streamFolder(file:File,wb:Workbook)
     {
         var outputStream: FileOutputStream? = null

@@ -1,6 +1,8 @@
-package com.example.leannext.screens
+package com.example.leannext.radarChart
 
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import com.example.leannext.screens.NetLinesStyle
+import com.example.leannext.screens.RadarChartConfig
 
 internal fun DrawScope.drawRadarNet(
     netLinesStyle: NetLinesStyle,
@@ -29,7 +31,5 @@ internal fun DrawScope.drawRadarNet(
                 cap = netLinesStyle.netLinesStrokeCap,
             )
         }
-
     }
-
 }
