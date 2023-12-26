@@ -1,37 +1,32 @@
 package com.example.leannext.viewModel
 
 import android.app.Application
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.content.Context
 import android.os.Build
-import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
 import com.example.leannext.db.MainDb
 import com.example.leannext.db.Repository
 import com.example.leannext.db.modelsDb.AnswerCriterias
 import com.example.leannext.db.modelsDb.Criterias
 import com.example.leannext.db.modelsDb.DevelopmentIndex
 import com.example.leannext.db.modelsDb.Directions
+import com.example.leannext.utlis.CheckMonth
 import com.example.leannext.utlis.CheckWeek
-import java.util.Calendar
 import java.util.Date
-import java.util.TimeZone
-import java.util.concurrent.TimeUnit
 
 /**Модель данных между UI и DB*/
 class MainViewModel(application: Application) : ViewModel() {
 
     val allDirection: LiveData<List<Directions>> //Лист всех направлений
     val itemsAllDiagrams: LiveData<List<DevelopmentIndex>>// Результаты тестов текущей недели, для построения диаграммы
+    val itemsAllDiagramsLastMonth: LiveData<List<DevelopmentIndex>>// Результаты тестов текущей недели, для построения диаграммы
     val itemsCriterias: LiveData<List<Criterias>> //Вопросы по определенному навправлению
 
     val searchResults: MutableLiveData<List<DevelopmentIndex>>//Поиск результатов тестов, для определенной недели
+    val searchResultsLastMonth: MutableLiveData<List<DevelopmentIndex>>//Поиск результатов тестов, для определенной недели
     val answerResult: MutableLiveData<List<AnswerCriterias>> //Ответы на вопросы определенного напрваления
 
 
@@ -39,8 +34,12 @@ class MainViewModel(application: Application) : ViewModel() {
 
 
     var week = mutableStateOf(0) //Переменная для перемещения по неделям
-    val startDate = mutableStateOf(CheckWeek.PreviousNextWeekModay(week.value)) //Дата начала недели относительно сдвига
-    val endDate = mutableStateOf(CheckWeek.PreviousNextWeekSunday(week.value)) //Дата конца недели относительно сдвига
+
+
+     @RequiresApi(Build.VERSION_CODES.O)
+     val startDate = mutableStateOf(CheckMonth.getCurrentMonthStartDate(week.value)) //Дата начала месяца относительно сдвига
+    @RequiresApi(Build.VERSION_CODES.O)
+    val endDate = mutableStateOf(CheckMonth.getCurrentMonthEndDate(week.value)) //Дата конца месяца относительно сдвига
 
 
     init {
@@ -50,14 +49,16 @@ class MainViewModel(application: Application) : ViewModel() {
 
         allDirection = repository.allItemDirection
         itemsAllDiagrams = repository.itemsForDiagram
+        itemsAllDiagramsLastMonth = repository.itemsForDiagramLastMonth
         searchResults = repository.searchResults
+        searchResultsLastMonth = repository.searchResultsLastMonth
         itemsCriterias = repository.allItemCriterias
         answerResult = repository.answerCriteries
     }
-
+    @RequiresApi(Build.VERSION_CODES.O)
     fun checkday() {
-        startDate.value = CheckWeek.PreviousNextWeekModay(week.value)
-        endDate.value = CheckWeek.PreviousNextWeekSunday(week.value)
+        startDate.value = CheckMonth.getCurrentMonthStartDate(week.value)
+        endDate.value = CheckMonth.getCurrentMonthEndDate(week.value)
     }
 
     fun getAnswerCriteries(idDirections: Int) {
@@ -68,6 +69,7 @@ class MainViewModel(application: Application) : ViewModel() {
         repository.changeListCriterias(id)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun insertAnswerCriteries(idCriteries: Int, mark: Double, idDirections: Int) {
         repository.insertAnswerCriteries(
             AnswerCriterias(null, idCriteries, mark, Date()),
@@ -76,8 +78,14 @@ class MainViewModel(application: Application) : ViewModel() {
         )
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun findDevelopmentIndex() {
         repository.changeListDevelopmentIndex(startDate.value, endDate.value)
+    }
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun findDevelopmentIndexLastMonth() {
+        repository.changeListDevelopmentIndexLastMonth(CheckMonth.getCurrentMonthStartDate(week.value-1),
+            CheckMonth.getCurrentMonthEndDate(week.value-1))
     }
 
 }

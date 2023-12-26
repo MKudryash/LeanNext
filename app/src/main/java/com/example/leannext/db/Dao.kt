@@ -57,6 +57,8 @@ interface Dao {
     fun getAllDevelopmentIndexDate1(startWeek: Date,endWeek:Date): List<DevelopmentIndex>
     @Query("Update DevelopmentIndex set mark = :mark where id = :id")
     fun updateDevelopmentIndex(id: Int,mark:Double)
+    @Query(value = "SELECT * FROM DevelopmentIndex WHERE date(date)>= :startWeek and date(date)<=:endWeek")
+    fun getDevelopmentIndexLastMonth(startWeek: Date,endWeek:Date): LiveData<List<DevelopmentIndex>>
 
 
     /**Запросы к таблице Навправления*/

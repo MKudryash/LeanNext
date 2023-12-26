@@ -1,7 +1,5 @@
 package com.example.leannext.screens
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -27,8 +25,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -54,18 +50,15 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.semantics.Role.Companion.Checkbox
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.Hyphens
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.window.Dialog
-import androidx.core.content.ContextCompat.startActivity
 import androidx.navigation.NavHostController
 import com.example.leannext.R
 import com.example.leannext.dataStore.StoreData
@@ -76,8 +69,6 @@ import com.example.leannext.screens.constantsUI.ConstantsUI
 import com.example.leannext.utlis.Constants
 import com.example.leannext.utlis.ExportDataToCsv
 import com.example.leannext.viewModel.MainViewModel
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberPermissionState
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -102,8 +93,10 @@ fun DiagramScreen(
     val allDirections by viewModel.allDirection.observeAsState(listOf())
     val itemsForDiagram by viewModel.itemsAllDiagrams.observeAsState(listOf())
     val searchResults by viewModel.searchResults.observeAsState(listOf())
+    val searchResultsLastMonth by viewModel.searchResultsLastMonth.observeAsState(listOf())
+    val itemsForDiagramLastMonth by viewModel.itemsAllDiagramsLastMonth.observeAsState(listOf())
     var searching by remember { mutableStateOf(false) }
-
+    var roundCheckBoxState by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
     var expanded by remember { mutableStateOf(false) }
@@ -268,6 +261,7 @@ fun DiagramScreen(
                             --viewModel.week.value
                             viewModel.checkday()
                             viewModel.findDevelopmentIndex()
+                            viewModel.findDevelopmentIndexLastMonth()
                             searching = viewModel.week.value != 0
                         },
                     contentAlignment = Alignment.Center
@@ -284,7 +278,7 @@ fun DiagramScreen(
                 )
                 {
                     Text(
-                        text = "Еженедельный отчет",
+                        text = "Ежемесячный отчет",
                         color = MaterialTheme.colorScheme.secondary,
                         fontFamily = FontFamily(Font(R.font.neosanspro_bold)),
                         fontSize = 4.em,
@@ -311,6 +305,7 @@ fun DiagramScreen(
                             if (viewModel.week.value < 0) ++viewModel.week.value
                             viewModel.checkday()
                             viewModel.findDevelopmentIndex()
+                            viewModel.findDevelopmentIndexLastMonth()
                             searching = viewModel.week.value != 0
                         },
                     contentAlignment = Alignment.Center,
@@ -324,7 +319,7 @@ fun DiagramScreen(
                     )
                 }
             }
-            var roundCheckBoxState by remember { mutableStateOf(false) }
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -340,17 +335,20 @@ fun DiagramScreen(
                 RoundCheckBox(
                     modifier = Modifier.width(45.dp),
                     color = RoundCheckBoxDefaults.colors(
-                     selectedColor = MaterialTheme.colorScheme.background,
-                     tickColor = MaterialTheme.colorScheme.secondary,
-                     borderColor = MaterialTheme.colorScheme.primary),
+                        selectedColor = MaterialTheme.colorScheme.background,
+                        tickColor = MaterialTheme.colorScheme.secondary,
+                        borderColor = MaterialTheme.colorScheme.primary
+                    ),
                     isChecked = roundCheckBoxState,
-                    onClick = { roundCheckBoxState = !roundCheckBoxState },
+                    onClick = { roundCheckBoxState = !roundCheckBoxState
+                        viewModel.findDevelopmentIndexLastMonth()},
                     enabled = true
                 )
 
             }
             val list = if (searching) searchResults else itemsForDiagram
-            RadarChartSample(list, derivedDimension, navHostController, viewModel)
+            val listLastMonth = if (roundCheckBoxState) searchResultsLastMonth else itemsForDiagramLastMonth
+            RadarChartSample(list, listLastMonth, derivedDimension, navHostController, viewModel)
             var sum = 0.0
             list.forEach {
                 sum += it.mark
@@ -466,9 +464,6 @@ fun DiagramScreen(
                 }
             }
 
-
-
-
             if (Constants.userName == "") {
                 InputDialogView {
                 }
@@ -479,7 +474,7 @@ fun DiagramScreen(
                 }
             }
             if (showInformation) {
-                InforamtionView {
+                InformationView {
                     showInformation = !showInformation
                 }
             }
@@ -492,6 +487,7 @@ fun DiagramScreen(
 @Composable
 fun RadarChartSample(
     itemsListDirectionIndex: List<DevelopmentIndex>?,
+    itemsListDirectionIndexLastMonth: List<DevelopmentIndex>?,
     w: Dp,
     navHostController: NavHostController,
     viewModel: MainViewModel
@@ -508,8 +504,9 @@ fun RadarChartSample(
             "Обучение\nперсонала",
             "Логистика"
         )
-//Сделать в одном цикле!
+    //Сделать в одном цикле!
     var valuesDirection = arrayListOf(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+    var valuesDirectionLastMonth = arrayListOf(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
     var indexDir = 1
 
     // iterate it using a mutable iterator and modify values
@@ -519,6 +516,17 @@ fun RadarChartSample(
         itemsListDirectionIndex?.forEach {
             if (it.idDirection == indexDir) {
                 iterate.set(it.mark)
+            }
+        }
+        indexDir++
+    }
+    indexDir = 1
+    val iterates = valuesDirectionLastMonth.listIterator()
+    while (iterates.hasNext()) {
+        iterates.next()
+        itemsListDirectionIndexLastMonth?.forEach {
+            if (it.idDirection == indexDir) {
+                iterates.set(it.mark)
             }
         }
         indexDir++
@@ -558,6 +566,20 @@ fun RadarChartSample(
                     fillColor = Color(0x594CBBBF),
                     fillColorAlpha = 0.5f,
                     borderColor = MaterialTheme.colorScheme.primary,
+                    borderColorAlpha = 0.5f,
+                    borderStrokeWidth = 6f,
+                    borderStrokeCap = StrokeCap.Butt,
+                )
+            )
+        ),
+        polygonsLast = listOf(
+            Polygon(
+                values = valuesDirectionLastMonth,
+                unit = "",
+                style = PolygonStyle(
+                    fillColor = Color(0x80FF6864),
+                    fillColorAlpha = 0.5f,
+                    borderColor = Color(0xFFFF6864),
                     borderColorAlpha = 0.5f,
                     borderStrokeWidth = 6f,
                     borderStrokeCap = StrokeCap.Butt,
@@ -651,7 +673,7 @@ fun InputDialogView(onDismiss: () -> Unit) {
 }
 
 @Composable
-fun InforamtionView(onDismiss: () -> Unit) {
+fun InformationView(onDismiss: () -> Unit) {
 
     Dialog(onDismissRequest = { onDismiss() }) {
         Card(

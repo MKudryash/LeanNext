@@ -37,6 +37,7 @@ fun RadarChart(
     scalarValue: Double,
     scalarValuesStyle: TextStyle,
     polygons: List<Polygon>,
+    polygonsLast: List<Polygon>,
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
     viewModel: MainViewModel
@@ -49,8 +50,6 @@ fun RadarChart(
     var labelsEndPoints by remember {
         mutableStateOf(listOf<Offset>())
     }
-
-
 
     Canvas(modifier = modifier.pointerInput(true) {
         detectTapGestures(
@@ -101,6 +100,16 @@ fun RadarChart(
 
 
         polygons.forEach {
+            drawPolygonShape(
+                this,
+                it,
+                radius,
+                scalarValue ,
+                Offset(size.width / 2, size.height / 2),
+                scalarSteps
+            )
+        }
+        polygonsLast.forEach {
             drawPolygonShape(
                 this,
                 it,

@@ -1,7 +1,5 @@
 package com.example.leannext.db
 
-import android.database.Cursor
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.leannext.db.modelsDb.AnswerCriterias
@@ -22,11 +20,14 @@ class Repository(private val dao: Dao) {
         CheckWeek.PreviousNextWeekModay(0),
         CheckWeek.PreviousNextWeekSunday(0)
     )
-    val searchResults = MutableLiveData<List<DevelopmentIndex>>() //Поиск индексов по выбраннйо неделе
+    val searchResults = MutableLiveData<List<DevelopmentIndex>>() //Поиск индексов по выбранной неделе
     val allItemCriterias = MutableLiveData<List<Criterias>>() // Список критериев
     val answerCriteries = MutableLiveData<List<AnswerCriterias>>() //Список ответов для навправления
-
-
+    val itemsForDiagramLastMonth:LiveData<List<DevelopmentIndex>> = dao.getDevelopmentIndexLastMonth( //Получение индексов текущей недели
+        CheckWeek.PreviousNextWeekModay(-1),
+        CheckWeek.PreviousNextWeekSunday(-1)
+    )
+    val searchResultsLastMonth = MutableLiveData<List<DevelopmentIndex>>() //Поиск индексов по выбранной неделе
     private val coroutineScope = CoroutineScope(Dispatchers.Main) //Поток корутины
 
     fun changeListDevelopmentIndex(startDate: Date, endDate: Date) {
@@ -38,6 +39,19 @@ class Repository(private val dao: Dao) {
         startDate: Date,
         endDate: Date
     ): Deferred<List<DevelopmentIndex>?> =
+        coroutineScope.async(Dispatchers.IO) {
+            return@async dao.getAllDevelopmentIndexDate1(startDate, endDate)
+        }
+
+    fun changeListDevelopmentIndexLastMonth(startDate: Date, endDate: Date) {
+        coroutineScope.launch(Dispatchers.Main) {
+            searchResultsLastMonth.value = asyncFindDevelopmentIndexLastMonth(startDate, endDate).await()
+        }
+    }
+    private fun asyncFindDevelopmentIndexLastMonth(
+        startDate: Date,
+        endDate: Date
+    ): Deferred<List<DevelopmentIndex>> =
         coroutineScope.async(Dispatchers.IO) {
             return@async dao.getAllDevelopmentIndexDate1(startDate, endDate)
         }
