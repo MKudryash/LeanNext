@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -26,6 +27,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -51,6 +54,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role.Companion.Checkbox
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -66,6 +70,8 @@ import androidx.navigation.NavHostController
 import com.example.leannext.R
 import com.example.leannext.dataStore.StoreData
 import com.example.leannext.db.modelsDb.DevelopmentIndex
+import com.example.leannext.roundCheckBox.RoundCheckBox
+import com.example.leannext.roundCheckBox.RoundCheckBoxDefaults
 import com.example.leannext.screens.constantsUI.ConstantsUI
 import com.example.leannext.utlis.Constants
 import com.example.leannext.utlis.ExportDataToCsv
@@ -318,7 +324,31 @@ fun DiagramScreen(
                     )
                 }
             }
+            var roundCheckBoxState by remember { mutableStateOf(false) }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.End
+            ) {
 
+                Text(
+                    "Отчет за прошлый месяц", color = MaterialTheme.colorScheme.secondary,
+                    fontFamily = FontFamily(Font(R.font.neosanspro_regular)),
+                    fontSize = 3.em,
+                    textAlign = TextAlign.Center,
+                )
+                RoundCheckBox(
+                    modifier = Modifier.width(45.dp),
+                    color = RoundCheckBoxDefaults.colors(
+                     selectedColor = MaterialTheme.colorScheme.background,
+                     tickColor = MaterialTheme.colorScheme.secondary,
+                     borderColor = MaterialTheme.colorScheme.primary),
+                    isChecked = roundCheckBoxState,
+                    onClick = { roundCheckBoxState = !roundCheckBoxState },
+                    enabled = true
+                )
+
+            }
             val list = if (searching) searchResults else itemsForDiagram
             RadarChartSample(list, derivedDimension, navHostController, viewModel)
             var sum = 0.0
@@ -622,14 +652,6 @@ fun InputDialogView(onDismiss: () -> Unit) {
 
 @Composable
 fun InforamtionView(onDismiss: () -> Unit) {
-    val context = LocalContext.current
-
-    val dataStore = StoreData(context)
-
-    var nameUser by remember {
-        mutableStateOf(Constants.userName)
-    }
-    val scope = rememberCoroutineScope()
 
     Dialog(onDismissRequest = { onDismiss() }) {
         Card(
@@ -680,16 +702,17 @@ fun InforamtionView(onDismiss: () -> Unit) {
         }
     }
 }
+
+
 @Composable
 fun BottomConnect() {
-var context = LocalContext.current
-    val uriHandler =  LocalUriHandler.current
+    val uriHandler = LocalUriHandler.current
 
     LazyColumn(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.background)
             .fillMaxWidth()
-            .padding(0.dp,25.dp),
+            .padding(0.dp, 25.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -698,9 +721,9 @@ var context = LocalContext.current
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(MaterialTheme.colorScheme.background)
-                    .padding(0.dp,1.dp)
+                    .padding(0.dp, 1.dp)
                     .clickable {
-                         uriHandler.openUri(it.link)
+                        uriHandler.openUri(it.link)
                     },
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
@@ -711,7 +734,7 @@ var context = LocalContext.current
                     contentDescription = "",
                     tint = MaterialTheme.colorScheme.secondary,
 
-                )
+                    )
                 Text(
                     it.title,
                     fontFamily = FontFamily(Font(R.font.neosanspro_regular)),
