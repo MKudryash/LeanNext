@@ -70,6 +70,8 @@ dependencies {
 
     //Библиотека для навигации по страницам
     implementation ("androidx.navigation:navigation-compose:2.7.5")
+
+
     implementation("androidx.room:room-common:2.6.0")
     implementation("androidx.room:room-ktx:2.6.0")
 

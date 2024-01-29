@@ -1,7 +1,9 @@
 package com.example.leannext.screens
 
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -75,6 +77,7 @@ import java.sql.Time
 import java.util.Timer
 import kotlin.concurrent.schedule
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DirectionTestScreen(
@@ -199,9 +202,9 @@ fun DirectionTestScreen(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(bottom = 92.dp),
             ) {
-                items(itemsListCriterias) { item ->
-                    var count = item.id!! % 3
-                    if (count == 0) count = 3
+                itemsIndexed(items = itemsListCriterias) { index,item ->
+                    var count = index+1
+                    if (count == 0) count = itemsListCriterias.size
                     val sheetState = rememberModalBottomSheetState()
                     var isSheetOpen by rememberSaveable {
                         mutableStateOf(false)
@@ -296,11 +299,13 @@ fun DirectionTestScreen(
                                                 selectedIndex =
                                                     if (selectedIndex != index) index else -1
                                                 try {
-                                                    viewModel.insertAnswerCriteries(
-                                                        item.id,
-                                                        items.toDouble(),
-                                                        id
-                                                    )
+                                                    item.id?.let {
+                                                        viewModel.insertAnswerCriteries(
+                                                            it,
+                                                            items.toDouble(),
+                                                            id
+                                                        )
+                                                    }
                                                     viewModel.getAnswerCriteries(id)
                                                     Timer().schedule(3000) {}
                                                     Log.d("Test", selectedIndex.toString())
@@ -325,7 +330,7 @@ fun DirectionTestScreen(
                                 }
                             }
                         }
-                        if (item.id < itemsListCriterias.size) {
+                        if (item.id!! < itemsListCriterias.size) {
                             Divider(
                                 color = MaterialTheme.colorScheme.primary,
                                 thickness = 2.dp,
