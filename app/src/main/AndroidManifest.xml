@@ -24,7 +24,7 @@
         <provider
             android:name="androidx.core.content.FileProvider"
 
-            android:authorities="com.anni.shareimage.fileprovider"
+            android:authorities="com.example.leannext"
 
             android:exported="false"
             android:grantUriPermissions="true">

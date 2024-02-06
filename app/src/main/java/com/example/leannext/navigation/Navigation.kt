@@ -1,4 +1,4 @@
-package com.example.leannext.Navigation
+package com.example.leannext.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost

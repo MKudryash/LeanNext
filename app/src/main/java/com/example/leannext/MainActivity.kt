@@ -1,11 +1,7 @@
 package com.example.leannext
 
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
-import android.app.AlarmManager
 import android.app.Application
-import android.app.PendingIntent
-import android.content.Context
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -17,7 +13,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.leannext.Navigation.Navigation
+import com.example.leannext.navigation.Navigation
 import com.example.leannext.dataStore.StoreData
 import com.example.leannext.ui.theme.LeanNextTheme
 import com.example.leannext.utlis.Constants
